@@ -1,0 +1,83 @@
+/* there should be very few things here that apply globaly */
+html,
+body {
+	margin: 0;
+	padding: 0;
+	font-family: 'Lato', sans-serif;
+	font-variation-settings: 'wdth' 100;
+	font-optical-sizing: auto;
+}
+
+* {
+	user-select: none;
+	-ms-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+// disable link previews
+a {
+	-webkit-touch-callout: none;
+}
+
+:root {
+	--main_section_radius: 8px;
+	--nav-bar-height: 74px;
+	--sticky-top-z-index: 100;
+}
+
+main.full-height {
+	min-height: 100vh;
+	min-height: calc(100vh - var(--os_top_padding));
+	display: flex;
+	flex-direction: column;
+}
+
+main.full-height:has(.os_top_padding) {
+	/* an element inside has the padding so the outer main must be full height */
+	min-height: 100vh;
+}
+
+.primary-gradient {
+	background: linear-gradient(180deg, var(--bs-primary) 0%, var(--bs-link-hover-color) 100%);
+	color: white;
+	box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.sticky_top {
+	position: sticky;
+	top: 0;
+	z-index: var(--sticky-top-z-index);
+}
+
+footer.bottom-bar {
+	border-radius: var(--main_section_radius) var(--main_section_radius) 0;
+	box-shadow: 0px -5px 20px rgba(0, 0, 0, 0.1);
+	background: white;
+}
+
+// so that things below the bottom navigation bar scroll past it
+.footer-spacer {
+	padding-bottom: 74px;
+}
+
+.card {
+	border: 1px solid rgba(171, 169, 158, 0.25);
+	box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+	border-radius: 15px;
+}
+
+.btn-plain {
+	border: none;
+	padding: 0;
+	background: none;
+}
+
+/* ------- bootstrap overrides begin ------- TODO: these things should be handled by the theme */
+body {
+	font-size: 14px; //doing this at the body level to leave the html 1rem = 16px
+	line-height: 16px;
+}
+.btn {
+	text-transform: uppercase;
+}

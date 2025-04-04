@@ -1,0 +1,1 @@
+export const logoSrc = '/imgs/main_app_logo.png';
