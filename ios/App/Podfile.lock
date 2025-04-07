@@ -1,34 +1,40 @@
 PODS:
-  - Capacitor (6.2.1):
+  - Capacitor (5.7.8):
     - CapacitorCordova
-  - CapacitorApp (6.0.2):
+  - CapacitorApp (5.0.8):
     - Capacitor
-  - CapacitorCommunityCameraPreview (6.0.1):
+  - CapacitorCordova (5.7.8)
+  - CapacitorSplashScreen (5.0.8):
     - Capacitor
-  - CapacitorCordova (6.2.1)
+  - CapacitorStatusBar (5.0.8):
+    - Capacitor
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
-  - "CapacitorCommunityCameraPreview (from `../../node_modules/@capacitor-community/camera-preview`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
+  - "CapacitorSplashScreen (from `../../node_modules/@capacitor/splash-screen`)"
+  - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
 
 EXTERNAL SOURCES:
   Capacitor:
     :path: "../../node_modules/@capacitor/ios"
   CapacitorApp:
     :path: "../../node_modules/@capacitor/app"
-  CapacitorCommunityCameraPreview:
-    :path: "../../node_modules/@capacitor-community/camera-preview"
   CapacitorCordova:
     :path: "../../node_modules/@capacitor/ios"
+  CapacitorSplashScreen:
+    :path: "../../node_modules/@capacitor/splash-screen"
+  CapacitorStatusBar:
+    :path: "../../node_modules/@capacitor/status-bar"
 
 SPEC CHECKSUMS:
-  Capacitor: 1e0d0e7330dea9f983b50da737d8918abcf273f8
-  CapacitorApp: 2a8c3a0b0814322e5e6e15fe595f02c3808f0f8b
-  CapacitorCommunityCameraPreview: 3b37673576ad824c282429a0bd093b45d0215921
-  CapacitorCordova: 8d93e14982f440181be7304aa9559ca631d77fff
+  Capacitor: 747aadb4fa786f460d8cd9d0557cb81440a13747
+  CapacitorApp: 102e553c3b1fdc255969c39aa19b529675690ef4
+  CapacitorCordova: 31ab98dca2ddcee051027a1afe7e8c85c82f7297
+  CapacitorSplashScreen: 7a69e693bc1ef83e4bd3fb073bd8c8fa33e9059e
+  CapacitorStatusBar: 51af549cfcf35aac3ab072b062967ae5971ee485
 
-PODFILE CHECKSUM: d7ec970f4d874fee2ddc46f350e0b3149574604e
+PODFILE CHECKSUM: 4021bb844f4ff58f5c7f8076ca63cec2d85c10be
 
 COCOAPODS: 1.15.2

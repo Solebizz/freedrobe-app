@@ -3,7 +3,9 @@
 	// import Notices from '$lib/components/notices.svelte';
 	import { App } from '@capacitor/app';
 	// import { notices } from '$lib/stores/notices';
+	import { StatusBar } from '@capacitor/status-bar';
 	import { onMount } from 'svelte';
+	import { SplashScreen } from '@capacitor/splash-screen';
 
 	let platform = Capacitor.getPlatform();
 	let top_padding = '20px'; //padding for web
@@ -12,6 +14,10 @@
 
 	onMount(() => {
 		App.addListener('backButton', () => history.back());
+		SplashScreen.hide();
+		if (Capacitor.getPlatform() === 'android') {
+			StatusBar.setOverlaysWebView({ overlay: true });
+		}
 	});
 </script>
 
