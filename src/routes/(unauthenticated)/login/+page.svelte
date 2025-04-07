@@ -1,23 +1,22 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
-	import Loader from "$lib/components/loader.svelte";
-	import { getOTP } from "$lib/utils/apis";
+	import { goto } from '$app/navigation';
+	import Loader from '$lib/components/loader.svelte';
+	import { getOTP } from '$lib/utils/apis';
 
-
-	import { logoSrc, termsUrl } from "$lib/utils/globals";
+	import { logoSrc, termsUrl } from '$lib/utils/globals';
 
 	let disabled = true;
 	let phone = '';
 	let error = false;
 	let loading = false;
-    let checked = false;
+	let checked = false;
 
-    async function handleGetOTP() {
+	async function handleGetOTP() {
 		const otp = getOTP(phone);
-        goto(`/login/otp?otp${otp}&phone=${phone}`)
+		goto(`/login/otp?otp${otp}&phone=${phone}`);
 	}
 
-    function handleInput(event: Event) {
+	function handleInput(event: Event) {
 		const input = event.target as HTMLInputElement;
 		// Remove all non-digit characters
 		let value = input.value.replace(/\D/g, '');
@@ -31,16 +30,14 @@
 		phone = value;
 	}
 
-    $: {
+	$: {
 		if (phone.length === 10 && checked) {
 			disabled = false; // Email is valid
 		} else {
 			disabled = true;
 		}
 	}
-
 </script>
-
 
 <div class="d-flex h-100 flex-column">
 	<div class="d-flex justify-content-center align-items-center flex-fill">
@@ -48,39 +45,29 @@
 	</div>
 	<div class="bg-secondary rounded-top-5 p-3 w-100 d-flex flex-column align-items-center pb-5">
 		<div class="w-100">
-            <h2 class="text-primary pb-2 pt-1 text-center my-3">Welcome to <span class="fw-bold">Freedrobe</span></h2>
-            <span class="error-text text-danger" class:d-none={!error}>Please check email or password</span>
-    
-            <form class="w-100" on:submit|preventDefault={handleGetOTP} enctype="multipart/form-data">
-                <div class="text-input-group">
-                    <label class="mb-1 text-primary" for="email">Phone</label>
-                    <input
-                        type="text"
-                        inputmode="numeric"
-                        class="form-control"
-                        bind:value={phone}
-                        aria-describedby="phone"
-                        placeholder="xxxxxxxxxx"
-                        on:input={handleInput}
-                    />
-                </div>
-                <div class="label-group">
+			<h2 class="text-primary pb-2 pt-1 text-center my-3">Welcome to <span class="fw-bold">Freedrobe</span></h2>
+			<span class="error-text text-danger" class:d-none={!error}>Please check email or password</span>
+
+			<form class="w-100" on:submit|preventDefault={handleGetOTP} enctype="multipart/form-data">
+				<div class="text-input-group">
+					<label class="mb-1 text-primary" for="email">Phone</label>
+					<input type="text" inputmode="numeric" class="form-control" bind:value={phone} aria-describedby="phone" placeholder="xxxxxxxxxx" on:input={handleInput} />
+				</div>
+				<div class="label-group">
 					<input class="form-check-input" type="checkbox" bind:checked value="" id="flexCheckDefault" />
 					<label class="form-check-label" for="flexCheckDefault">Accept our <a href={termsUrl}>Terms & Conditions</a> <i class="bi bi-box-arrow-up-right text-primary"></i> </label>
 				</div>
-                
-                
-                <button type="submit" class:disabled class="btn btn-primary w-100 my-4 d-flex justify-content-center gap-2 rounded-pill"
-                    >Get OTP
-                    {#if loading}
-                        <Loader />
-                    {/if}
-                </button>
-            </form>
-        </div>
+
+				<button type="submit" class:disabled class="btn btn-primary w-100 my-4 d-flex justify-content-center gap-2 rounded-pill"
+					>Get OTP
+					{#if loading}
+						<Loader />
+					{/if}
+				</button>
+			</form>
+		</div>
 	</div>
 </div>
-
 
 <style lang="scss">
 	a {
