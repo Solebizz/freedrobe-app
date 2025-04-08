@@ -13,7 +13,7 @@
 {:else}
 	<div id="outermost_app_wrap">
 		<MainHeader />
-		<div id="main_container" class="px-3 pt-3">
+		<div id="main_container" class="bg-body-tertiary px-3 pt-3">
 			<slot />
 		</div>
 		<Nav />

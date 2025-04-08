@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import MemberSidebar from '$lib/components/member_sidebar.svelte';
+	import { logoFullSrc } from '$lib/utils/globals';
 
 	export let show_sidebar = true;
 
@@ -12,25 +13,29 @@
 			goto($page.data.back_button);
 		}
 	}
-
 </script>
 
-<section class="primary-gradient os_top_padding sticky_top">
-	<div class="d-flex ps-3 pt-2 pe-0 align-items-center pb-4">
-		{#if $page.data.back_button}
-			<button on:click={handleBack} class="back btn-plain"><i class="bi bi-arrow-left"></i></button>
-		{/if}
-		<span class="fs-2 py-2 me-auto">{$page.data.the_title ?? ''}</span>
+<section class="os_top_padding sticky_top">
+	<div class="d-flex ps-3 pe-0 align-items-center justify-content-between pb-2">
+		<div>
+			{#if $page.data.back_button}
+				<button on:click={handleBack} class="back btn-plain"><i class="bi bi-arrow-left"></i></button>
+			{/if}
+			<img src={logoFullSrc} class="header-logo" alt="ICARUS" />
+			<button class="btn rounded-3 fs-6 p-1 ms-4 bg-primary text-white shadow px-2">👑 Subscribe</button>
+			<span class="fs-2 py-2 me-auto">{$page.data.the_title ?? ''}</span>
+		</div>
+		<div>
+			{#if $page.data.the_ctas}
+				{#each $page.data.the_ctas as cta}
+					<a class="btn text-white" href={cta.href}>
+						{#if cta.icon}<i class="bi bi-{cta.icon} me-1 text-black fs-3" />{/if}
+						{cta?.label || ''}
+					</a>
+				{/each}
+			{/if}
+		</div>
 		<!-- add ctas in header with label from load method-->
-		{#if $page.data.the_ctas}
-			{#each $page.data.the_ctas as cta}
-				<a class="btn text-white" href={cta.href}>
-					{#if cta.icon}<i class="bi bi-{cta.icon} me-1" />{/if}
-					{cta.label}
-				</a>
-			{/each}
-		{/if}
-		<div class="ms-3" style="width:40px"></div>
 	</div>
 </section>
 
@@ -43,6 +48,10 @@
 		color: white;
 		font-size: 1rem;
 		margin-right: 1rem;
+	}
+
+	.header-logo {
+		height: 4rem;
 	}
 	.primary-gradient {
 		// TODO png header img

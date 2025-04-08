@@ -21,7 +21,7 @@
 {/if}
 
 <aside class="os_top_padding d-flex flex-column" class:show>
-	<button class="tab" on:click={toggle}>
+	<button class="tab mt-5" on:click={toggle}>
 		<MemberImage width={40} />
 
 		<!-- {#if !trainer_mode}

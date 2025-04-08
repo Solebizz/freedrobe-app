@@ -1,6 +1,11 @@
-/** @type {import('./$types').LayoutPageLoad} */
+/** @type {import('./$types').PageLoad} */
 export async function load() {
 	return {
-		the_title: 'My Profile',
+		the_ctas: [
+			{
+				href: '/basket',
+				icon: 'bag-heart',
+			},
+		],
 	};
 }

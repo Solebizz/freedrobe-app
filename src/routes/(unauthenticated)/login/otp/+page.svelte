@@ -53,7 +53,7 @@
 	}
 
 	function handleSubmit() {
-		goto('/closet')
+		goto('/profile');
 	}
 
 	$: {

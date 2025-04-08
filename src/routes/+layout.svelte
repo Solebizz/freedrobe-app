@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Capacitor } from '@capacitor/core';
-	// import Notices from '$lib/components/notices.svelte';
+	import Notices from '$lib/components/notices.svelte';
 	import { App } from '@capacitor/app';
-	// import { notices } from '$lib/stores/notices';
+	import { notices } from '$lib/stores/notices';
 	import { StatusBar } from '@capacitor/status-bar';
 	import { onMount } from 'svelte';
 	import { SplashScreen } from '@capacitor/splash-screen';
@@ -36,7 +36,7 @@
 </svelte:head>
 <div id="outer-wrapper" style="--os_top_padding:{top_padding}">
 	<slot />
-	<!-- <Notices notices={$notices} /> -->
+	<Notices notices={$notices} />
 </div>
 
 <style lang="scss">
