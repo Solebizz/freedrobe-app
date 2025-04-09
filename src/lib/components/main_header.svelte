@@ -32,8 +32,9 @@
 		<div>
 			{#if $page.data.the_ctas}
 				{#each $page.data.the_ctas as cta}
-					<a class="btn text-white" href={cta.href}>
-						{#if cta.icon}<i class="bi bi-{cta.icon} me-1 text-black fs-3" />{/if}
+					{@const isActive = cta.href === $page.url.pathname}
+					<a class="btn text-white" href={cta.href} class:active={isActive}>
+						{#if cta.icon}<i class="bi bi-{cta.icon}{isActive ? '-fill text-secondary' : ' text-black'} me-1 fs-3" />{/if}
 						{cta?.label || ''}
 					</a>
 				{/each}
@@ -56,6 +57,12 @@
 
 	.header-logo {
 		height: 4rem;
+	}
+	.active {
+		color: var(--bs-secondary);
+		* {
+			font-weight: bold;
+		}
 	}
 	.primary-gradient {
 		// TODO png header img
