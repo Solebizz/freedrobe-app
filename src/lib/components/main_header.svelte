@@ -13,6 +13,10 @@
 			goto($page.data.back_button);
 		}
 	}
+
+	function handleClickSubscribe() {
+		goto('/subscription-list');
+	}
 </script>
 
 <section class="os_top_padding sticky_top">
@@ -21,8 +25,8 @@
 			{#if $page.data.back_button}
 				<button on:click={handleBack} class="back btn-plain"><i class="bi bi-arrow-left"></i></button>
 			{/if}
-			<img src={logoFullSrc} class="header-logo" alt="ICARUS" />
-			<button class="btn rounded-3 fs-6 p-1 ms-4 bg-primary text-white shadow px-2">👑 Subscribe</button>
+			<img src={logoFullSrc} class="header-logo" alt="FREEDROBE" />
+			<button class="btn rounded-3 fs-6 p-1 ms-4 bg-primary text-white shadow px-2" on:click={handleClickSubscribe}>👑 Subscribe</button>
 			<span class="fs-2 py-2 me-auto">{$page.data.the_title ?? ''}</span>
 		</div>
 		<div>
