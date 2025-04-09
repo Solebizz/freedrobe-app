@@ -8,16 +8,23 @@
 		{
 			Title: 'Article 1',
 			Status: 'Ready To Deliver',
+			inBasket: false,
 		},
 		{
-			Title: 'Article 1',
+			Title: 'Article 2',
 			Status: 'Ready To Deliver',
+			inBasket: false,
 		},
 		{
-			Title: 'Article 1',
+			Title: 'Article 3',
 			Status: 'Ready To Deliver',
+			inBasket: false,
 		},
 	];
+
+	function toggleBasket(index: number) {
+		cards[index].inBasket = !cards[index].inBasket;
+	}
 </script>
 
 <h1 class="fw-bold mb-3">My Closet</h1>
@@ -25,9 +32,13 @@
 	<p class="fs-6">No items in the closet.</p>
 {/if}
 <div class="card-deck d-flex gap-3 mb-3 flex-wrap">
-	{#each cards as card}
+	{#each cards as card, index}
 		<div class="card bg-white">
-			<div class="card-image card-img-top" style="background-image:url({image});--imgwidth:{width}px;--border:{border}px;"></div>
+			<div class="card-image card-img-top position-relative" style="background-image:url({image});--imgwidth:{width}px;--border:{border}px;">
+				<button class="basket-btn position-absolute shadow" style="top: 0.5rem; right: 0.5rem;" on:click={() => toggleBasket(index)}>
+					{card.inBasket ? 'Added ✅' : 'Add to Basket ✙'}
+				</button>
+			</div>
 			<div class="card-body">
 				<h5 class="card-title fw-bold">{card.Title}</h5>
 				<span class="badge bg-secondary p-2">{card.Status}</span>
@@ -40,6 +51,7 @@
 	.card {
 		width: 100%;
 		max-width: 25rem;
+		position: relative;
 	}
 	.card-image {
 		width: auto;
@@ -47,5 +59,18 @@
 		border-radius: 1rem;
 		background-position: center;
 		background-size: cover;
+	}
+	.basket-btn {
+		background-color: rgba(0, 0, 0, 0.6);
+		color: white;
+		border: none;
+		border-radius: 0.5rem;
+		padding: 0.4rem 0.8rem;
+		font-size: 0.8rem;
+		cursor: pointer;
+		transition: background-color 0.2s ease;
+	}
+	.basket-btn:hover {
+		background-color: rgba(0, 0, 0, 0.8);
 	}
 </style>
