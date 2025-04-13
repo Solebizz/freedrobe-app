@@ -20,6 +20,21 @@
 			Status: 'Ready To Deliver',
 			inBasket: false,
 		},
+		{
+			Title: 'Article 3',
+			Status: 'Ready To Deliver',
+			inBasket: false,
+		},
+		{
+			Title: 'Article 3',
+			Status: 'Ready To Deliver',
+			inBasket: false,
+		},
+		{
+			Title: 'Article 3',
+			Status: 'Ready To Deliver',
+			inBasket: false,
+		},
 	];
 
 	function toggleBasket(index: number) {
@@ -31,7 +46,7 @@
 {#if !cards.length}
 	<p class="fs-6">No items in the closet.</p>
 {/if}
-<div class="card-deck d-flex gap-3 mb-3 flex-wrap">
+<div class="card-deck mb-3">
 	{#each cards as card, index}
 		<div class="card bg-white">
 			<div class="card-image card-img-top position-relative" style="background-image:url({image});--imgwidth:{width}px;--border:{border}px;">
@@ -48,18 +63,30 @@
 </div>
 
 <style lang="scss">
-	.card {
-		width: 100%;
-		max-width: 25rem;
-		position: relative;
+	.card-deck {
+		display: grid;
+		gap: 1rem;
+		grid-template-columns: repeat(2, 1fr);
+
+		@media (min-width: 600px) {
+			grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+		}
 	}
+
+	.card {
+		position: relative;
+		border-radius: 1rem;
+		box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.1);
+	}
+
 	.card-image {
-		width: auto;
+		width: 100%;
 		height: var(--imgwidth);
 		border-radius: 1rem;
 		background-position: center;
 		background-size: cover;
 	}
+
 	.basket-btn {
 		background-color: rgba(0, 0, 0, 0.6);
 		color: white;
@@ -70,6 +97,7 @@
 		cursor: pointer;
 		transition: background-color 0.2s ease;
 	}
+
 	.basket-btn:hover {
 		background-color: rgba(0, 0, 0, 0.8);
 	}
