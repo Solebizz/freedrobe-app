@@ -6,6 +6,7 @@
 	import { StatusBar } from '@capacitor/status-bar';
 	import { onMount } from 'svelte';
 	import { SplashScreen } from '@capacitor/splash-screen';
+	import BottomSheet from '$lib/components/bottom_sheet.svelte';
 
 	let platform = Capacitor.getPlatform();
 	let top_padding = '20px'; //padding for web
@@ -37,6 +38,7 @@
 <div id="outer-wrapper" style="--os_top_padding:{top_padding}">
 	<slot />
 	<Notices notices={$notices} />
+	<BottomSheet />
 </div>
 
 <style lang="scss">

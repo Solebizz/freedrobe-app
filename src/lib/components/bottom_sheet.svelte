@@ -1,0 +1,70 @@
+<script lang="ts">
+	import { onDestroy, SvelteComponent } from 'svelte';
+	import { bottomSheetStore } from '$lib/stores/bottom_sheet';
+
+	let show = false;
+	let children: typeof SvelteComponent | null | undefined = null;
+	let handleClose = () => {};
+	let bgColor = 'transparent'; // Default background color
+
+	const unsubscribe = bottomSheetStore.subscribe((state) => {
+		show = !!state.show;
+		children = state.children;
+		handleClose = state.handleClose ?? (() => {});
+	});
+
+	onDestroy(() => {
+		unsubscribe();
+	});
+
+	function onClickClose() {
+		bgColor = 'transparent'; // Change to the desired color
+		handleClose();
+		bottomSheetStore.reset();
+	}
+</script>
+
+<div class:showSheetWrapper={show} class="sheetWrapper d-flex align-items-end">
+	<div class:show class="contentWrapper h-50">
+		<div class="d-flex justify-content-end">
+			<button on:click={onClickClose} class="bg-black border-0">
+				<i class="bi bi-x m-0 fs-2 text-white"></i>
+			</button>
+		</div>
+		<svelte:component this={children} />
+	</div>
+</div>
+
+<style lang="scss">
+	.sheetWrapper {
+		width: 100%;
+		max-width: 30rem;
+		z-index: 1000;
+		&.showSheetWrapper {
+			position: fixed;
+			background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+			top: 0;
+			bottom: 0;
+		}
+	}
+
+	.contentWrapper {
+		width: 100%;
+		background-color: white;
+		border-radius: 1rem 1rem 0 0;
+		padding: 1rem;
+		position: relative;
+		bottom: 0;
+		overflow: auto;
+		transform: translateY(100%); /* Initially hidden offscreen */
+		transition: transform 0.3s ease; /* Slide in animation */
+	}
+
+	.contentWrapper.show {
+		transform: translateY(0); /* Slide into view */
+	}
+
+	button {
+		cursor: pointer;
+	}
+</style>
