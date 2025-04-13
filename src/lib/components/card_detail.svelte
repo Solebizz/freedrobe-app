@@ -3,7 +3,7 @@
 	export let status: string;
 </script>
 
-<div class="text-white">
+<div class="text-primary">
 	<h3>{title}</h3>
 	<p>Status: {status}</p>
 </div>

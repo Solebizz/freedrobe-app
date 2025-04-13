@@ -64,7 +64,7 @@
 	{#each cards as card, index}
 		<div class="card bg-white" on:click={() => openCardDetails(index)}>
 			<div class="card-image card-img-top position-relative" style="background-image:url({image});--imgwidth:{width}px;--border:{border}px;">
-				<button class="basket-btn position-absolute shadow" style="top: 0.5rem; right: 0.5rem;" on:click={() => toggleBasket(index)}>
+				<button class="basket-btn position-absolute shadow" style="top: 0.5rem; right: 0.5rem;" on:click|stopPropagation={() => toggleBasket(index)}>
 					{card.inBasket ? 'Added ✅' : 'Quick Add ✙'}
 				</button>
 			</div>

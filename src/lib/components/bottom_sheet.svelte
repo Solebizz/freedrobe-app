@@ -24,7 +24,7 @@
 	}
 </script>
 
-<div class:showSheetWrapper={show} class="sheetWrapper d-flex align-items-end">
+<div class:showSheetWrapper={show} class="sheetWrapper d-flex align-items-end" on:click={onClickClose}>
 	<div class:show class="contentWrapper h-50">
 		<div class="d-flex justify-content-end">
 			<button on:click={onClickClose} class="bg-black border-0">
