@@ -5,7 +5,6 @@
 	let show = false;
 	let children: typeof SvelteComponent | null | undefined = null;
 	let handleClose = () => {};
-	let bgColor = 'transparent'; // Default background color
 
 	const unsubscribe = bottomSheetStore.subscribe((state) => {
 		show = !!state.show;
@@ -18,7 +17,6 @@
 	});
 
 	function onClickClose() {
-		bgColor = 'transparent'; // Change to the desired color
 		handleClose();
 		bottomSheetStore.reset();
 	}
