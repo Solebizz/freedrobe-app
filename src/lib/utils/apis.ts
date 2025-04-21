@@ -66,12 +66,12 @@ export interface IUserInfo {
 	subscriptionValidityPeriod?: string;
 }
 interface IVerifyOTPParams {
-	SessionID: string;
-	OTP: string;
+	sessionId: string;
+	otp: string;
 }
 // Verify OTP and get user info
 export async function verifyOTPAndGetUserInfo(params: IVerifyOTPParams) {
-	const { SessionID, OTP } = params;
+	const { sessionId, otp } = params;
 	interface IAuthInfo {
 		refreshToken: string;
 		authToken: string;
@@ -86,8 +86,8 @@ export async function verifyOTPAndGetUserInfo(params: IVerifyOTPParams) {
 		const headers = new Headers();
 		headers.append('Content-Type', 'application/json');
 		const body = {
-			sessionId: SessionID,
-			otp: OTP,
+			sessionId,
+			otp,
 		};
 		const requestOptions = {
 			method: 'POST',

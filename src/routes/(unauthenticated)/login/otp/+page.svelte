@@ -2,12 +2,14 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import Loader from '$lib/components/loader.svelte';
+	import { verifyOTPAndGetUserInfo } from '$lib/utils/apis';
 
 	let otp = Array(6).fill('');
 	let otpDisplay = '';
 	let disabled = true;
 	let loading = false;
 	let phone = $page.url.searchParams.get('phone');
+	let sessionId = $page.url.searchParams.get('session_id');
 
 	function handleInput(index: number, event: KeyboardEvent) {
 		const input = event.target as HTMLInputElement;
@@ -52,7 +54,10 @@
 		history.back();
 	}
 
-	function handleSubmit() {
+	async function handleSubmit() {
+		if (!sessionId) return;
+		const resp = await verifyOTPAndGetUserInfo({ sessionId, otp: otpDisplay });
+		if (!resp || !resp.authInfo || !resp.authInfo.AuthToken || !resp.userInfo || resp.userInfo.UserRole !== 'endUser') return;
 		goto('/profile');
 	}
 

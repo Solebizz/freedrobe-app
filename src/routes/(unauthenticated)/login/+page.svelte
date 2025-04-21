@@ -12,8 +12,10 @@
 	let checked = false;
 
 	async function handleGetOTP() {
-		const otp = getOTP(phone);
-		goto(`/login/otp?otp${otp}&phone=${phone}`);
+		const resp = await getOTP(`91${phone}`);
+		const sessionID = resp?.SessionID;
+		loading = true;
+		goto(`/login/otp?session_id=${sessionID}&phone=${phone}`);
 	}
 
 	function handleInput(event: Event) {
@@ -51,7 +53,17 @@
 			<form class="w-100" on:submit|preventDefault={handleGetOTP} enctype="multipart/form-data">
 				<div class="text-input-group">
 					<label class="mb-1 text-primary" for="email">Phone</label>
-					<input type="text" inputmode="numeric" class="form-control" bind:value={phone} aria-describedby="phone" placeholder="xxxxxxxxxx" on:input={handleInput} />
+					<div class="d-flex align-items-center gap-2 bg-white p-1 border rounded-3">
+						<span class="fw-bold px-1">+91</span>
+						<input
+							type="text"
+							inputmode="numeric"
+							class="form-control bg-transparent border-0 p-1 shadow-none"
+							bind:value={phone}
+							aria-describedby="phone"
+							placeholder="xxxxxxxxxx"
+							on:input={handleInput} />
+					</div>
 				</div>
 				<div class="label-group">
 					<input class="form-check-input" type="checkbox" bind:checked value="" id="flexCheckDefault" />
