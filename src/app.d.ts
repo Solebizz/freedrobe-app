@@ -7,6 +7,74 @@ declare global {
 		// interface PageData {}
 		// interface PageState {}
 		// interface Platform {}
+		interface IOTP {
+			SessionID: string;
+		}
+		interface IAddressInfo {
+			Line1: string;
+			Line2: string;
+		}
+		interface IUserInfo {
+			Phone: string;
+			UserRole: string;
+			StorageValue: number;
+			WashValue: number;
+			DryCleanValue: number;
+			LogisticValue: number;
+			ActiveSubscription: number;
+			Deleted: boolean;
+			Blocked: boolean;
+			BlockedReason: string;
+			Address?: IAddressInfo;
+			Gender?: string;
+			LocationId?: string;
+			Name?: string;
+			SubscriptionId?: string;
+			SubscriptionValidTill?: string;
+			SubscriptionValidityPeriod?: string;
+		}
+		interface IAuthInfo {
+			RefreshToken: string;
+			AuthToken: string;
+			AuthTokenExpiryAt: number;
+			RefershTokenExpiryAt: number;
+		}
+		interface ILocationInfo {
+			ID: string;
+			Area: string;
+			City: string;
+			State: string;
+		}
+		interface IBenefitsInfo {
+			StorageValue: number;
+			WashValue: number;
+			DryCleanValue: number;
+			LogisticValue: number;
+		}
+		interface ISubscriptionInfo {
+			ID: string;
+			Title: string;
+			Description: string;
+			Features: string[];
+			Price: number;
+			Currency: string;
+			CurrentlySubscribed: number;
+			Private: boolean;
+			PaymentCycle: string;
+			Validity: string;
+			Deleted: boolean;
+			Benefits: IBenefitsInfo;
+		}
+		interface IData {
+			LoadedFromLocalStorage: boolean;
+			Locations?: Record<string, ILocationInfo>;
+			Auth?: IAuthInfo;
+			User?: IUserInfo;
+			Staff?: {
+				User?: IUserInfo;
+				Auth?: IAuthInfo;
+			};
+		}
 	}
 }
 

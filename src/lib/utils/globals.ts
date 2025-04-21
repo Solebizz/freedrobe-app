@@ -40,3 +40,32 @@ export async function urltoFile(url: string, filename: string, mimeType: string)
 	}
 	return fetch(url).then((res) => res.arrayBuffer());
 }
+
+/**
+ * Takes key value pairs in the form of {key_in_app: key_in_core} and returns an object with the values in the form the app needs them
+ * @param {Object} obj as provided by Core
+ * @param {Record<string,string|function>} map in the form of {key_in_app: key_in_core} key_in_core can be a (item)=> some processing
+ * @returns {Object} in the form of {key_in_app: value}
+ */
+export function serializeResponse<J extends object, T extends object>(obj: T, map: { [P in keyof J]: Extract<keyof T, string> | ((obj: T) => any) }): J {
+	let res = {};
+	for (let key_in_app in map) {
+		let key_in_core = map[key_in_app];
+		if (typeof key_in_core === 'string') {
+			//@ts-ignore it could be any
+			res[key_in_app] = obj[key_in_core];
+		} else if (key_in_core instanceof Function) {
+			//@ts-ignore it could be any
+			res[key_in_app] = key_in_core(obj);
+		} else {
+			throw new Error(`invalid map for key '${key_in_core}'`);
+		}
+	}
+	return res as J;
+}
+
+export async function fetchAuthHeadrs($APP: App.IData, staff = false): Promise<HeadersInit> {
+	return {
+		authToken: (staff ? $APP.Staff?.Auth?.AuthToken : $APP.Auth?.AuthToken) || '',
+	};
+}
