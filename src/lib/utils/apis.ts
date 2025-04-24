@@ -10,7 +10,7 @@ interface IServerResponse<T = unknown> {
 	message: string;
 	data: T;
 }
-// Get OTP
+// Get OTP ✅
 export async function getOTP(phone: string) {
 	interface IOTP {
 		sessionId: string;

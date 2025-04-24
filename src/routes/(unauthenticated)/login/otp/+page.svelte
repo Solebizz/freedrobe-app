@@ -2,7 +2,9 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import Loader from '$lib/components/loader.svelte';
+	import { addError } from '$lib/stores/notices';
 	import { verifyOTPAndGetUserInfo } from '$lib/utils/apis';
+	import { onMount } from 'svelte';
 
 	let otp = Array(6).fill('');
 	let otpDisplay = '';
@@ -10,6 +12,20 @@
 	let loading = false;
 	let phone = $page.url.searchParams.get('phone');
 	let sessionId = $page.url.searchParams.get('session_id');
+
+	onMount(() => {
+		let errorMessage = '';
+		if (!sessionId) {
+			errorMessage = 'Unable to get the session id. Please login again.';
+		} else if (!phone) {
+			errorMessage = 'Unable to get the phone number. Please login again.';
+		}
+
+		if (errorMessage) {
+			addError(errorMessage, 10);
+			goto('/login');
+		}
+	});
 
 	function handleInput(index: number, event: KeyboardEvent) {
 		const input = event.target as HTMLInputElement;
