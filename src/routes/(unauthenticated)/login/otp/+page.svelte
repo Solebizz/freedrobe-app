@@ -73,8 +73,13 @@
 	async function handleSubmit() {
 		if (!sessionId) return;
 		const resp = await verifyOTPAndGetUserInfo({ sessionId, otp: otpDisplay });
-		if (!resp || !resp.authInfo || !resp.authInfo.AuthToken || !resp.userInfo || resp.userInfo.UserRole !== 'endUser') return;
-		goto('/profile');
+		if (!resp || !resp.authInfo || !resp.authInfo.AuthToken || !resp.userInfo || resp.userInfo.UserRole !== 'endUser') {
+			// TODO store logs somewhere.
+			addError('Unable to get the user. Please try again after sometime.');
+			goto('/login');
+		} else {
+			goto('/profile');
+		}
 	}
 
 	$: {
