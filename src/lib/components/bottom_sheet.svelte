@@ -38,8 +38,8 @@
 		width: 100%;
 		max-width: 30rem;
 		z-index: 1000;
+		position: fixed;
 		&.showSheetWrapper {
-			position: fixed;
 			background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
 			top: 0;
 			bottom: 0;
