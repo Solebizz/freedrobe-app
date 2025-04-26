@@ -1,9 +1,20 @@
 <script>
+	import { goto } from '$app/navigation';
 	import Loader from '$lib/components/loader.svelte';
 	import MainHeader from '$lib/components/main_header.svelte';
 	import Nav from '$lib/components/nav.svelte';
+	import { APP } from '$lib/stores/appMain';
+	import { addError } from '$lib/stores/notices';
+	import { onMount } from 'svelte';
 
 	let loading = false;
+
+	onMount(() => {
+		if (!$APP.Auth?.AuthToken || !$APP.Auth?.RefreshToken) {
+			addError('Something went wrong. Please login again.');
+			goto('/login');
+		}
+	});
 </script>
 
 {#if loading}

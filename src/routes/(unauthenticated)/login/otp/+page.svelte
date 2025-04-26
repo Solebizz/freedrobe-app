@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import Loader from '$lib/components/loader.svelte';
+	import { APP } from '$lib/stores/appMain';
 	import { addError } from '$lib/stores/notices';
 	import { verifyOTPAndGetUserInfo } from '$lib/utils/apis';
 	import { onMount } from 'svelte';
@@ -78,6 +79,8 @@
 			addError('Unable to get the user. Please try again after sometime.');
 			goto('/login');
 		} else {
+			$APP.Auth = resp.authInfo;
+			$APP.User = resp.userInfo;
 			goto('/profile');
 		}
 	}
