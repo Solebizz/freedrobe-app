@@ -21,7 +21,7 @@
 
 <section class="os_top_padding sticky_top">
 	<div class="d-flex ps-3 pe-0 align-items-center justify-content-between pb-2">
-		<div>
+		<div class="d-flex align-items-center">
 			{#if $page.data.back_button}
 				<button on:click={handleBack} class="back btn-plain"><i class="bi bi-arrow-left"></i></button>
 			{/if}

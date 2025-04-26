@@ -188,7 +188,7 @@ interface ISaveUserInfoParams {
 	address: IAddressInfo;
 	locationId: string;
 }
-// save user info
+// save user info ✅
 export async function saveUserInfo(params: ISaveUserInfoParams) {
 	try {
 		const $APP = get(APP);
@@ -246,7 +246,7 @@ export async function saveUserInfo(params: ISaveUserInfoParams) {
 
 // Fetch Locations
 export async function getSubscriptionsList() {
-	interface IBenefitsInfo {
+	interface IBenifitsInfo {
 		storageValue: number;
 		washValue: number;
 		dryCleanValue: number;
@@ -264,7 +264,7 @@ export async function getSubscriptionsList() {
 		paymentCycle: string;
 		validity: string;
 		deleted: boolean;
-		benefits: IBenefitsInfo;
+		benifits: IBenifitsInfo;
 	}
 	interface ISubscriptionsInfoFromServer {
 		subscriptions: ISubscriptionInfo[];
@@ -293,8 +293,8 @@ export async function getSubscriptionsList() {
 				PaymentCycle: 'paymentCycle',
 				Validity: 'validity',
 				Deleted: 'deleted',
-				Benefits: (s) =>
-					serializeResponse<App.IBenefitsInfo, IBenefitsInfo>(s.benefits, {
+				Benifits: (s) =>
+					serializeResponse<App.IBenifitsInfo, IBenifitsInfo>(s.benifits, {
 						StorageValue: 'storageValue',
 						WashValue: 'washValue',
 						DryCleanValue: 'dryCleanValue',

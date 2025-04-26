@@ -1,16 +1,19 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Loader from '$lib/components/loader.svelte';
-	import { subscriptions } from '$lib/utils/data';
+	import { getSubscriptionsList } from '$lib/utils/apis';
 
-	let memberships = subscriptions;
-	let selected;
+	let subscriptions: Record<string, App.ISubscriptionInfo> = {};
+	let selected: App.ISubscriptionInfo;
 	let loading = true;
 	let termsText = 'Subscription will be start from the date of payment.';
 
 	onMount(async () => {
-		if (!memberships) return;
-		selected = memberships && Object.values(memberships)[0];
+		const resp = await getSubscriptionsList();
+		if (!resp) return;
+
+		subscriptions = resp;
+		selected = subscriptions && Object.values(subscriptions)[0];
 		loading = false;
 	});
 
@@ -19,25 +22,27 @@
 
 {#if loading}
 	<Loader />
-{/if}
-
-{#if memberships}
+{:else if subscriptions}
 	<div class="d-flex flex-column gap-2">
 		<h1 class="fw-bold mb-3">Available Plans.</h1>
 
-		{#each Object.values(memberships) as membership}
+		{#each Object.values(subscriptions) as subscription}
 			<div class="selectBox radio">
-				<input type="radio" name="radio" id={membership.ID} value={membership} bind:group={selected} />
-				<label class="rounded-3 border" for={membership.ID}>
-					<p class="fw-bold">{membership.Name}</p>
-					<p class="m-0"><span class="currency fw-bold">₹</span><span class="fs-5 fw-bold">{membership.Price}</span> / {membership.Validity} articles</p>
-					<p class="m-0 mt-1">{@html membership.Description}</p>
+				<input type="radio" name="radio" id={subscription.ID} value={subscription} bind:group={selected} />
+				<label class="rounded-3 border" for={subscription.ID}>
+					<p class="fw-bold">{subscription.Title}</p>
+					<p class="m-0"><span class="currency fw-bold">₹</span><span class="fs-5 fw-bold">{subscription.Price}</span></p>
+					<p class="m-0 mt-1">{subscription.Description}</p>
+					<ul class="px-3 pt-2">
+						<li>{subscription.Benifits.StorageValue} Articles Storage</li>
+						<li>{subscription.Benifits.DryCleanValue} Articles Dryclean</li>
+						<li>{subscription.Benifits.WashValue} Articles Wash</li>
+					</ul>
 				</label>
 			</div>
 		{/each}
-		<button on:click={startPaymentFlow} class="submit-cta btn btn-primary w-100 mt-3 d-flex align-items-center justify-content-center gap-2 shadow"><span>Continue with {selected?.Name}</span></button>
-		<p class="m-0 text-center">OR</p>
-		<button on:click={startPaymentFlow} class="submit-cta btn btn-secondary text-white w-100 d-flex align-items-center justify-content-center gap-2 shadow"><span>Pay @ Pickup</span></button>
+		<button on:click={startPaymentFlow} class="submit-cta btn btn-primary w-100 mt-3 d-flex align-items-center justify-content-center gap-2 shadow"
+			><span>Continue with {selected?.Title}</span></button>
 		<p class="text-primary">* {termsText}</p>
 	</div>
 {/if}
@@ -69,7 +74,7 @@
 			display: block;
 			border: 1px solid var(--bs-tertiary-bg);
 			position: relative;
-			padding: 15px 15px 15px 40px;
+			padding: 33px 15px 15px 40px;
 			cursor: pointer;
 			&:before {
 				content: '';

@@ -45,7 +45,7 @@ declare global {
 			City: string;
 			State: string;
 		}
-		interface IBenefitsInfo {
+		interface IBenifitsInfo {
 			StorageValue: number;
 			WashValue: number;
 			DryCleanValue: number;
@@ -63,7 +63,7 @@ declare global {
 			PaymentCycle: string;
 			Validity: string;
 			Deleted: boolean;
-			Benefits: IBenefitsInfo;
+			Benifits: IBenifitsInfo;
 		}
 		interface IData {
 			LoadedFromLocalStorage: boolean;
