@@ -69,7 +69,7 @@ interface IVerifyOTPParams {
 	sessionId: string;
 	otp: string;
 }
-// Verify OTP and get user info
+// Verify OTP and get user info ✅
 export async function verifyOTPAndGetUserInfo(params: IVerifyOTPParams) {
 	const { sessionId, otp } = params;
 	interface IAuthInfo {
@@ -143,7 +143,7 @@ export async function verifyOTPAndGetUserInfo(params: IVerifyOTPParams) {
 	}
 }
 
-// Fetch Locations
+// Fetch Locations ✅
 export async function getLocationsInfo() {
 	interface ILocationInfo {
 		_id: string;
@@ -164,14 +164,15 @@ export async function getLocationsInfo() {
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
 		const data = jsonResp.data as ILocationsInfoFromServer;
-		const locations: Record<string, App.ILocationInfo> = {};
+		const locations: App.ILocationInfo[] = [];
 		for (let location of data.locations) {
-			locations[location._id] = serializeResponse<App.ILocationInfo, ILocationInfo>(location, {
+			const sr = serializeResponse<App.ILocationInfo, ILocationInfo>(location, {
 				ID: '_id',
 				Area: 'area',
 				City: 'city',
 				State: 'state',
 			});
+			locations.push(sr);
 		}
 		return locations;
 	} catch (e) {
@@ -192,6 +193,7 @@ export async function saveUserInfo(params: ISaveUserInfoParams) {
 	try {
 		const $APP = get(APP);
 		const headers = {
+			'Content-Type': 'application/json',
 			...(await fetchAuthHeadrs($APP)),
 		};
 		const requestOptions = {

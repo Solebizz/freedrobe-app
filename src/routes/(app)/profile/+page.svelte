@@ -1,25 +1,42 @@
 <script lang="ts">
 	import Field, { type FieldDefinition } from '$lib/components/field.svelte';
+	import { APP } from '$lib/stores/appMain';
+	import { addError, addNotice } from '$lib/stores/notices';
+	import { getLocationsInfo, saveUserInfo } from '$lib/utils/apis';
+	import { onMount } from 'svelte';
 	interface Field {
 		key: string;
 		definition: FieldDefinition;
 	}
 
 	let form: HTMLFormElement;
-	let profile = {};
+	let profile: Record<string, any> = {
+		Name: $APP.User?.Name,
+		Gender: $APP.User?.Gender,
+		AddressLine1: $APP.User?.Address?.Line1,
+		AddressLine2: $APP.User?.Address?.Line2,
+	};
 
-	let stateOptions = [{ label: 'Uttarpradesh', value: 'UP' }];
+	let locationInfo: App.ILocationInfo[] | undefined = [];
+	let locationId = '';
 
-	let areaOptions = [
-		{ label: 'Sector 120', value: '120' },
-		{ label: 'Sector 25', value: '28' },
-		{ label: 'Sector 125', value: '125' },
+	const genderOptions = [
+		{ label: 'Male', value: 'Male' },
+		{ label: 'Female', value: 'Female' },
+		{ label: '🏳️‍🌈LGBTQ+', value: '🏳️‍🌈LGBTQ+' },
 	];
 
-	let cityOptions = [
-		{ label: 'Noida', value: 'noida' },
-		{ label: 'Ghaziabad', value: 'ghaziabad' },
-	];
+	onMount(async () => {
+		locationInfo = await getLocationsInfo();
+		if (!locationInfo) return;
+
+		const userLocation = locationInfo?.filter((l) => l.ID === $APP.User?.LocationId);
+		if (!userLocation.length) return;
+
+		profile.State = userLocation[0].State;
+		profile.City = userLocation[0].City;
+		profile.Area = userLocation[0].Area;
+	});
 
 	let fields: Field[] = [
 		{
@@ -28,6 +45,16 @@
 				Edit: true,
 				Label: 'Name',
 				Type: 'text',
+				Required: true,
+			},
+		},
+		{
+			key: 'Gender',
+			definition: {
+				Edit: true,
+				Label: 'Gender',
+				Type: 'select',
+				Options: genderOptions,
 				Required: true,
 			},
 		},
@@ -46,29 +73,7 @@
 				Edit: true,
 				Label: 'Address Line 2',
 				Type: 'text',
-				Required: false,
-			},
-		},
-		{
-			key: 'Area',
-			definition: {
-				Edit: true,
-				Label: 'Area',
-				Type: 'select',
 				Required: true,
-				Options: areaOptions,
-				Default: '120',
-			},
-		},
-		{
-			key: 'City',
-			definition: {
-				Edit: true,
-				Label: 'City',
-				Type: 'select',
-				Required: true,
-				Options: cityOptions,
-				Default: 'noida',
 			},
 		},
 		{
@@ -78,23 +83,92 @@
 				Label: 'State',
 				Type: 'select',
 				Required: true,
-				Options: stateOptions,
-				Default: 'UP',
+			},
+		},
+		{
+			key: 'City',
+			definition: {
+				Edit: false,
+				Label: 'City',
+				Type: 'select',
+				Required: true,
+				HTMLAttributes: {
+					disabled: true,
+				},
+			},
+		},
+		{
+			key: 'Area',
+			definition: {
+				Edit: false,
+				Label: 'Area',
+				Type: 'select',
+				Required: true,
 			},
 		},
 	];
 
+	$: {
+		let stateIndex = fields.findIndex(({ key }) => key == 'State');
+		const duplicates = locationInfo?.map((l) => l.State);
+		const uniquies = new Set(duplicates);
+		fields[stateIndex].definition.Options = Array.from(uniquies).map((u) => ({ label: u, value: u }));
+	}
+
+	$: {
+		if (profile?.State) {
+			let cityIndex = fields.findIndex(({ key }) => key == 'City');
+			const duplicates = locationInfo?.filter((l) => profile && l.State === profile.State).map((l) => l.City);
+			const uniquies = new Set(duplicates);
+			fields[cityIndex].definition.Options = Array.from(uniquies).map((u) => ({ label: u, value: u }));
+			fields[cityIndex].definition.Edit = true;
+		}
+	}
+
+	$: {
+		if (profile?.City) {
+			let areaIndex = fields.findIndex(({ key }) => key == 'Area');
+			const duplicates = locationInfo?.filter((l) => profile && l.City === profile.City).map((l) => l.Area);
+			const uniquies = new Set(duplicates);
+			fields[areaIndex].definition.Options = Array.from(uniquies).map((u) => ({ label: u, value: u }));
+			fields[areaIndex].definition.Edit = true;
+		}
+	}
+
 	$: disabled = !form || !form.checkValidity() || !profile;
 
 	function checkSubmit() {
+		const selectedLocation = locationInfo?.filter((l) => l.State === profile.State && l.City === profile.City && l.Area === profile.Area);
+		if (!selectedLocation?.length) {
+			addError('Wrong Location Selection');
+			return false;
+		}
+
+		locationId = selectedLocation[0].ID;
+
 		return true;
+	}
+
+	async function submitForm() {
+		const params = {
+			name: profile.Name,
+			gender: profile.Gender,
+			address: {
+				line1: profile.AddressLine1,
+				line2: profile.AddressLine2,
+			},
+			locationId: locationId,
+		};
+		// save this data in user
+		$APP.User = await saveUserInfo(params);
+		addNotice('Profile Updated Successfully.');
 	}
 </script>
 
 <h1 class="fw-bold">My Profile</h1>
 
 <main class="mt-3">
-	<form method="post" class="position-relative d-flex flex-column flex-grow-1 justify-content-between gap-2" bind:this={form} on:submit={checkSubmit}>
+	<form method="post" class="position-relative d-flex flex-column flex-grow-1 justify-content-between gap-2" bind:this={form} on:submit|preventDefault={submitForm}>
 		<div class="narrow-form">
 			{#each fields as { key, definition }}
 				<div class="mb-3" data-field={key}>
@@ -104,6 +178,6 @@
 		</div>
 
 		<button class="d-none">Needed for ENTER to submit</button>
-		<button on:click={() => checkSubmit() && form.checkValidity() && form.submit()} type="submit" class="btn btn-primary text-uppercase" {disabled} on:click={(e) => form.submit()}> Update </button>
+		<button on:click={() => checkSubmit() && form.checkValidity()} type="submit" class="btn btn-primary text-uppercase" {disabled}> Update </button>
 	</form>
 </main>
