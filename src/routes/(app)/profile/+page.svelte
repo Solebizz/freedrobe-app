@@ -1,13 +1,9 @@
 <script lang="ts">
-	import Field, { type FieldDefinition } from '$lib/components/field.svelte';
+	import Field, { type IField } from '$lib/components/field.svelte';
 	import { APP } from '$lib/stores/appMain';
 	import { addError, addNotice } from '$lib/stores/notices';
 	import { getLocationsInfo, saveUserInfo } from '$lib/utils/apis';
 	import { onMount } from 'svelte';
-	interface Field {
-		key: string;
-		definition: FieldDefinition;
-	}
 
 	let form: HTMLFormElement;
 	let profile: Record<string, any> = {
@@ -38,7 +34,7 @@
 		profile.Area = userLocation[0].Area;
 	});
 
-	let fields: Field[] = [
+	let fields: IField[] = [
 		{
 			key: 'Name',
 			definition: {

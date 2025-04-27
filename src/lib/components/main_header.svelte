@@ -23,7 +23,7 @@
 	<div class="d-flex ps-3 pe-0 align-items-center justify-content-between pb-2">
 		<div class="d-flex align-items-center">
 			{#if $page.data.back_button}
-				<button on:click={handleBack} class="back btn-plain"><i class="bi bi-arrow-left"></i></button>
+				<button on:click={handleBack} class="back btn-plain"><i class="bi bi-arrow-left text-black"></i></button>
 			{/if}
 			<img src={logoFullSrc} class="header-logo" alt="FREEDROBE" />
 			<button class="btn rounded-3 fs-6 p-1 ms-4 bg-primary text-white shadow px-2" on:click={handleClickSubscribe}>👑 Subscribe</button>

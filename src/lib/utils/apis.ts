@@ -244,7 +244,7 @@ export async function saveUserInfo(params: ISaveUserInfoParams) {
 	}
 }
 
-// Fetch Locations
+// Fetch Locations ✅
 export async function getSubscriptionsList() {
 	interface IBenifitsInfo {
 		storageValue: number;
@@ -303,6 +303,161 @@ export async function getSubscriptionsList() {
 			});
 		}
 		return subscriptions;
+	} catch (e) {
+		const message = (e as Error).message || 'Unkown error';
+		addError(message, 5);
+		console.error(message);
+	}
+}
+
+// save user info ✅
+export async function buySubscription(subscriptionId: string) {
+	try {
+		const $APP = get(APP);
+		const params = {
+			subscriptionId,
+		};
+		const headers = {
+			'Content-Type': 'application/json',
+			...(await fetchAuthHeadrs($APP)),
+		};
+		const requestOptions = {
+			method: 'PUT',
+			headers,
+			body: JSON.stringify(params),
+		};
+		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/subscriptions/buy-subscription`, requestOptions);
+		const jsonResp: IServerResponse<IUserInfo> = await res.json();
+		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
+		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
+		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
+		return true;
+	} catch (e) {
+		const message = (e as Error).message || 'Unkown error';
+		addError(message, 5);
+		console.error(message);
+	}
+}
+
+interface IPriceFromServer {
+	currency: string;
+	basePrice: number;
+	discount: number;
+	discountReason: string;
+	taxes: number;
+	total: number;
+}
+interface IOrdersInfo {
+	_id: string;
+	locationId: string;
+	userId: string;
+	type: string; // TODO can we convert this to enum
+	status: string; // TODO can we convert this to enum
+	completionTimeSlotStart: string;
+	completionTimeSlotEnd: string;
+	noOfArticles: number;
+	price: IPriceFromServer;
+	currency: string;
+	articles: any[]; // TODO change this later
+	paymentId: string;
+}
+export async function getOrdersList() {
+	interface IOrdersInfoFromServer {
+		orders: IOrdersInfo[];
+	}
+	try {
+		const $APP = get(APP);
+		const headers = {
+			'Content-Type': 'application/json',
+			...(await fetchAuthHeadrs($APP)),
+		};
+		const requestOptions = {
+			method: 'GET',
+			headers,
+		};
+		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/orders`, requestOptions);
+		const jsonResp: IServerResponse<IOrdersInfoFromServer> = await res.json();
+		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
+		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
+		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
+		const data = jsonResp.data as IOrdersInfoFromServer;
+		const orders: Record<string, App.IOrdersInfo> = {};
+		for (let order of data.orders) {
+			orders[order._id] = serializeResponse<App.IOrdersInfo, IOrdersInfo>(order, {
+				ID: '_id',
+				LocationID: 'locationId',
+				UserID: 'userId',
+				Type: 'type',
+				Status: 'status',
+				CompletionTimeSlotStart: 'completionTimeSlotStart',
+				CompletionTimeSlotEnd: 'completionTimeSlotEnd',
+				NoOfArticles: 'noOfArticles',
+				Currency: 'currency',
+				Articles: 'articles',
+				PaymentID: 'paymentId',
+				Price: (p) =>
+					serializeResponse<App.IPriceInfo, IPriceFromServer>(p.price, {
+						Currency: 'currency',
+						BasePrice: 'basePrice',
+						Discount: 'discount',
+						DiscountReason: 'discountReason',
+						Taxes: 'taxes',
+						Total: 'total',
+					}),
+			});
+		}
+		return orders;
+	} catch (e) {
+		const message = (e as Error).message || 'Unkown error';
+		addError(message, 5);
+		console.error(message);
+	}
+}
+
+interface IPlaceOrdersParams {
+	type: string; // TODO can we make this enum
+	noOfArticles: number;
+	completionTimeSlotStart: number;
+	completionTimeSlotEnd: number;
+}
+export async function placeOrderAndFetchPrice(params: IPlaceOrdersParams) {
+	try {
+		const headers = new Headers();
+		headers.append('Content-Type', 'application/json');
+		const requestOptions = {
+			method: 'POST',
+			headers,
+			body: JSON.stringify(params),
+		};
+		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/orders`, requestOptions);
+		const jsonResp: IServerResponse<IOrdersInfo> = await res.json();
+		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
+		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
+		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
+		const data = jsonResp.data as IOrdersInfo;
+		const serializedResp = serializeResponse<App.IOrdersInfo, IOrdersInfo>(data, {
+			ID: '_id',
+			LocationID: 'locationId',
+			UserID: 'userId',
+			Type: 'type',
+			Status: 'status',
+			CompletionTimeSlotStart: 'completionTimeSlotStart',
+			CompletionTimeSlotEnd: 'completionTimeSlotEnd',
+			NoOfArticles: 'noOfArticles',
+			Currency: 'currency',
+			Articles: 'articles',
+			PaymentID: 'paymentId',
+			Price: (p) =>
+				serializeResponse<App.IPriceInfo, IPriceFromServer>(p.price, {
+					Currency: 'currency',
+					BasePrice: 'basePrice',
+					Discount: 'discount',
+					DiscountReason: 'discountReason',
+					Taxes: 'taxes',
+					Total: 'total',
+				}),
+		});
+		return serializedResp;
 	} catch (e) {
 		const message = (e as Error).message || 'Unkown error';
 		addError(message, 5);

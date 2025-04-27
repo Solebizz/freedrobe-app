@@ -65,6 +65,28 @@ declare global {
 			Deleted: boolean;
 			Benifits: IBenifitsInfo;
 		}
+		interface IPriceInfo {
+			Currency: string;
+			BasePrice: number;
+			Discount: number;
+			DiscountReason: string;
+			Taxes: number;
+			Total: number;
+		}
+		interface IOrdersInfo {
+			ID: string;
+			LocationID: string;
+			UserID: string;
+			Type: string; // TODO can we make this an enum
+			Status: string; // TODO can we make this an enum
+			CompletionTimeSlotStart: string;
+			CompletionTimeSlotEnd: string;
+			NoOfArticles: number;
+			Price: IPriceInfo[];
+			Currency: string;
+			Articles: any[]; // TODO change this later
+			PaymentID: string;
+		}
 		interface IData {
 			LoadedFromLocalStorage: boolean;
 			Locations?: Record<string, ILocationInfo>;

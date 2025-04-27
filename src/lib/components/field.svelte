@@ -7,6 +7,11 @@
 		checked?: (value: any) => boolean;
 	}
 
+	export interface IField {
+		key: string;
+		definition: FieldDefinition;
+	}
+
 	export interface FieldDefinition {
 		Label?: string;
 		Type?:

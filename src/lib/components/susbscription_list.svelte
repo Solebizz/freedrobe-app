@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Loader from '$lib/components/loader.svelte';
-	import { getSubscriptionsList } from '$lib/utils/apis';
+	import { buySubscription, getSubscriptionsList } from '$lib/utils/apis';
+	import { addError, addNotice } from '$lib/stores/notices';
+	import { goto } from '$app/navigation';
 
 	let subscriptions: Record<string, App.ISubscriptionInfo> = {};
 	let selected: App.ISubscriptionInfo;
@@ -17,7 +19,13 @@
 		loading = false;
 	});
 
-	async function startPaymentFlow() {}
+	async function startPaymentFlow() {
+		const resp = await buySubscription(selected.ID);
+		if (!resp) return addError('Something went wrong. Please try again.');
+
+		addNotice('Subscription bought successfully.');
+		goto('/orders');
+	}
 </script>
 
 {#if loading}
