@@ -16,6 +16,7 @@
 		border-radius: calc(var(--imgwidth) / 2);
 		background-position: center;
 		background-size: cover;
+		box-sizing: content-box;
 		border: var(--bs-secondary) var(--border) solid;
 	}
 </style>
