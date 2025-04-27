@@ -3,7 +3,7 @@
 	import Loader from '$lib/components/loader.svelte';
 	import { getOTP } from '$lib/utils/apis';
 
-	import { logoSrc, termsUrl } from '$lib/utils/globals';
+	import { logoFullSrc, termsUrl } from '$lib/utils/globals';
 
 	let disabled = true;
 	let phone = '';
@@ -42,10 +42,10 @@
 </script>
 
 <div class="d-flex h-100 flex-column">
-	<div class="d-flex justify-content-center align-items-center flex-fill">
-		<img src={logoSrc} class="splash-logo" alt="ICARUS" />
+	<div class="d-flex justify-content-center">
+		<img src={logoFullSrc} class="splash-logo" alt="ICARUS" />
 	</div>
-	<div class="bg-secondary rounded-top-5 p-3 w-100 d-flex flex-column align-items-center pb-5">
+	<div class="rounded-top-5 p-3 w-100 d-flex flex-column align-items-center pb-5">
 		<div class="w-100">
 			<h2 class="text-primary pb-2 pt-1 text-center my-3">Welcome to <span class="fw-bold">Freedrobe</span></h2>
 			<span class="error-text text-danger" class:d-none={!error}>Please check email or password</span>
@@ -70,7 +70,7 @@
 					<label class="form-check-label" for="flexCheckDefault">Accept our <a href={termsUrl}>Terms & Conditions</a> <i class="bi bi-box-arrow-up-right text-primary"></i> </label>
 				</div>
 
-				<button type="submit" class:disabled class="btn btn-primary w-100 my-4 d-flex justify-content-center gap-2 rounded-pill"
+				<button type="submit" class:disabled class="btn btn-primary w-100 my-4 d-flex justify-content-center gap-2"
 					>Get OTP
 					{#if loading}
 						<Loader />
