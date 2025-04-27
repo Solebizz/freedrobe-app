@@ -50,6 +50,7 @@ export interface IUserInfo {
 	phone: string;
 	user_role: string;
 	storageValue: number;
+	totalStorageValue: number;
 	washValue: number;
 	dryCleanValue: number;
 	logisticValue: number;
@@ -110,6 +111,7 @@ export async function verifyOTPAndGetUserInfo(params: IVerifyOTPParams) {
 			Phone: 'phone',
 			UserRole: 'user_role',
 			StorageValue: 'storageValue',
+			TotalStorageValue: 'totalStorageValue',
 			WashValue: 'washValue',
 			DryCleanValue: 'dryCleanValue',
 			LogisticValue: 'logisticValue',
@@ -211,6 +213,7 @@ export async function saveUserInfo(params: ISaveUserInfoParams) {
 			Phone: 'phone',
 			UserRole: 'user_role',
 			StorageValue: 'storageValue',
+			TotalStorageValue: 'totalStorageValue',
 			WashValue: 'washValue',
 			DryCleanValue: 'dryCleanValue',
 			LogisticValue: 'logisticValue',
@@ -332,8 +335,39 @@ export async function buySubscription(subscriptionId: string) {
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
+		const data = jsonResp.data;
+		const userInfo = serializeResponse<App.IUserInfo, IUserInfo>(data, {
+			Phone: 'phone',
+			UserRole: 'user_role',
+			StorageValue: 'storageValue',
+			TotalStorageValue: 'totalStorageValue',
+			WashValue: 'washValue',
+			DryCleanValue: 'dryCleanValue',
+			LogisticValue: 'logisticValue',
+			ActiveSubscription: 'activeSubscription',
+			Deleted: 'deleted',
+			Blocked: 'blocked',
+			BlockedReason: 'blockedReason',
+			Address: (d) => {
+				const defaults = {
+					Line1: '',
+					Line2: '',
+				};
+				if (!d.address) return defaults;
+				return serializeResponse<App.IAddressInfo, IAddressInfo>(d.address, {
+					Line1: 'line1',
+					Line2: 'line2',
+				});
+			},
+			Gender: 'gender',
+			LocationId: 'locationId',
+			Name: 'name',
+			SubscriptionId: 'subscriptionId',
+			SubscriptionValidTill: 'subscriptionValidTill',
+			SubscriptionValidityPeriod: 'subscriptionValidityPeriod',
+		});
 		addNotice('Subscription bought successfully.');
-		return true;
+		return userInfo;
 	} catch (e) {
 		const message = (e as Error).message || 'Unkown error';
 		addError(message, 5);

@@ -18,6 +18,7 @@ declare global {
 			Phone: string;
 			UserRole: string;
 			StorageValue: number;
+			TotalStorageValue: number;
 			WashValue: number;
 			DryCleanValue: number;
 			LogisticValue: number;

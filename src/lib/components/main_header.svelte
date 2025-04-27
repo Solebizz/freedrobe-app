@@ -3,6 +3,8 @@
 	import { goto } from '$app/navigation';
 	import MemberSidebar from '$lib/components/member_sidebar.svelte';
 	import { logoFullSrc } from '$lib/utils/globals';
+	import { APP } from '$lib/stores/appMain';
+	import { DateTime } from 'luxon';
 
 	export let show_sidebar = true;
 
@@ -26,7 +28,15 @@
 				<button on:click={handleBack} class="back btn-plain"><i class="bi bi-arrow-left text-black"></i></button>
 			{/if}
 			<img src={logoFullSrc} class="header-logo" alt="FREEDROBE" />
-			<button class="btn rounded-3 fs-6 p-1 ms-4 bg-primary text-white shadow px-2" on:click={handleClickSubscribe}>👑 Subscribe</button>
+			{#if $APP.User?.ActiveSubscription}
+				<div class="subscription-wrapper ms-3 d-flex flex-column gap-1">
+					<p class="m-0 fw-bold">Subscription Status: 🟢</p>
+					<p class="m-0 fw-bold">Subscription End: {DateTime.fromMillis(Number($APP.User.SubscriptionValidTill)).toFormat('dd LLL yyyy')}</p>
+					<p class="m-0 fw-bold">Storage: <span class="bg-secondary text-primary rounded-2">{`${$APP.User.StorageValue}/${$APP.User.TotalStorageValue}`}</span></p>
+				</div>
+			{:else}
+				<button class="btn rounded-3 fs-6 p-1 ms-4 bg-primary text-white shadow px-2" on:click={handleClickSubscribe}>🌟 Subscribe</button>
+			{/if}
 			<span class="fs-2 py-2 me-auto">{$page.data.the_title ?? ''}</span>
 		</div>
 		<div>
@@ -84,5 +94,12 @@
 		background-color: var(--bs-secondary);
 		right: -5px;
 		font-size: 0.6rem;
+	}
+	.subscription-wrapper {
+		p {
+			span {
+				padding: 0.1rem 0.2rem 0.1rem 0.2rem;
+			}
+		}
 	}
 </style>

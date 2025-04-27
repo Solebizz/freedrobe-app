@@ -4,6 +4,7 @@
 	import { buySubscription, getSubscriptionsList } from '$lib/utils/apis';
 	import { addError, addNotice } from '$lib/stores/notices';
 	import { goto } from '$app/navigation';
+	import { APP } from '$lib/stores/appMain';
 
 	let subscriptions: Record<string, App.ISubscriptionInfo> = {};
 	let selected: App.ISubscriptionInfo;
@@ -22,6 +23,7 @@
 	async function startPaymentFlow() {
 		const resp = await buySubscription(selected.ID);
 		if (!resp) return;
+		$APP.User = resp;
 		goto('/orders');
 	}
 </script>
