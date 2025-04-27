@@ -1,6 +1,8 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import Field, { type IField } from '$lib/components/field.svelte';
-	import { addNotice } from '$lib/stores/notices';
+	import { APP } from '$lib/stores/appMain';
+	import { addError, addNotice } from '$lib/stores/notices';
 	import { placeOrderAndFetchPrice } from '$lib/utils/apis';
 	import { DateTime } from 'luxon';
 
@@ -52,6 +54,8 @@
 	}
 
 	async function submitForm() {
+		if (!$APP.User?.ActiveSubscription) return addError('No active subscriptions. Subscribe to continue.', 5);
+
 		const [startTimeStr, endTimeStr] = pickupOrder.Time.split('-');
 
 		const { hour: startHour, minute: startMinute } = parseTime(startTimeStr);
@@ -70,8 +74,6 @@
 		};
 
 		await placeOrderAndFetchPrice(params);
-		addNotice('Order Placed Successfully.');
-		pickupOrder = {};
 	}
 
 	$: disabled = !form || !form.checkValidity() || !pickupOrder;

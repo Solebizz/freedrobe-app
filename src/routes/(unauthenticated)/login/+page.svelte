@@ -41,7 +41,7 @@
 	}
 </script>
 
-<div class="d-flex h-100 flex-column">
+<div class="d-flex h-100 flex-column os_top_padding mt-4">
 	<div class="d-flex justify-content-center">
 		<img src={logoFullSrc} class="splash-logo" alt="ICARUS" />
 	</div>

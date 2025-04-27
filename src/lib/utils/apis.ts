@@ -1,6 +1,6 @@
 import { env } from '$env/dynamic/public';
 import { APP } from '$lib/stores/appMain';
-import { addError } from '$lib/stores/notices';
+import { addError, addNotice } from '$lib/stores/notices';
 import { get } from 'svelte/store';
 import { fetchAuthHeadrs, serializeResponse } from './globals';
 
@@ -236,6 +236,7 @@ export async function saveUserInfo(params: ISaveUserInfoParams) {
 			SubscriptionValidTill: 'subscriptionValidTill',
 			SubscriptionValidityPeriod: 'subscriptionValidityPeriod',
 		});
+		addNotice('Profile Updated Successfully.');
 		return userInfo;
 	} catch (e) {
 		const message = (e as Error).message || 'Unkown error';
@@ -331,6 +332,7 @@ export async function buySubscription(subscriptionId: string) {
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
+		addNotice('Subscription bought successfully.');
 		return true;
 	} catch (e) {
 		const message = (e as Error).message || 'Unkown error';
@@ -422,8 +424,12 @@ interface IPlaceOrdersParams {
 }
 export async function placeOrderAndFetchPrice(params: IPlaceOrdersParams) {
 	try {
-		const headers = new Headers();
-		headers.append('Content-Type', 'application/json');
+		const $APP = get(APP);
+
+		const headers = {
+			'Content-Type': 'application/json',
+			...(await fetchAuthHeadrs($APP)),
+		};
 		const requestOptions = {
 			method: 'POST',
 			headers,
@@ -457,6 +463,7 @@ export async function placeOrderAndFetchPrice(params: IPlaceOrdersParams) {
 					Total: 'total',
 				}),
 		});
+		addNotice('Order Placed Successfully.');
 		return serializedResp;
 	} catch (e) {
 		const message = (e as Error).message || 'Unkown error';

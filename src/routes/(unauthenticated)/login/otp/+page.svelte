@@ -95,9 +95,9 @@
 </script>
 
 <header class="os_top_padding">
-	<button class="btn px-3" on:click={handleBack}><i class="bi bi-arrow-left me-3"></i>Back</button>
+	<p class="px-3 fs-6 pt-3" on:click={handleBack}><i class="bi bi-arrow-left me-2"></i>Back</p>
 </header>
-<main class="h-100 d-flex justify-content-center mt-5">
+<main class="h-100 d-flex justify-content-center mt-3">
 	{#if !phone}
 		<div class="text-center">
 			<p class="fs-4">⚠️ Phone number is required.</p>
@@ -106,7 +106,7 @@
 	{:else}
 		<form on:submit|preventDefault={handleSubmit} class="otp-form d-flex flex-column align-items-center mt-5" name="otp-form">
 			<div class="title text-center">
-				<h3>OTP Verification</h3>
+				<h4>OTP Verification</h4>
 				<p class="info">OTP has been successfully sent to <span class="fw-bold">{phone}</span></p>
 			</div>
 
@@ -116,7 +116,7 @@
 				{/each}
 			</div>
 
-			<button type="submit" class:disabled class="btn btn-primary w-100 my-4 d-flex justify-content-center gap-2 rounded-pill">
+			<button type="submit" class:disabled class="btn btn-primary w-100 my-4 d-flex justify-content-center gap-2">
 				Verify
 				{#if loading}
 					<Loader />

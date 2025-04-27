@@ -1,5 +1,6 @@
 <script lang="ts">
 	import MemberImage from '$lib/components/member_image.svelte';
+	import { APP } from '$lib/stores/appMain';
 	import { termsUrl } from '$lib/utils/globals';
 
 	export let trainer_mode: boolean = false;
@@ -12,6 +13,8 @@
 	}
 
 	function handleLogout() {
+		$APP.User = undefined;
+		$APP.Auth = undefined;
 		toggle();
 	}
 </script>
@@ -34,7 +37,7 @@
 		{/if} -->
 	</button>
 
-	<div class="p-3 d-flex flex-column flex-grow-1">
+	<div class="p-3 d-flex flex-column flex-grow-1 text-black">
 		<section class="members d-flex flex-column mb-4">
 			<!-- {#if !trainer_mode && is_staff}
 				<a class="link" href="/staff/home">
@@ -177,7 +180,7 @@
 	button,
 	a {
 		background: none;
-		color: white;
+		color: #000;
 		border: none;
 		display: flex;
 		align-items: center;

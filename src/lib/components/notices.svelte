@@ -26,7 +26,7 @@
 
 <div id="notice-container">
 	{#each notices as notice, notice_i}
-		<div class="notice" data-key="notice_i">
+		<div class="notice mt-2" data-key="notice_i">
 			<div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
 				<div class="toast-header">
 					<i class="bi me-2 fs-6 {getClass(notice)}" />

@@ -44,16 +44,7 @@
 				Required: true,
 			},
 		},
-		{
-			key: 'Gender',
-			definition: {
-				Edit: true,
-				Label: 'Gender',
-				Type: 'select',
-				Options: genderOptions,
-				Required: true,
-			},
-		},
+
 		{
 			key: 'AddressLine1',
 			definition: {
@@ -69,6 +60,16 @@
 				Edit: true,
 				Label: 'Address Line 2',
 				Type: 'text',
+				Required: true,
+			},
+		},
+		{
+			key: 'Gender',
+			definition: {
+				Edit: true,
+				Label: 'Gender',
+				Type: 'select',
+				Options: genderOptions,
 				Required: true,
 			},
 		},
@@ -156,8 +157,8 @@
 			locationId: locationId,
 		};
 		// save this data in user
-		$APP.User = await saveUserInfo(params);
-		addNotice('Profile Updated Successfully.');
+		const user = await saveUserInfo(params);
+		if (user) $APP.User = user;
 	}
 </script>
 

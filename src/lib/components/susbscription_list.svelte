@@ -21,9 +21,7 @@
 
 	async function startPaymentFlow() {
 		const resp = await buySubscription(selected.ID);
-		if (!resp) return addError('Something went wrong. Please try again.');
-
-		addNotice('Subscription bought successfully.');
+		if (!resp) return;
 		goto('/orders');
 	}
 </script>
