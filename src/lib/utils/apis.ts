@@ -383,6 +383,13 @@ interface IPriceFromServer {
 	taxes: number;
 	total: number;
 }
+interface IArticleInfo {
+	_id: string;
+	name: string;
+	category: string;
+	images: string[];
+	price: number;
+}
 interface IOrdersInfo {
 	_id: string;
 	locationId: string;
@@ -394,9 +401,11 @@ interface IOrdersInfo {
 	noOfArticles: number;
 	price: IPriceFromServer;
 	currency: string;
-	articles: any[]; // TODO change this later
+	articles: IArticleInfo[]; // TODO change this later
 	paymentId: string;
+	createdAt: string;
 }
+// fetch orders list ✅
 export async function getOrdersList() {
 	interface IOrdersInfoFromServer {
 		orders: IOrdersInfo[];
@@ -418,6 +427,8 @@ export async function getOrdersList() {
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
 		const data = jsonResp.data as IOrdersInfoFromServer;
 		const orders: Record<string, App.IOrdersInfo> = {};
+		if (!data.orders) return;
+
 		for (let order of data.orders) {
 			orders[order._id] = serializeResponse<App.IOrdersInfo, IOrdersInfo>(order, {
 				ID: '_id',
@@ -429,8 +440,22 @@ export async function getOrdersList() {
 				CompletionTimeSlotEnd: 'completionTimeSlotEnd',
 				NoOfArticles: 'noOfArticles',
 				Currency: 'currency',
-				Articles: 'articles',
+				Articles: (p) => {
+					const articlesArray = [];
+					for (let article of p.articles) {
+						const s = serializeResponse<App.IArticleInfo, IArticleInfo>(article, {
+							ID: '_id',
+							Name: 'name',
+							Category: 'category',
+							Images: 'images',
+							Price: 'price',
+						});
+						articlesArray.push(s);
+					}
+					return articlesArray;
+				},
 				PaymentID: 'paymentId',
+				CreatedAt: 'createdAt',
 				Price: (p) =>
 					serializeResponse<App.IPriceInfo, IPriceFromServer>(p.price, {
 						Currency: 'currency',
@@ -485,8 +510,22 @@ export async function placeOrderAndFetchPrice(params: IPlaceOrdersParams) {
 			CompletionTimeSlotEnd: 'completionTimeSlotEnd',
 			NoOfArticles: 'noOfArticles',
 			Currency: 'currency',
-			Articles: 'articles',
+			Articles: (p) => {
+				const articlesArray = [];
+				for (let article of p.articles) {
+					const s = serializeResponse<App.IArticleInfo, IArticleInfo>(article, {
+						ID: '_id',
+						Name: 'name',
+						Category: 'category',
+						Images: 'images',
+						Price: 'price',
+					});
+					articlesArray.push(s);
+				}
+				return articlesArray;
+			},
 			PaymentID: 'paymentId',
+			CreatedAt: 'createdAt',
 			Price: (p) =>
 				serializeResponse<App.IPriceInfo, IPriceFromServer>(p.price, {
 					Currency: 'currency',

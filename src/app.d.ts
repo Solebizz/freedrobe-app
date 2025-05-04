@@ -74,6 +74,13 @@ declare global {
 			Taxes: number;
 			Total: number;
 		}
+		interface IArticleInfo {
+			ID: string;
+			Name: string;
+			Category: string;
+			Images: string[];
+			Price: number;
+		}
 		interface IOrdersInfo {
 			ID: string;
 			LocationID: string;
@@ -83,10 +90,11 @@ declare global {
 			CompletionTimeSlotStart: string;
 			CompletionTimeSlotEnd: string;
 			NoOfArticles: number;
-			Price: IPriceInfo[];
+			Price: IPriceInfo;
 			Currency: string;
-			Articles: any[]; // TODO change this later
+			Articles: IArticleInfo[]; // TODO change this later
 			PaymentID: string;
+			CreatedAt: string;
 		}
 		interface IData {
 			LoadedFromLocalStorage: boolean;
@@ -99,6 +107,24 @@ declare global {
 			};
 		}
 	}
+
+	/**
+	 * Utility Type that turns specified optional keys into required ones. Also re-maps into a new type so hovering the type in IDE is more meaningful
+	 * See linked SO post for further explanation
+	 * https://stackoverflow.com/questions/66679911/typescript-typecast-object-so-specific-required-keys-are-no-longer-optional-in-t
+	 *
+	 */
+	type RequireKeys<T extends object, K extends keyof T> = Required<Pick<T, K>> & Omit<T, K> extends infer O ? { [P in keyof O]: O[P] } : never;
+
+	/**
+	 * Utility Type that turns specified `K` fields into optional fields and re-maps into a new type for better IDE experience
+	 */
+	type OptionalKeys<T extends object, K extends keyof T> = Partial<Pick<T, K>> & Omit<T, K> extends infer O ? { [P in keyof O]: O[P] } : never;
+
+	/**
+	 * Utility Type that "condenses" complex types into an easier to read version when hovering
+	 */
+	type Condense<T> = { [K in keyof T]: T[K] };
 }
 
 export {};
