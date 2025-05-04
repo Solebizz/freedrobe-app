@@ -1,12 +1,13 @@
 // src/lib/stores/bottomSheetStore.ts
 import { writable } from 'svelte/store';
 import type { Writable } from 'svelte/store';
-import type { SvelteComponent } from 'svelte';
+import type { ComponentType } from 'svelte';
 
 interface IData {
 	show?: boolean;
-	children?: typeof SvelteComponent | null;
+	children?: ComponentType | null;
 	handleClose?: () => void;
+	props?: Record<string, any>;
 }
 
 function noop() {}
@@ -21,6 +22,7 @@ const createBottomSheetStore = (): IUseBottomSheet => {
 		show: false,
 		children: null,
 		handleClose: noop,
+		props: {},
 	});
 
 	return {
@@ -32,6 +34,7 @@ const createBottomSheetStore = (): IUseBottomSheet => {
 				show: newState.show ?? prev.show,
 				children: newState.children ?? null,
 				handleClose: newState.handleClose ?? noop,
+				props: newState.props ?? {},
 			}));
 		},
 		reset: () =>
@@ -39,6 +42,7 @@ const createBottomSheetStore = (): IUseBottomSheet => {
 				show: false,
 				children: null,
 				handleClose: noop,
+				props: {},
 			}),
 	};
 };

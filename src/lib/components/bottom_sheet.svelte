@@ -5,11 +5,13 @@
 	let show = false;
 	let children: typeof SvelteComponent | null | undefined = null;
 	let handleClose = () => {};
+	let props = {};
 
 	const unsubscribe = bottomSheetStore.subscribe((state) => {
 		show = !!state.show;
 		children = state.children;
 		handleClose = state.handleClose ?? (() => {});
+		props = state.props ?? {};
 	});
 
 	onDestroy(() => {
@@ -23,13 +25,13 @@
 </script>
 
 <div class:showSheetWrapper={show} class="sheetWrapper d-flex align-items-end" on:click={onClickClose}>
-	<div class:show class="contentWrapper h-50">
+	<div class:show class="contentWrapper h-50 overflow-hidden">
 		<div class="d-flex justify-content-end">
-			<button on:click={onClickClose} class="bg-black border-0">
-				<i class="bi bi-x m-0 fs-2 text-white"></i>
-			</button>
+			<i class="bi bi-x m-0 fs-2 text-black" on:click={onClickClose}></i>
 		</div>
-		<svelte:component this={children} />
+		<div class="overflow-auto h-100 mb-5 pb-4">
+			<svelte:component this={children} {...props} />
+		</div>
 	</div>
 </div>
 
