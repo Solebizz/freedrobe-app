@@ -388,7 +388,8 @@ interface IArticleInfo {
 	name: string;
 	category: string;
 	images: string[];
-	price: number;
+	price?: number;
+	status?: string;
 }
 interface IOrdersInfo {
 	_id: string;
@@ -481,6 +482,7 @@ interface IPlaceOrdersParams {
 	completionTimeSlotStart: number;
 	completionTimeSlotEnd: number;
 }
+// place pickup orders and fetch price ✅
 export async function placeOrderAndFetchPrice(params: IPlaceOrdersParams) {
 	try {
 		const $APP = get(APP);
@@ -538,6 +540,46 @@ export async function placeOrderAndFetchPrice(params: IPlaceOrdersParams) {
 		});
 		addNotice('Order Placed Successfully.');
 		return serializedResp;
+	} catch (e) {
+		const message = (e as Error).message || 'Unkown error';
+		addError(message, 5);
+		console.error(message);
+	}
+}
+
+export async function getArticles() {
+	interface IArticlesInfoFromServer {
+		articles: IArticleInfo[];
+	}
+	try {
+		const $APP = get(APP);
+		const headers = {
+			'Content-Type': 'application/json',
+			...(await fetchAuthHeadrs($APP)),
+		};
+		const requestOptions = {
+			method: 'GET',
+			headers,
+		};
+		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/articles`, requestOptions);
+		const jsonResp: IServerResponse<IArticlesInfoFromServer> = await res.json();
+		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
+		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
+		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
+		const data = jsonResp.data as IArticlesInfoFromServer;
+		const articles: Record<string, App.IArticleInfo> = {};
+		if (!data.articles) return;
+
+		for (let article of data.articles) {
+			articles[article._id] = serializeResponse<App.IArticleInfo, IArticleInfo>(article, {
+				ID: '_id',
+				Status: 'status',
+				Name: 'name',
+				Category: 'category',
+				Images: 'images',
+			});
+		}
+		return articles;
 	} catch (e) {
 		const message = (e as Error).message || 'Unkown error';
 		addError(message, 5);

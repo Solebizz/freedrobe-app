@@ -5,6 +5,7 @@ const APP_DATA_KEY = 'main_app_data';
 
 const defaultAppData: App.IData = {
 	LoadedFromLocalStorage: false,
+	ArticlesInBag: [],
 };
 
 /*

@@ -25,7 +25,7 @@
 </script>
 
 <div class:showSheetWrapper={show} class="sheetWrapper d-flex align-items-end" on:click={onClickClose}>
-	<div class:show class="contentWrapper h-50 overflow-hidden">
+	<div class:show class="contentWrapper h-75 overflow-hidden">
 		<div class="d-flex justify-content-end">
 			<i class="bi bi-x m-0 fs-2 text-black" on:click={onClickClose}></i>
 		</div>

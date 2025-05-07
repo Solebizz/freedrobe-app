@@ -79,7 +79,8 @@ declare global {
 			Name: string;
 			Category: string;
 			Images: string[];
-			Price: number;
+			Price?: number;
+			Status?: string;
 		}
 		interface IOrdersInfo {
 			ID: string;
@@ -101,6 +102,8 @@ declare global {
 			Locations?: Record<string, ILocationInfo>;
 			Auth?: IAuthInfo;
 			User?: IUserInfo;
+			Articles?: Record<string, IArticleInfo>;
+			ArticlesInBag: string[];
 			Staff?: {
 				User?: IUserInfo;
 				Auth?: IAuthInfo;

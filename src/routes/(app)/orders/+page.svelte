@@ -40,11 +40,7 @@
 	}
 </script>
 
-<h1 class="fw-bold mb-3 d-flex gap-3">
-	My Orders ({Object.keys(orders).length})
-	{#if Object.keys(orders).length}
-		<button on:click={handlePickupClick} class="btn btn-primary shadow">Schedule</button>{/if}
-</h1>
+<h1 class="fw-bold mb-3 d-flex gap-3">My Orders</h1>
 
 {#if loading}
 	<Loader />

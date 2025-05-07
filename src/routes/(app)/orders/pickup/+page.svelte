@@ -73,7 +73,8 @@
 			completionTimeSlotEnd: endDateTime.toMillis(),
 		};
 
-		await placeOrderAndFetchPrice(params);
+		const resp = await placeOrderAndFetchPrice(params);
+		if (resp && resp.ID) pickupOrder = {};
 	}
 
 	$: disabled = !form || !form.checkValidity() || !pickupOrder;
