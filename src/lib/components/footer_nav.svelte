@@ -18,11 +18,11 @@
 </script>
 
 <footer class:show_shadow={$page.data.show_nav_shadow}>
-	<nav class="mb-2">
+	<nav>
 		{#each items as link}
 			{#if !link.hidden}
 				{@const isActive = extractRoute(link.href) === extractRoute(current_href)}
-				<a href={link.href} class:active={isActive} class="link" title={link.label} data-sveltekit-preload-code="eager">
+				<a href={link.href} class:active={isActive} class="link p-2 pt-3" title={link.label} data-sveltekit-preload-code="eager">
 					<i class="fs-1 bi bi-{link.icon}{isActive ? '-fill' : ''} position-relative" />
 					<span class="icon-label">{link.label}</span>
 				</a>
@@ -48,7 +48,6 @@
 			font-size: 24px;
 		}
 		a {
-			height: var(--nav-bar-height);
 			color: var(--bs-body-color);
 			display: flex;
 			align-items: center;

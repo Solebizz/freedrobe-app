@@ -29,10 +29,9 @@
 			{/if}
 			<img src={logoFullSrc} class="header-logo" alt="FREEDROBE" />
 			{#if $APP.User?.ActiveSubscription}
-				<div class="subscription-wrapper ms-3 d-flex flex-column gap-1">
-					<p class="m-0 fw-bold">Subscription Status: 🟢</p>
-					<p class="m-0 fw-bold">Subscription End: {DateTime.fromMillis(Number($APP.User.SubscriptionValidTill)).toFormat('dd LLL yyyy')}</p>
-					<p class="m-0 fw-bold">Storage: <span class="bg-secondary text-primary rounded-2">{`${$APP.User.StorageValue}/${$APP.User.TotalStorageValue}`}</span></p>
+				<div class="subscription-wrapper ms-2 d-flex flex-column gap-1">
+					<p class="m-0 fw-bold">Subscription: <span class="text-success">Active</span></p>
+					<p class="m-0 fw-bold">Storage: <span class="bg-secondary text-primary rounded-2 px-1">{`${$APP.User.StorageValue}/${$APP.User.TotalStorageValue}`}</span></p>
 				</div>
 			{:else}
 				<button class="btn rounded-3 fs-6 p-1 ms-4 bg-primary text-white shadow px-2" on:click={handleClickSubscribe}>🌟 Subscribe</button>
@@ -44,7 +43,7 @@
 				{#each $page.data.the_ctas as cta}
 					{@const isActive = cta.href === $page.url.pathname}
 					<a class="btn text-white" href={cta.href} class:active={isActive}>
-						{#if cta.icon}<i class="bi bi-{cta.icon}{isActive ? '-fill text-secondary' : ' text-black'} me-1 fs-3" />{/if}
+						{#if cta.icon}<i class="bi bi-{cta.icon}{isActive ? '-fill text-secondary' : ' text-black'} me-5 fs-3" />{/if}
 						{cta?.label || ''}
 					</a>
 				{/each}
@@ -66,7 +65,7 @@
 	}
 
 	.header-logo {
-		height: 4rem;
+		height: 4.5rem;
 	}
 	.active {
 		color: var(--bs-secondary);

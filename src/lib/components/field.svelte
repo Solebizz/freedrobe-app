@@ -329,7 +329,7 @@
 	label,
 	input,
 	textarea {
-		font-weight: 300; //TODO: figure out if this should be set here or at the theme level
+		font-weight: 400;
 	}
 	.field[data-field-type='checkbox'] {
 		label {

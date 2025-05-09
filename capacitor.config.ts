@@ -15,6 +15,11 @@ const config: CapacitorConfig = {
 			launchAutoHide: false,
 			backgroundColor: '#fff',
 		},
+		StatusBar: {
+			overlaysWebView: false,
+			style: 'DARK',
+			backgroundColor: '#000000',
+		},
 	},
 	ios: {
 		scheme: 'App',

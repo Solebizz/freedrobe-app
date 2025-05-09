@@ -7,5 +7,6 @@ export default defineConfig({
 		port: 5176,
 		strictPort: true,
 		host: '0.0.0.0',
+		allowedHosts: ['welfare-treat-boy-ld.trycloudflare.com'],
 	},
 });

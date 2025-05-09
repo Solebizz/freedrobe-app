@@ -16,9 +16,6 @@
 	onMount(() => {
 		App.addListener('backButton', () => history.back());
 		SplashScreen.hide();
-		if (Capacitor.getPlatform() === 'android') {
-			StatusBar.setOverlaysWebView({ overlay: true });
-		}
 	});
 </script>
 

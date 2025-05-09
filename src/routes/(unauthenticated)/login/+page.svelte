@@ -43,7 +43,7 @@
 
 <div class="d-flex h-100 flex-column os_top_padding mt-4">
 	<div class="d-flex justify-content-center">
-		<img src={logoFullSrc} class="splash-logo" alt="ICARUS" />
+		<img src={logoFullSrc} class="splash-logo" alt="ICARUS" height="130" />
 	</div>
 	<div class="rounded-top-5 p-3 w-100 d-flex flex-column align-items-center pb-5">
 		<div class="w-100">
@@ -52,7 +52,7 @@
 
 			<form class="w-100" on:submit|preventDefault={handleGetOTP} enctype="multipart/form-data">
 				<div class="text-input-group">
-					<label class="mb-1 text-primary" for="email">Phone</label>
+					<label class="mb-1 text-primary" for="email">Login / Signup</label>
 					<div class="d-flex align-items-center gap-2 bg-white p-1 border rounded-3">
 						<span class="fw-bold px-1">+91</span>
 						<input
@@ -61,13 +61,13 @@
 							class="form-control bg-transparent border-0 p-1 shadow-none"
 							bind:value={phone}
 							aria-describedby="phone"
-							placeholder="xxxxxxxxxx"
+							placeholder="Enter mobile number"
 							on:input={handleInput} />
 					</div>
 				</div>
 				<div class="label-group">
 					<input class="form-check-input" type="checkbox" bind:checked value="" id="flexCheckDefault" />
-					<label class="form-check-label" for="flexCheckDefault">Accept our <a href={termsUrl}>Terms & Conditions</a> <i class="bi bi-box-arrow-up-right text-primary"></i> </label>
+					<label class="form-check-label" for="flexCheckDefault">I accept <a href={termsUrl}>Terms & Conditions</a> </label>
 				</div>
 
 				<button type="submit" class:disabled class="btn btn-primary w-100 my-4 d-flex justify-content-center gap-2"
@@ -114,8 +114,8 @@
 			margin-top: 0;
 		}
 	}
-	.splash-logo {
-		height: auto;
-		width: 11rem;
-	}
+	// .splash-logo {
+	// 	height: auto;
+	// 	width: 11rem;
+	// }
 </style>

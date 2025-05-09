@@ -15,6 +15,7 @@
 
 	let locationInfo: App.ILocationInfo[] | undefined = [];
 	let locationId = '';
+	$: editable = !$APP.User?.LocationId;
 
 	const genderOptions = [
 		{ label: 'Male', value: 'Male' },
@@ -34,11 +35,11 @@
 		profile.Area = userLocation[0].Area;
 	});
 
-	let fields: IField[] = [
+	$: fields = [
 		{
 			key: 'Name',
 			definition: {
-				Edit: true,
+				Edit: editable,
 				Label: 'Name',
 				Type: 'text',
 				Required: true,
@@ -48,7 +49,7 @@
 		{
 			key: 'AddressLine1',
 			definition: {
-				Edit: true,
+				Edit: editable,
 				Label: 'Address Line 1',
 				Type: 'text',
 				Required: true,
@@ -57,7 +58,7 @@
 		{
 			key: 'AddressLine2',
 			definition: {
-				Edit: true,
+				Edit: editable,
 				Label: 'Address Line 2',
 				Type: 'text',
 				Required: true,
@@ -66,7 +67,7 @@
 		{
 			key: 'Gender',
 			definition: {
-				Edit: true,
+				Edit: editable,
 				Label: 'Gender',
 				Type: 'select',
 				Options: genderOptions,
@@ -76,7 +77,7 @@
 		{
 			key: 'State',
 			definition: {
-				Edit: true,
+				Edit: editable,
 				Label: 'State',
 				Type: 'select',
 				Required: true,
@@ -103,7 +104,7 @@
 				Required: true,
 			},
 		},
-	];
+	] as IField[];
 
 	$: {
 		let stateIndex = fields.findIndex(({ key }) => key == 'State');
@@ -118,7 +119,7 @@
 			const duplicates = locationInfo?.filter((l) => profile && l.State === profile.State).map((l) => l.City);
 			const uniquies = new Set(duplicates);
 			fields[cityIndex].definition.Options = Array.from(uniquies).map((u) => ({ label: u, value: u }));
-			fields[cityIndex].definition.Edit = true;
+			fields[cityIndex].definition.Edit = editable;
 		}
 	}
 
@@ -128,7 +129,7 @@
 			const duplicates = locationInfo?.filter((l) => profile && l.City === profile.City).map((l) => l.Area);
 			const uniquies = new Set(duplicates);
 			fields[areaIndex].definition.Options = Array.from(uniquies).map((u) => ({ label: u, value: u }));
-			fields[areaIndex].definition.Edit = true;
+			fields[areaIndex].definition.Edit = editable;
 		}
 	}
 
@@ -174,7 +175,9 @@
 			{/each}
 		</div>
 
-		<button class="d-none">Needed for ENTER to submit</button>
-		<button on:click={() => checkSubmit() && form.checkValidity()} type="submit" class="btn btn-primary text-uppercase" {disabled}> Update </button>
+		{#if !$APP.User?.LocationId}
+			<button class="d-none">Needed for ENTER to submit</button>
+			<button on:click={() => checkSubmit() && form.checkValidity()} type="submit" class="btn btn-primary text-uppercase" {disabled}> Update </button>
+		{/if}
 	</form>
 </main>

@@ -23,10 +23,10 @@
 	}
 
 	function openCardDetails(index: number) {
-		bottomSheetStore.setSheet({
-			show: true,
-			children: CardDetail as typeof SvelteComponent,
-		});
+		// bottomSheetStore.setSheet({
+		// 	show: true,
+		// 	children: CardDetail as typeof SvelteComponent,
+		// });
 	}
 
 	function handlePickupClick() {
@@ -56,7 +56,21 @@
 	<div class="card-deck mb-3">
 		{#each Object.values($APP.Articles) as article, index}
 			<div class="card bg-white" on:click={() => openCardDetails(index)}>
-				<div class="card-image card-img-top position-relative border" style="background-image:url({article.Images[0]});--imgwidth:{width}px;--border:{border}px;" />
+				<div id={`carousel-wrapper-${index}`} class="carousel slide" data-ride="carousel">
+					<div class="carousel-inner">
+						{#each article.Images as src, index}
+							<div class:active={index === 0} class="carousel-item">
+								<img class="d-block w-100" {src} alt={index + 1 + ` ${article.Name}`} />
+							</div>
+						{/each}
+					</div>
+					<a class="carousel-control-prev" href={`#carousel-wrapper-${index}`} role="button" data-slide="prev">
+						<span class="sr-only bg-black b-1">👈</span>
+					</a>
+					<a class="carousel-control-next" href={`#carousel-wrapper-${index}`} role="button" data-slide="next">
+						<span class="sr-only bg-black">👉</span>
+					</a>
+				</div>
 				<div class="card-body">
 					<h5 class="card-title fw-bold">{article.Name}</h5>
 					<span class="chip bg-secondary text-primary p-1 rounded fw-bold">{article.Status}</span>
