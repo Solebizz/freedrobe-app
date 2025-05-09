@@ -25,6 +25,7 @@
 	// import { PUBLIC_ADMIN_URL } from '$env/static/public';
 	import { logoSrc } from '$lib/utils/globals';
 	import { onMount } from 'svelte';
+	import { APP } from '$lib/stores/appMain';
 
 	let backgroundColor = '$fff';
 
@@ -47,7 +48,10 @@
 		// } catch (e) {
 		// 	return goto('/offline');
 		// }
-		localOrRemoteGo('/login');
+		if ($APP.Auth?.AuthToken) {
+			return localOrRemoteGo('/profile');
+		}
+		return localOrRemoteGo('/login');
 	});
 </script>
 
