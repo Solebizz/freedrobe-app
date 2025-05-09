@@ -3,7 +3,6 @@
 	import Notices from '$lib/components/notices.svelte';
 	import { App } from '@capacitor/app';
 	import { notices } from '$lib/stores/notices';
-	import { StatusBar } from '@capacitor/status-bar';
 	import { onMount } from 'svelte';
 	import { SplashScreen } from '@capacitor/splash-screen';
 	import BottomSheet from '$lib/components/bottom_sheet.svelte';
