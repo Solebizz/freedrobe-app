@@ -2,13 +2,12 @@
 	import { onMount } from 'svelte';
 	import Loader from '$lib/components/loader.svelte';
 	import { buySubscription, getSubscriptionsList } from '$lib/utils/apis';
-	import { addError, addNotice } from '$lib/stores/notices';
 	import { goto } from '$app/navigation';
-	import { APP } from '$lib/stores/appMain';
 
 	let subscriptions: Record<string, App.ISubscriptionInfo> = {};
 	let selected: App.ISubscriptionInfo;
 	let loading = true;
+	let submitLoading = false;
 	let termsText = 'Subscription will be start from the date of payment.';
 
 	onMount(async () => {
@@ -21,10 +20,15 @@
 	});
 
 	async function startPaymentFlow() {
+		submitLoading = true;
 		const resp = await buySubscription(selected.ID);
 		if (!resp) return;
-		$APP.User = resp;
-		goto('/orders');
+		goto('/payment/initiate', {
+			state: {
+				amount: selected.Price,
+				paymentGatewayEntityId: resp.paymentGatewayEntityId,
+			},
+		});
 	}
 </script>
 
@@ -32,7 +36,7 @@
 	<Loader />
 {:else if subscriptions}
 	<div class="d-flex flex-column gap-2">
-		<h1 class="fw-bold mb-3">Available Plans.</h1>
+		<h1 class="fw-bold mb-3">Available Plans</h1>
 
 		{#each Object.values(subscriptions) as subscription}
 			<div class="selectBox radio">
@@ -49,8 +53,8 @@
 				</label>
 			</div>
 		{/each}
-		<button on:click={startPaymentFlow} class="submit-cta btn btn-primary w-100 mt-3 d-flex align-items-center justify-content-center gap-2 shadow"
-			><span>Continue with {selected?.Title}</span></button>
+		<button on:click={startPaymentFlow} disabled={submitLoading} class="submit-cta btn btn-primary w-100 mt-3 d-flex align-items-center justify-content-center gap-2 shadow"
+			><span>Continue with {selected?.Title}</span>{#if submitLoading}<Loader />{/if}</button>
 		<p class="text-primary">* {termsText}</p>
 	</div>
 {/if}

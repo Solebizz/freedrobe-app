@@ -251,10 +251,10 @@ export async function saveUserInfo(params: ISaveUserInfoParams) {
 // Fetch Locations ✅
 export async function getSubscriptionsList() {
 	interface IBenifitsInfo {
-		storageValue: number;
-		washValue: number;
-		dryCleanValue: number;
-		logisticValue: number;
+		totalStorageValue: number;
+		freeWashValue: number;
+		freeDryCleanValue: number;
+		freeLogisticValue: number;
 	}
 	interface ISubscriptionInfo {
 		_id: string;
@@ -299,10 +299,10 @@ export async function getSubscriptionsList() {
 				Deleted: 'deleted',
 				Benifits: (s) =>
 					serializeResponse<App.IBenifitsInfo, IBenifitsInfo>(s.benifits, {
-						StorageValue: 'storageValue',
-						WashValue: 'washValue',
-						DryCleanValue: 'dryCleanValue',
-						LogisticValue: 'logisticValue',
+						StorageValue: 'totalStorageValue',
+						WashValue: 'freeWashValue',
+						DryCleanValue: 'freeDryCleanValue',
+						LogisticValue: 'freeLogisticValue',
 					}),
 			});
 		}
@@ -316,6 +316,9 @@ export async function getSubscriptionsList() {
 
 // save user info ✅
 export async function buySubscription(subscriptionId: string) {
+	interface ISubscriptionResponseFromServer {
+		gatewayEntityId: string;
+	}
 	try {
 		const $APP = get(APP);
 		const params = {
@@ -326,11 +329,43 @@ export async function buySubscription(subscriptionId: string) {
 			...(await fetchAuthHeadrs($APP)),
 		};
 		const requestOptions = {
+			method: 'POST',
+			headers,
+			body: JSON.stringify(params),
+		};
+		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/subscriptions/buy`, requestOptions);
+		const jsonResp: IServerResponse<ISubscriptionResponseFromServer> = await res.json();
+		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
+		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
+		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
+		const data = jsonResp.data;
+		const paymentGatewayEntityId = data.gatewayEntityId;
+		return { paymentGatewayEntityId };
+	} catch (e) {
+		const message = (e as Error).message || 'Unkown error';
+		addError(message, 5);
+		console.error(message);
+	}
+}
+
+interface IActivateSubscriptionParams {
+	gatewayEntityId: string;
+	paymentId: string;
+	signature: string;
+}
+export async function activateSubscription(params: IActivateSubscriptionParams) {
+	try {
+		const $APP = get(APP);
+		const headers = {
+			'Content-Type': 'application/json',
+			...(await fetchAuthHeadrs($APP)),
+		};
+		const requestOptions = {
 			method: 'PUT',
 			headers,
 			body: JSON.stringify(params),
 		};
-		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/subscriptions/buy-subscription`, requestOptions);
+		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/subscriptions/activate`, requestOptions);
 		const jsonResp: IServerResponse<IUserInfo> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
@@ -366,7 +401,6 @@ export async function buySubscription(subscriptionId: string) {
 			SubscriptionValidTill: 'subscriptionValidTill',
 			SubscriptionValidityPeriod: 'subscriptionValidityPeriod',
 		});
-		addNotice('Subscription bought successfully.');
 		return userInfo;
 	} catch (e) {
 		const message = (e as Error).message || 'Unkown error';

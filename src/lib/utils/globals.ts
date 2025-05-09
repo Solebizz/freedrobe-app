@@ -69,3 +69,5 @@ export async function fetchAuthHeadrs($APP: App.IData, staff = false): Promise<H
 		authToken: (staff ? $APP.Staff?.Auth?.AuthToken : $APP.Auth?.AuthToken) || '',
 	};
 }
+
+export const entityName = 'Freedrobe';

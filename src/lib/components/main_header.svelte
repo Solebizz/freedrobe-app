@@ -34,7 +34,7 @@
 					<p class="m-0 fw-bold">Storage: <span class="bg-secondary text-primary rounded-2 px-1">{`${$APP.User.StorageValue}/${$APP.User.TotalStorageValue}`}</span></p>
 				</div>
 			{:else}
-				<button class="btn rounded-3 fs-6 p-1 ms-4 bg-primary text-white shadow px-2" on:click={handleClickSubscribe}>🌟 Subscribe</button>
+				<button class="border-0 text-uppercase p-2 px-3 shadow rounded-3 p-1 ms-4 bg-primary text-white shadow px-2" on:click={handleClickSubscribe}>Subscribe</button>
 			{/if}
 			<span class="fs-2 py-2 me-auto">{$page.data.the_title ?? ''}</span>
 		</div>

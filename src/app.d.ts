@@ -82,6 +82,11 @@ declare global {
 			Price?: number;
 			Status?: string;
 		}
+		interface IRazorpayResponse {
+			razorpay_payment_id: string;
+			razorpay_signature: string;
+			razorpay_subscription_id: string;
+		}
 		interface IOrdersInfo {
 			ID: string;
 			LocationID: string;

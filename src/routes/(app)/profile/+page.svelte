@@ -177,7 +177,7 @@
 
 		{#if !$APP.User?.LocationId}
 			<button class="d-none">Needed for ENTER to submit</button>
-			<button on:click={() => checkSubmit() && form.checkValidity()} type="submit" class="btn btn-primary text-uppercase" {disabled}> Update </button>
+			<button on:click={() => checkSubmit() && form.checkValidity()} type="submit" class="btn btn-primary text-uppercase mb-3" {disabled}> Update </button>
 		{/if}
 	</form>
 </main>
