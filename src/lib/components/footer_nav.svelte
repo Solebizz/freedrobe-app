@@ -22,7 +22,7 @@
 		{#each items as link}
 			{#if !link.hidden}
 				{@const isActive = extractRoute(link.href) === extractRoute(current_href)}
-				<a href={link.href} class:active={isActive} class="link p-2 pt-3" title={link.label} data-sveltekit-preload-code="eager">
+				<a href={link.href} class:active={isActive} class="link p-2 pt-3 mb-1" title={link.label} data-sveltekit-preload-code="eager">
 					<i class="fs-1 bi bi-{link.icon}{isActive ? '-fill' : ''} position-relative" />
 					<span class="icon-label">{link.label}</span>
 				</a>
