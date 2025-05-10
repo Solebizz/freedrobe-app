@@ -3,18 +3,32 @@
 	import { env } from '$env/dynamic/public';
 	import { APP } from '$lib/stores/appMain';
 	import { addError, addNotice } from '$lib/stores/notices';
-	import { activateSubscription } from '$lib/utils/apis';
+	import { activateSubscription, cofirmOrder } from '$lib/utils/apis';
 	import { entityName, logoFullSrc } from '$lib/utils/globals';
 
 	const state = history.state;
 	const amount = state['sveltekit:states'].amount * 100;
-	const paymentGatewayEntityId = state['sveltekit:states'].paymentGatewayEntityId;
+	const paymentGatewayEntityId = state['sveltekit:states']?.paymentGatewayEntityId;
+	const referrer = state['sveltekit:states']?.referrer;
+	const orderId = state['sveltekit:states']?.orderId;
+	const orderUnderscoreId = state['sveltekit:states']?.orderUnderscoreId;
+
+	let orderOptions = {};
+	switch (referrer) {
+		case 'basket': {
+			orderOptions = { order_id: orderId };
+			break;
+		}
+		default: {
+			orderOptions = { subscription_id: paymentGatewayEntityId };
+		}
+	}
 
 	const options = {
 		key: env.PUBLIC_RAZORPAY_KEY_ID,
 		amount,
 		currency: 'INR',
-		subscription_id: paymentGatewayEntityId,
+		...orderOptions,
 		description: entityName,
 		image: logoFullSrc,
 		prefill: {
@@ -61,28 +75,60 @@
 			},
 		},
 		handler: async function (response: App.IRazorpayResponse) {
-			if (!response || !response.razorpay_payment_id || !response.razorpay_signature || !response.razorpay_subscription_id) {
-				addError('Payment failed. Try again.');
-				return goto('/subscription-list');
-			}
-			const params = {
-				gatewayEntityId: response.razorpay_subscription_id,
-				paymentId: response.razorpay_payment_id,
-				signature: response.razorpay_signature,
-			};
-			const userInfo = await activateSubscription(params);
-			if (!userInfo) {
-				addError('Unable to get the user. Please try again after sometime.');
-				return goto('/subscription-list');
-			}
+			switch (referrer) {
+				case 'basket': {
+					if (!response || !response.razorpay_payment_id || !response.razorpay_signature || !response.razorpay_order_id) {
+						addError('Payment failed. Try again.');
+						return goto('/basket');
+					}
+					const params = {
+						signature: response.razorpay_signature,
+						paymentId: response.razorpay_payment_id,
+						orderId: orderUnderscoreId,
+					};
+					const confirm_resp = await cofirmOrder(params);
+					if (!confirm_resp) {
+						addError('Something went wrong. Please try again after sometime', 10);
+						return goto('/basket');
+					}
 
-			addNotice('Subscription bought.');
-			$APP.User = userInfo;
-			goto('/profile');
+					addNotice('Order placed successfully.');
+					$APP.ArticlesInBag = [];
+					return goto('/orders');
+				}
+				default: {
+					if (!response || !response.razorpay_payment_id || !response.razorpay_signature || !response.razorpay_subscription_id) {
+						addError('Payment failed. Try again.');
+						return goto('/subscription-list');
+					}
+					const params = {
+						gatewayEntityId: response.razorpay_subscription_id,
+						paymentId: response.razorpay_payment_id,
+						signature: response.razorpay_signature,
+					};
+					const userInfo = await activateSubscription(params);
+					if (!userInfo) {
+						addError('Unable to get the user. Please try again after sometime.');
+						return goto('/subscription-list');
+					}
+
+					addNotice('Subscription bought.');
+					$APP.User = userInfo;
+					goto('/profile');
+				}
+			}
 		},
 		modal: {
 			ondismiss: function () {
-				goto('/subscription-list');
+				switch (referrer) {
+					case 'basket': {
+						goto('/orders');
+						break;
+					}
+					default: {
+						goto('/subscription-list');
+					}
+				}
 			},
 		},
 	};

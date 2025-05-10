@@ -1,118 +1,113 @@
 <script lang="ts">
-	import CardDetail from '$lib/components/card_detail.svelte';
+	import { goto } from '$app/navigation';
+	import Field, { type IField } from '$lib/components/field.svelte';
+	import Loader from '$lib/components/loader.svelte';
+	import OrderDetails from '$lib/components/order_details.svelte';
+	import { APP } from '$lib/stores/appMain';
 	import { bottomSheetStore } from '$lib/stores/bottom_sheet';
+	import { addError, addNotice } from '$lib/stores/notices';
+	import { cofirmOrder, placeOrderAndFetchPrice } from '$lib/utils/apis';
 	import type { SvelteComponent } from 'svelte';
 
-	const image =
-		'https://s3-alpha-sig.figma.com/img/34ee/b408/fa1f041b554a9755cf0e6c420731bb59?Expires=1745193600&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=fXd0kPAwH-GbwMGJM8hjMwQtSqIoqmzCnROmvC5idN3C3UQGeIR4ov8S6X9aL3Lm4e9Nuxi4faJf2yddkLkmNMSgwTsd9IcNRAZ8mBGZSFTWo8fn0f8zbS1EqryT3mbd7rEqx0eJ5gEnvpjkiKimm9NOKkcNhKeYPz7XeEDZapa76LO-RUsvxGCGoegC5P6d1dKmAhgA5P7-glonZihQOGnJjOEl6wMXhh5AZo6mzDNIK-NbG4w8RtELR01aBq9SaT1zA3B0gySuixOiTprTlbHrlsT3f~Gtr0bt2gaPZsuWzCjehoyxIrXY1~fghYUjqx0BLFFw6-eLx3X1EzTJpw__';
 	export let width = 200;
 	export let border = 2;
 
-	const cards = [
+	let form: HTMLFormElement;
+	let order: Record<string, any> = {};
+	let loading = false;
+
+	$: itemsInBag = Array.isArray($APP.ArticlesInBag) && $APP.Articles ? $APP.ArticlesInBag.map((id) => $APP.Articles?.[id]).filter((item) => item !== undefined) : [];
+
+	let fields: IField[] = [
 		{
-			Title: 'Article 1',
-			Status: 'Ready To Deliver',
-			inBasket: false,
-		},
-		{
-			Title: 'Article 2',
-			Status: 'Ready To Deliver',
-			inBasket: false,
-		},
-		{
-			Title: 'Article 3',
-			Status: 'Ready To Deliver',
-			inBasket: false,
-		},
-		{
-			Title: 'Article 3',
-			Status: 'Ready To Deliver',
-			inBasket: false,
-		},
-		{
-			Title: 'Article 3',
-			Status: 'Ready To Deliver',
-			inBasket: false,
-		},
-		{
-			Title: 'Article 3',
-			Status: 'Ready To Deliver',
-			inBasket: false,
+			key: 'Type',
+			definition: {
+				Edit: true,
+				Label: 'Select Service Type',
+				Type: 'radio',
+				Required: true,
+				Options: [
+					{ label: 'Delivery (1 day delivery)', value: 'Delivery' },
+					{ label: 'Laundry (Takes 2-3 days)', value: 'Laundry' },
+					{ label: 'Dry Clean (Takes 3-4 day)', value: 'Dry Clean' },
+				],
+			},
 		},
 	];
 
-	function toggleBasket(index: number) {
-		cards[index].inBasket = !cards[index].inBasket;
+	function removeArticleFromBasket(id: string) {
+		let articleIdsInBag = $APP.ArticlesInBag;
+		let index = articleIdsInBag.findIndex((val) => val === id);
+
+		articleIdsInBag.splice(index, 1);
+
+		$APP.ArticlesInBag = articleIdsInBag;
 	}
 
-	function openCardDetails(index: number) {
-		bottomSheetStore.setSheet({
-			show: true,
-			children: CardDetail as typeof SvelteComponent,
-			handleClose: () => {
-				console.log(`Sheet closed for ${cards[index].Title}`);
-			},
-		});
+	async function submitForm() {
+		loading = true;
+		try {
+			const params = {
+				articles: $APP.ArticlesInBag,
+				type: order.Type,
+			};
+			const resp = await placeOrderAndFetchPrice(params);
+			if (resp && resp.ID) {
+				if (resp.Price.Total === 0) {
+					const confirm_resp = await cofirmOrder({
+						orderId: resp.ID,
+					});
+					if (!confirm_resp) return addError('Something went wrong. Please try again after sometime', 10);
+					addNotice('Order placed successfully.');
+					$APP.ArticlesInBag = [];
+					return goto('/orders');
+				}
+				bottomSheetStore.setSheet({
+					show: true,
+					children: OrderDetails as typeof SvelteComponent,
+					props: {
+						order: resp,
+						referrerComponent: 'basket',
+					},
+				});
+			}
+		} finally {
+			loading = false;
+		}
 	}
+
+	$: disabled = !form || !form.checkValidity() || !order;
 </script>
 
 <h1 class="fw-bold mb-3">My Basket</h1>
-{#if !cards.length}
-	<p class="fs-6">No items in the closet.</p>
+{#if !itemsInBag.length}
+	<p class="fs-6 text-center">No items in the bag.</p>
 {/if}
-<div class="card-deck mb-3">
-	{#each cards as card, index}
-		<div class="card bg-white" on:click={() => openCardDetails(index)}>
-			<div class="card-image card-img-top position-relative" style="background-image:url({image});--imgwidth:{width}px;--border:{border}px;">
-				<button class="basket-btn position-absolute shadow" style="top: 0.5rem; right: 0.5rem;" on:click|stopPropagation={() => toggleBasket(index)}>
-					{card.inBasket ? 'Added ✅' : 'Quick Add ✙'}
-				</button>
-			</div>
-			<div class="card-body">
-				<h5 class="card-title fw-bold">{card.Title}</h5>
-				<span class="badge bg-secondary p-2">{card.Status}</span>
+<div class="mb-3 d-flex flex-column gap-3">
+	{#each itemsInBag as article}
+		<div class="bg-white p-2 d-flex align-items-center gap-2">
+			<img class="rounded border border-black" width="100" height="100" src={article.Images[0]} alt="Article Image" />
+			<div class="d-flex flex-column gap-2">
+				<p class="m-0 fs-5 fw-bold">{article.Name}</p>
+				<button class="border-0 chip bg-secondary text-primary p-1 rounded fw-bold shadow" on:click|stopPropagation={() => removeArticleFromBasket(article.ID)}> Remove from basket </button>
 			</div>
 		</div>
 	{/each}
 </div>
 
+<form method="post" class="position-relative d-flex flex-column flex-grow-1 justify-content-between gap-2" bind:this={form} on:submit|preventDefault={submitForm}>
+	<div class="narrow-form">
+		{#each fields as { key, definition }}
+			<div class="mb-3" data-field={key}>
+				<Field {key} {definition} bind:value={order[key]} />
+			</div>
+		{/each}
+	</div>
+
+	<button class="d-none">Needed for ENTER to submit</button>
+	<button on:click={() => form.checkValidity()} type="submit" class="btn btn-primary text-uppercase mb-3 d-flex justify-content-center gap-2" {disabled}>
+		proceed to checkout {#if loading}<Loader />{/if}</button>
+</form>
+
 <style lang="scss">
-	.card-deck {
-		display: grid;
-		gap: 1rem;
-		grid-template-columns: repeat(2, 1fr);
-
-		@media (min-width: 600px) {
-			grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-		}
-	}
-
-	.card {
-		position: relative;
-		border-radius: 1rem;
-		box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.1);
-	}
-
-	.card-image {
-		width: 100%;
-		height: var(--imgwidth);
-		border-radius: 1rem;
-		background-position: center;
-		background-size: cover;
-	}
-
-	.basket-btn {
-		background-color: rgba(0, 0, 0, 0.6);
-		color: white;
-		border: none;
-		border-radius: 0.5rem;
-		padding: 0.4rem 0.8rem;
-		font-size: 0.8rem;
-		cursor: pointer;
-		transition: background-color 0.2s ease;
-	}
-
-	.basket-btn:hover {
-		background-color: rgba(0, 0, 0, 0.8);
-	}
 </style>

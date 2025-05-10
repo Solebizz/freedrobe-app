@@ -1,34 +1,15 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Card from '$lib/components/card.svelte';
-	import CardDetail from '$lib/components/card_detail.svelte';
 	import Loader from '$lib/components/loader.svelte';
 	import { APP } from '$lib/stores/appMain';
-	import { bottomSheetStore } from '$lib/stores/bottom_sheet';
 	import { getArticles } from '$lib/utils/apis';
-	import { onMount, type SvelteComponent } from 'svelte';
+	import { onMount } from 'svelte';
 
 	export let width = 200;
 	export let border = 2;
 
 	let loading = true;
-
-	function toggleBasket(id: string) {
-		let articleIdsInBag = $APP.ArticlesInBag;
-		let index = articleIdsInBag.findIndex((val) => val === id);
-
-		if (index === -1) articleIdsInBag.push(id);
-		else articleIdsInBag.splice(index, 1);
-
-		$APP.ArticlesInBag = articleIdsInBag;
-	}
-
-	function openCardDetails(index: number) {
-		// bottomSheetStore.setSheet({
-		// 	show: true,
-		// 	children: CardDetail as typeof SvelteComponent,
-		// });
-	}
 
 	function handlePickupClick() {
 		goto('/orders/pickup');
@@ -57,7 +38,7 @@
 	{#if $APP.User?.ActiveSubscription}
 		<div class="d-flex align-items-center flex-column">
 			<p class="fs-6 text-center">No items in the closet yet.</p>
-			<button on:click={handlePickupClick} class="btn btn-secondary w-75">Place your first pickup 🤩</button>
+			<button on:click={handlePickupClick} class="btn btn-secondary w-75">Place your first pickup</button>
 		</div>
 	{:else}
 		<p class="text-center fs-6">No active subscription.</p>

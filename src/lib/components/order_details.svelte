@@ -1,7 +1,25 @@
 <script lang="ts">
 	import { DateTime } from 'luxon';
+	import Loader from './loader.svelte';
+	import { goto } from '$app/navigation';
 
 	export let order: App.IOrdersInfo;
+	export let referrerComponent;
+
+	let loading = false;
+
+	async function handleClickPayment() {
+		loading = true;
+		goto('/payment/initiate', {
+			state: {
+				amount: order.Price,
+				orderId: order.PaymentGatewayID,
+				referrer: 'basket',
+				orderUnderscoreId: order.ID,
+			},
+		});
+		loading = false;
+	}
 </script>
 
 <div class="order-card">
@@ -15,6 +33,11 @@
 	<p class="m-0"><strong>Order Total:</strong> ₹{order.Price.BasePrice}</p>
 	<p class="m-0"><strong>Discount:</strong> ₹{order.Price.Discount}</p>
 	<p class="m-0"><strong>Sub Total:</strong> ₹{order.Price.Total}</p>
+
+	{#if referrerComponent === 'basket'}
+		<button on:click={handleClickPayment} class="btn btn-primary text-uppercase mb-3 d-flex justify-content-center gap-2 w-100 mt-3">
+			Confirm & Pay {#if loading}<Loader />{/if}</button>
+	{/if}
 
 	{#if order.Articles.length > 0}
 		<hr />

@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { APP } from '$lib/stores/appMain';
+	import { bottomSheetStore } from '$lib/stores/bottom_sheet';
+	import type { SvelteComponent } from 'svelte';
+	import CardDetail from './card_detail.svelte';
 
-	export let article;
+	export let article: App.IArticleInfo;
 
 	function toggleBasket(id: string) {
 		let articleIdsInBag = $APP.ArticlesInBag;
@@ -12,15 +15,23 @@
 
 		$APP.ArticlesInBag = articleIdsInBag;
 	}
+	function handleCardClick() {
+		bottomSheetStore.setSheet({
+			show: true,
+			children: CardDetail as typeof SvelteComponent,
+			props: {
+				article,
+			},
+		});
+	}
 </script>
 
-<div class="card bg-white">
-	<img class="d-block w-100" src={article.Images[0]} alt={article.Name} />
-
+<div class="card bg-white" on:click={handleCardClick}>
+	<img class="d-block w-100 rounded-top-5" src={article.Images[0]} alt={article.Name} />
 	<div class="card-body">
 		<h5 class="card-title fw-bold">{article.Name}</h5>
 		<button class="border-0 chip bg-secondary text-primary p-1 rounded fw-bold shadow" on:click|stopPropagation={() => toggleBasket(article.ID)}>
-			{$APP.ArticlesInBag && $APP.ArticlesInBag.includes(article.ID) ? 'Added ✅' : 'Quick Add ✙'}
+			{$APP.ArticlesInBag && $APP.ArticlesInBag.includes(article.ID) ? 'Added ✅' : 'Add now ✙'}
 		</button>
 		<span class="status position-absolute" class:opacity-90={article.Status === 'Available'} class:bg-success={article.Status === 'Available'} style="top: 0.5rem; right: 0.5rem;">
 			{article.Status}

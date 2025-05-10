@@ -1,9 +1,10 @@
 <script lang="ts">
-	export let title: string;
-	export let status: string;
+	export let article: App.IArticleInfo;
 </script>
 
 <div class="text-primary">
-	<h3>{title}</h3>
-	<p>Status: {status}</p>
+	<div>
+		<h3>{article.Name}</h3>
+		<span></span>
+	</div>
 </div>

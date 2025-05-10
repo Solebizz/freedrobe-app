@@ -42,7 +42,10 @@
 			{#if $page.data.the_ctas}
 				{#each $page.data.the_ctas as cta}
 					{@const isActive = cta.href === $page.url.pathname}
-					<a class="btn text-white" href={cta.href} class:active={isActive}>
+					<a class="btn text-white position-relative" href={cta.href} class:active={isActive}>
+						{#if $APP.ArticlesInBag.length > 0}
+							<span class="pill position-absolute rounded-pill bg-danger text-white px-2">{$APP.ArticlesInBag.length}</span>
+						{/if}
 						{#if cta.icon}<i class="bi bi-{cta.icon}{isActive ? '-fill text-secondary' : ' text-black'} me-5 fs-3" />{/if}
 						{cta?.label || ''}
 					</a>
@@ -72,6 +75,11 @@
 		* {
 			font-weight: bold;
 		}
+	}
+	.pill {
+		font-size: 0.6rem;
+		right: 3.2rem;
+		top: 0.6rem;
 	}
 	.primary-gradient {
 		// TODO png header img

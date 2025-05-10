@@ -440,6 +440,7 @@ interface IOrdersInfo {
 	articles: IArticleInfo[]; // TODO change this later
 	paymentId: string;
 	createdAt: string;
+	paymentGatewayId: string;
 }
 // fetch orders list ✅
 export async function getOrdersList() {
@@ -492,7 +493,7 @@ export async function getOrdersList() {
 				},
 				PaymentID: 'paymentId',
 				CreatedAt: 'createdAt',
-				ReceiptID: 'recieptId',
+				ReceiptID: 'receiptId',
 				Price: (p) =>
 					serializeResponse<App.IPriceInfo, IPriceFromServer>(p.price, {
 						Currency: 'currency',
@@ -514,9 +515,10 @@ export async function getOrdersList() {
 
 interface IPlaceOrdersParams {
 	type: string; // TODO can we make this enum
-	noOfArticles: number;
-	completionTimeSlotStart: number;
-	completionTimeSlotEnd: number;
+	noOfArticles?: number;
+	articles?: string[];
+	completionTimeSlotStart?: number;
+	completionTimeSlotEnd?: number;
 }
 // place pickup orders and fetch price ✅
 export async function placeOrderAndFetchPrice(params: IPlaceOrdersParams) {
@@ -548,6 +550,7 @@ export async function placeOrderAndFetchPrice(params: IPlaceOrdersParams) {
 			CompletionTimeSlotEnd: 'completionTimeSlotEnd',
 			NoOfArticles: 'noOfArticles',
 			Currency: 'currency',
+			ReceiptID: 'receiptId',
 			Articles: (p) => {
 				const articlesArray = [];
 				for (let article of p.articles) {
@@ -562,6 +565,7 @@ export async function placeOrderAndFetchPrice(params: IPlaceOrdersParams) {
 				}
 				return articlesArray;
 			},
+			PaymentGatewayID: 'paymentGatewayId',
 			PaymentID: 'paymentId',
 			CreatedAt: 'createdAt',
 			Price: (p) =>
@@ -574,7 +578,6 @@ export async function placeOrderAndFetchPrice(params: IPlaceOrdersParams) {
 					Total: 'total',
 				}),
 		});
-		addNotice('Order Placed Successfully.');
 		return serializedResp;
 	} catch (e) {
 		const message = (e as Error).message || 'Unkown error';
@@ -583,6 +586,7 @@ export async function placeOrderAndFetchPrice(params: IPlaceOrdersParams) {
 	}
 }
 
+// get articles info ✅
 export async function getArticles() {
 	interface IArticlesInfoFromServer {
 		articles: IArticleInfo[];
@@ -616,6 +620,41 @@ export async function getArticles() {
 			});
 		}
 		return articles;
+	} catch (e) {
+		const message = (e as Error).message || 'Unkown error';
+		addError(message, 5);
+		console.error(message);
+	}
+}
+
+interface IConfirmOrderParams {
+	paymentId?: string;
+	signature?: string;
+	orderId: string;
+}
+export async function cofirmOrder(params: IConfirmOrderParams) {
+	const { paymentId, signature, orderId } = params;
+	try {
+		const $APP = get(APP);
+		const paramsForResquest = {
+			paymentId,
+			signature,
+		};
+		const headers = {
+			'Content-Type': 'application/json',
+			...(await fetchAuthHeadrs($APP)),
+		};
+		const requestOptions = {
+			method: 'PUT',
+			headers,
+			body: JSON.stringify(paramsForResquest),
+		};
+		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/orders/${orderId}`, requestOptions);
+		const jsonResp: IServerResponse<IOrdersInfo> = await res.json();
+		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
+		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
+		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
+		return true;
 	} catch (e) {
 		const message = (e as Error).message || 'Unkown error';
 		addError(message, 5);

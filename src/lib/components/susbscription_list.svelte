@@ -27,6 +27,7 @@
 			state: {
 				amount: selected.Price,
 				paymentGatewayEntityId: resp.paymentGatewayEntityId,
+				referrer: 'subscription_list',
 			},
 		});
 	}

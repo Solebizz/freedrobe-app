@@ -86,6 +86,7 @@ declare global {
 			razorpay_payment_id: string;
 			razorpay_signature: string;
 			razorpay_subscription_id: string;
+			razorpay_order_id: string;
 		}
 		interface IOrdersInfo {
 			ID: string;
@@ -102,6 +103,7 @@ declare global {
 			PaymentID: string;
 			CreatedAt: string;
 			ReceiptID: string;
+			PaymentGatewayID: string;
 		}
 		interface IData {
 			LoadedFromLocalStorage: boolean;
