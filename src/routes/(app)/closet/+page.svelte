@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import Card from '$lib/components/card.svelte';
 	import CardDetail from '$lib/components/card_detail.svelte';
 	import Loader from '$lib/components/loader.svelte';
 	import { APP } from '$lib/stores/appMain';
@@ -54,31 +55,8 @@
 	</div>
 {:else}
 	<div class="card-deck mb-3">
-		{#each Object.values($APP.Articles) as article, index}
-			<div class="card bg-white" on:click={() => openCardDetails(index)}>
-				<div id={`carousel-wrapper-${index}`} class="carousel slide" data-ride="carousel">
-					<div class="carousel-inner">
-						{#each article.Images as src, index}
-							<div class:active={index === 0} class="carousel-item">
-								<img class="d-block w-100" {src} alt={index + 1 + ` ${article.Name}`} />
-							</div>
-						{/each}
-					</div>
-					<a class="carousel-control-prev" href={`#carousel-wrapper-${index}`} role="button" data-slide="prev">
-						<span class="sr-only bg-black b-1">👈</span>
-					</a>
-					<a class="carousel-control-next" href={`#carousel-wrapper-${index}`} role="button" data-slide="next">
-						<span class="sr-only bg-black">👉</span>
-					</a>
-				</div>
-				<div class="card-body">
-					<h5 class="card-title fw-bold">{article.Name}</h5>
-					<span class="chip bg-secondary text-primary p-1 rounded fw-bold">{article.Status}</span>
-					<button class="basket-btn position-absolute shadow" style="top: 0.5rem; right: 0.5rem;" on:click|stopPropagation={() => toggleBasket(article.ID)}>
-						{$APP.ArticlesInBag && $APP.ArticlesInBag.includes(article.ID) ? 'Added ✅' : 'Quick Add ✙'}
-					</button>
-				</div>
-			</div>
+		{#each Object.values($APP.Articles) as article}
+			<Card {article} />
 		{/each}
 	</div>
 {/if}
@@ -94,33 +72,6 @@
 		}
 	}
 
-	.card {
-		position: relative;
-		border-radius: 1rem;
-	}
-
-	.card-image {
-		width: 100%;
-		height: var(--imgwidth);
-		border-radius: 1rem;
-		background-position: center;
-		background-size: cover;
-	}
-
-	.basket-btn {
-		background-color: rgba(0, 0, 0, 0.8);
-		color: white;
-		border: none;
-		border-radius: 0.5rem;
-		padding: 0.4rem 0.8rem;
-		font-size: 0.8rem;
-		cursor: pointer;
-		transition: background-color 0.2s ease;
-	}
-
-	.basket-btn:hover {
-		background-color: rgba(0, 0, 0, 0.9);
-	}
 	.chip {
 		font-size: 0.8rem;
 	}

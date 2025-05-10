@@ -9,8 +9,8 @@
 
 	let platform = Capacitor.getPlatform();
 	let top_padding = '20px'; //padding for web
-	if (platform == 'ios') top_padding = '50px';
-	if (platform == 'android') top_padding = '40px';
+	if (platform == 'ios') top_padding = '35px';
+	if (platform == 'android') top_padding = '25px';
 
 	onMount(() => {
 		App.addListener('backButton', () => history.back());

@@ -3,6 +3,7 @@
 	import CardDetail from '$lib/components/card_detail.svelte';
 	import Loader from '$lib/components/loader.svelte';
 	import OrderDetails from '$lib/components/order_details.svelte';
+	import { APP } from '$lib/stores/appMain';
 	import { bottomSheetStore } from '$lib/stores/bottom_sheet';
 	import { getOrdersList } from '$lib/utils/apis';
 	import { DateTime } from 'luxon';
@@ -45,10 +46,14 @@
 {#if loading}
 	<Loader />
 {:else if !Object.keys(orders).length}
-	<div class="d-flex align-items-center flex-column">
-		<p class="fs-6 text-center">No items in the orders yet.</p>
-		<button on:click={handlePickupClick} class="btn btn-secondary w-75">Place your first pickup 🤩</button>
-	</div>
+	{#if !$APP.User?.ActiveSubscription}
+		<div class="d-flex align-items-center flex-column mt-2">
+			<p class="fs-6 text-center">No items in the orders yet.</p>
+			<button on:click={handlePickupClick} class="btn btn-secondary w-75">Place your first pickup</button>
+		</div>
+	{:else}
+		<p class="text-center fs-6">No active subscription.</p>
+	{/if}
 {:else}
 	<div class="d-flex flex-column gap-2 mb-3">
 		{#each Object.values(orders) as order}
