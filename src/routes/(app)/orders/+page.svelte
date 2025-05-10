@@ -76,21 +76,18 @@
 						{#each order.Articles.slice(0, expandedOrders[order.ID] ? order.Articles.length : maxVisibleArticles) as article}
 							<div class="article">
 								{#if article.Images && article.Images.length > 0}
-									<img class="rounded border border-black" src={article.Images[0]} alt="Article Image" />
+									<img class="rounded border border-black" width="100" height="100" src={article.Images[0]} alt="Article Image" />
 								{/if}
 							</div>
 						{/each}
 
 						{#if !expandedOrders[order.ID] && order.Articles.length > maxVisibleArticles}
-							<!-- The next article thumbnail with overlay -->
 							<div class="article position-relative">
 								{#if order.Articles[maxVisibleArticles]?.Images?.[0]}
-									<img class="rounded faded border border-black" src={order.Articles[maxVisibleArticles].Images[0]} on:load={() => (showMoreText = true)} alt="Article Image" />
-									{#if showMoreText}
-										<div class="overlay">
-											+{order.Articles.length - maxVisibleArticles} more
-										</div>
-									{/if}
+									<img class="rounded faded border border-black" width="100" height="100" src={order.Articles[maxVisibleArticles].Images[0]} alt="Article Image" />
+									<div class="overlay">
+										+{order.Articles.length - maxVisibleArticles} more
+									</div>
 								{/if}
 							</div>
 						{/if}

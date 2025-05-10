@@ -33,7 +33,7 @@
 		position: relative;
 		border-radius: 1rem;
 		img {
-			min-height: 15rem;
+			min-height: 10rem;
 		}
 	}
 
