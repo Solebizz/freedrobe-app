@@ -436,6 +436,7 @@ interface IOrdersInfo {
 	noOfArticles: number;
 	price: IPriceFromServer;
 	currency: string;
+	receiptId: string;
 	articles: IArticleInfo[]; // TODO change this later
 	paymentId: string;
 	createdAt: string;
@@ -491,6 +492,7 @@ export async function getOrdersList() {
 				},
 				PaymentID: 'paymentId',
 				CreatedAt: 'createdAt',
+				ReceiptID: 'recieptId',
 				Price: (p) =>
 					serializeResponse<App.IPriceInfo, IPriceFromServer>(p.price, {
 						Currency: 'currency',

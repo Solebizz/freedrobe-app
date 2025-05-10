@@ -41,12 +41,12 @@
 	}
 </script>
 
-<h1 class="fw-bold mb-3 d-flex gap-3">My Orders</h1>
+<h1 class="fw-bold mb-3">My Orders</h1>
 
 {#if loading}
 	<Loader />
 {:else if !Object.keys(orders).length}
-	{#if !$APP.User?.ActiveSubscription}
+	{#if $APP.User?.ActiveSubscription}
 		<div class="d-flex align-items-center flex-column mt-2">
 			<p class="fs-6 text-center">No items in the orders yet.</p>
 			<button on:click={handlePickupClick} class="btn btn-secondary w-75">Place your first pickup</button>
@@ -58,9 +58,12 @@
 	<div class="d-flex flex-column gap-2 mb-3">
 		{#each Object.values(orders) as order}
 			<div class="order-card">
-				<p class="m-0 fs-5 fw-bold">{order.Type} Order - <span class="chip bg-secondary text-primary p-1 rounded">{order.Status}</span></p>
-				<p class="mt-3 m-0"><strong>Order ID:</strong> {order.ID}</p>
-				<p class="m-0"><strong>Created:</strong> {DateTime.fromISO(order.CreatedAt).toFormat('dd LLL yyyy, hh:mma')}</p>
+				<div class="d-flex justify-content-between align-items-center">
+					<p class="m-0 fs-5 fw-bold">{order.Type} Order</p>
+					<span class="chip bg-secondary text-primary p-1 rounded">{order.Status}</span>
+				</div>
+				<p class="mt-3 m-0"><strong>Receipt ID:</strong> {order.ReceiptID}</p>
+				<p class="m-0"><strong>Placed on:</strong> {DateTime.fromISO(order.CreatedAt).toFormat('dd LLL yyyy, hh:mma')}</p>
 				<p><strong>No. of Articles:</strong> {order.NoOfArticles}</p>
 				<p class="m-0"><strong>Order Total:</strong> ₹{order.Price.BasePrice}</p>
 				<p class="m-0"><strong>Discount:</strong> ₹{order.Price.Discount}</p>

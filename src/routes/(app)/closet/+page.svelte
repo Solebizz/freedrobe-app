@@ -37,7 +37,7 @@
 	onMount(async () => {
 		try {
 			const resp = await getArticles();
-			if (!resp) return (loading = false);
+			if (!resp) loading = false;
 			$APP.Articles = resp;
 		} finally {
 			loading = false;
@@ -45,14 +45,23 @@
 	});
 </script>
 
-<h1 class="fw-bold mb-3">My Closet</h1>
+<div class="heading-wrapper d-flex align-items-center gap-3 mb-2 justify-content-between">
+	<h1 class="fw-bold">My Closet</h1>
+	{#if $APP.User?.ActiveSubscription}
+		<button on:click={handlePickupClick} class="btn btn-secondary">Pickup</button>
+	{/if}
+</div>
 {#if loading}
 	<Loader />
 {:else if !$APP.Articles || !Object.keys($APP.Articles).length}
-	<div class="d-flex align-items-center flex-column">
-		<p class="fs-6 text-center">No items in the closet yet.</p>
-		<button on:click={handlePickupClick} class="btn btn-secondary w-75">Place your first pickup 🤩</button>
-	</div>
+	{#if $APP.User?.ActiveSubscription}
+		<div class="d-flex align-items-center flex-column">
+			<p class="fs-6 text-center">No items in the closet yet.</p>
+			<button on:click={handlePickupClick} class="btn btn-secondary w-75">Place your first pickup 🤩</button>
+		</div>
+	{:else}
+		<p class="text-center fs-6">No active subscription.</p>
+	{/if}
 {:else}
 	<div class="card-deck mb-3">
 		{#each Object.values($APP.Articles) as article}
@@ -62,6 +71,11 @@
 {/if}
 
 <style lang="scss">
+	.heading-wrapper {
+		button {
+			font-size: 0.8rem;
+		}
+	}
 	.card-deck {
 		display: grid;
 		gap: 1rem;

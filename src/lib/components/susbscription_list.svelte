@@ -42,8 +42,10 @@
 			<div class="selectBox radio">
 				<input type="radio" name="radio" id={subscription.ID} value={subscription} bind:group={selected} />
 				<label class="rounded-3 border" for={subscription.ID}>
-					<p class="fw-bold">{subscription.Title}</p>
-					<p class="m-0"><span class="currency fw-bold">₹</span><span class="fs-5 fw-bold">{subscription.Price}</span></p>
+					<div class="d-flex justify-content-between">
+						<p class="fw-bold fs-5">{subscription.Title}</p>
+						<p class="m-0"><span class="currency fw-bold">₹</span><span class="fs-5 fw-bold">{subscription.Price}</span></p>
+					</div>
 					<p class="m-0 mt-1">{subscription.Description}</p>
 					<ul class="px-3 pt-2">
 						<li>{subscription.Benifits.StorageValue} Articles Storage</li>

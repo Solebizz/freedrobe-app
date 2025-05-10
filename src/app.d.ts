@@ -101,6 +101,7 @@ declare global {
 			Articles: IArticleInfo[]; // TODO change this later
 			PaymentID: string;
 			CreatedAt: string;
+			ReceiptID: string;
 		}
 		interface IData {
 			LoadedFromLocalStorage: boolean;
