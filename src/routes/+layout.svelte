@@ -1,20 +1,18 @@
 <script lang="ts">
 	import { Capacitor } from '@capacitor/core';
 	import Notices from '$lib/components/notices.svelte';
-	import { App } from '@capacitor/app';
 	import { notices } from '$lib/stores/notices';
-	import { onMount } from 'svelte';
-	import { SplashScreen } from '@capacitor/splash-screen';
 	import BottomSheet from '$lib/components/bottom_sheet.svelte';
+	import { onMount } from 'svelte';
+	import { App } from '@capacitor/app';
 
 	let platform = Capacitor.getPlatform();
 	let top_padding = '20px'; //padding for web
-	if (platform == 'ios') top_padding = '35px';
+	if (platform == 'ios') top_padding = '55px';
 	if (platform == 'android') top_padding = '25px';
 
 	onMount(() => {
 		App.addListener('backButton', () => history.back());
-		SplashScreen.hide();
 	});
 </script>
 
