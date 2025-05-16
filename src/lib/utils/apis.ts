@@ -632,6 +632,7 @@ interface IConfirmOrderParams {
 	signature?: string;
 	orderId: string;
 }
+// confirm order ✅
 export async function cofirmOrder(params: IConfirmOrderParams) {
 	const { paymentId, signature, orderId } = params;
 	try {
@@ -655,6 +656,62 @@ export async function cofirmOrder(params: IConfirmOrderParams) {
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
 		return true;
+	} catch (e) {
+		const message = (e as Error).message || 'Unkown error';
+		addError(message, 5);
+		console.error(message);
+	}
+}
+
+export async function getUserInfo() {
+	try {
+		const $APP = get(APP);
+		const headers = {
+			'Content-Type': 'application/json',
+			...(await fetchAuthHeadrs($APP)),
+		};
+		const requestOptions = {
+			method: 'GET',
+			headers,
+		};
+		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/users`, requestOptions);
+		const jsonResp: IServerResponse<IUserInfo> = await res.json();
+		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
+		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
+		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
+		const data = jsonResp.data as IUserInfo;
+
+		const userInfo = serializeResponse<App.IUserInfo, IUserInfo>(data, {
+			Phone: 'phone',
+			UserRole: 'user_role',
+			StorageValue: 'storageValue',
+			TotalStorageValue: 'totalStorageValue',
+			WashValue: 'washValue',
+			DryCleanValue: 'dryCleanValue',
+			LogisticValue: 'logisticValue',
+			ActiveSubscription: 'activeSubscription',
+			Deleted: 'deleted',
+			Blocked: 'blocked',
+			BlockedReason: 'blockedReason',
+			Address: (u) => {
+				const defaults = {
+					Line1: '',
+					Line2: '',
+				};
+				if (!u.address) return defaults;
+				return serializeResponse<App.IAddressInfo, IAddressInfo>(u.address, {
+					Line1: 'line1',
+					Line2: 'line2',
+				});
+			},
+			Gender: 'gender',
+			LocationId: 'locationId',
+			Name: 'name',
+			SubscriptionId: 'subscriptionId',
+			SubscriptionValidTill: 'subscriptionValidTill',
+			SubscriptionValidityPeriod: 'subscriptionValidityPeriod',
+		});
+		return { userInfo };
 	} catch (e) {
 		const message = (e as Error).message || 'Unkown error';
 		addError(message, 5);

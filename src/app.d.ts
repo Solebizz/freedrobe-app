@@ -103,7 +103,7 @@ declare global {
 			PaymentID: string;
 			CreatedAt: string;
 			ReceiptID: string;
-			PaymentGatewayID: string;
+			PaymentGatewayID?: string;
 		}
 		interface IData {
 			LoadedFromLocalStorage: boolean;
