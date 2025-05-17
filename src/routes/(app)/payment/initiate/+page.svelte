@@ -13,16 +13,7 @@
 	const orderId = state['sveltekit:states']?.orderId;
 	const orderUnderscoreId = state['sveltekit:states']?.orderUnderscoreId;
 
-	let orderOptions = {};
-	switch (referrer) {
-		case 'basket': {
-			orderOptions = { order_id: orderId };
-			break;
-		}
-		default: {
-			orderOptions = { subscription_id: paymentGatewayEntityId };
-		}
-	}
+	let orderOptions = { order_id: orderId };
 
 	const options = {
 		key: env.PUBLIC_RAZORPAY_KEY_ID,
@@ -97,12 +88,12 @@
 					return goto('/orders');
 				}
 				default: {
-					if (!response || !response.razorpay_payment_id || !response.razorpay_signature || !response.razorpay_subscription_id) {
+					if (!response || !response.razorpay_payment_id || !response.razorpay_signature || !response.razorpay_order_id) {
 						addError('Payment failed. Try again.');
 						return goto('/subscription-list');
 					}
 					const params = {
-						gatewayEntityId: response.razorpay_subscription_id,
+						gatewayEntityId: response.razorpay_order_id,
 						paymentId: response.razorpay_payment_id,
 						signature: response.razorpay_signature,
 					};

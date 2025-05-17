@@ -88,8 +88,18 @@ declare global {
 		interface IRazorpayResponse {
 			razorpay_payment_id: string;
 			razorpay_signature: string;
-			razorpay_subscription_id: string;
 			razorpay_order_id: string;
+		}
+		interface IPriceBreakUp {
+			SubscriptionAmount: number;
+			DiscountPercent: number;
+			DiscountAmount: number;
+			ProtectionPlanAmount: number;
+		}
+		interface ISubscriptionOrderInfo {
+			GatewayEntityId: string;
+			Total: number;
+			PriceBreakup: IPriceBreakUp;
 		}
 		interface IOrdersInfo {
 			ID: string;
@@ -107,6 +117,12 @@ declare global {
 			CreatedAt: string;
 			ReceiptID: string;
 			PaymentGatewayID?: string;
+		}
+		interface ICouopnInfo {
+			ID: string;
+			Code: string;
+			Description: string;
+			Discount: number;
 		}
 		interface IData {
 			LoadedFromLocalStorage: boolean;

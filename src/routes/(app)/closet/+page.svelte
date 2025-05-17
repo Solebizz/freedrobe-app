@@ -28,7 +28,7 @@
 
 <div class="heading-wrapper d-flex align-items-center gap-3 mb-2 justify-content-between">
 	<h1 class="fw-bold">My Closet</h1>
-	{#if $APP.User?.ActiveSubscription}
+	{#if $APP.User?.ActiveSubscription && $APP.Articles && Object.keys($APP.Articles).length}
 		<button on:click={handlePickupClick} class="btn btn-secondary">Pickup</button>
 	{/if}
 </div>

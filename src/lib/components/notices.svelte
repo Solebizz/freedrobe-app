@@ -46,6 +46,6 @@
 		position: fixed;
 		top: 90px;
 		right: 10px;
-		z-index: calc(var(--sticky-top-z-index) + 1);
+		z-index: 1001;
 	}
 </style>

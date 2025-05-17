@@ -2,11 +2,12 @@
 	import { createEventDispatcher } from 'svelte';
 	import type { IField } from './field.svelte';
 	import Field from './field.svelte';
+	import { fetchCouponInfo } from '$lib/utils/apis';
+	import { addError } from '$lib/stores/notices';
 
-	export let plans: Record<string, App.IProtectionPlanInfo>;
-	export let selectProtectionPlan: (id: string) => {};
+	export let updateDiscountCoupon: (id: App.ICouopnInfo) => {};
 
-	let selectedPlan: Record<string, any> = {};
+	let obj: Record<string, any> = {};
 
 	let form: HTMLFormElement;
 
@@ -24,12 +25,19 @@
 
 	const dispatch = createEventDispatcher();
 
-	function submitForm() {
-		selectProtectionPlan(selectedPlan.Plan);
+	async function submitForm() {
+		if (!obj.Coupon) return;
+
+		const resp = await fetchCouponInfo(obj.Coupon);
+		if (!resp) {
+			return;
+		}
+
+		updateDiscountCoupon(resp.discountInfo);
 		dispatch('close');
 	}
 
-	$: disabled = !form || !form.checkValidity() || !selectedPlan;
+	$: disabled = !form || !form.checkValidity() || !obj;
 </script>
 
 <p class="fs-5 fw-bold mb-1">Protection Plans</p>
@@ -38,7 +46,7 @@
 		<div class="narrow-form">
 			{#each fields as { key, definition }}
 				<div class="mb-3" data-field={key}>
-					<Field {key} {definition} bind:value={selectedPlan[key]} />
+					<Field {key} {definition} bind:value={obj[key]} />
 				</div>
 			{/each}
 		</div>

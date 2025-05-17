@@ -334,16 +334,26 @@ export async function getSubscriptionsList(protection = false) {
 	}
 }
 
+interface IBuySubscriptionParams {
+	subscriptionId: string;
+	protectionId?: string;
+	couponId?: string;
+}
 // save user info ✅
-export async function buySubscription(subscriptionId: string) {
-	interface ISubscriptionResponseFromServer {
+export async function buySubscription(params: IBuySubscriptionParams) {
+	interface IPriceBreakUp {
+		subscription: number;
+		discountPercent: number;
+		discountValue: number;
+		protectionPlan: number;
+	}
+	interface ISubscriptionOrderResponseFromServer {
 		gatewayEntityId: string;
+		amount: number;
+		details: IPriceBreakUp;
 	}
 	try {
 		const $APP = get(APP);
-		const params = {
-			subscriptionId,
-		};
 		const headers = {
 			'Content-Type': 'application/json',
 			...(await fetchAuthHeadrs($APP)),
@@ -354,13 +364,27 @@ export async function buySubscription(subscriptionId: string) {
 			body: JSON.stringify(params),
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/subscriptions/buy`, requestOptions);
-		const jsonResp: IServerResponse<ISubscriptionResponseFromServer> = await res.json();
+		const jsonResp: IServerResponse<ISubscriptionOrderResponseFromServer> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
 		const data = jsonResp.data;
-		const paymentGatewayEntityId = data.gatewayEntityId;
-		return { paymentGatewayEntityId };
+
+		const subscriptionOrderInfo = serializeResponse<App.ISubscriptionOrderInfo, ISubscriptionOrderResponseFromServer>(data, {
+			GatewayEntityId: 'gatewayEntityId',
+			Total: 'amount',
+			PriceBreakup: (s) => {
+				if (!s.details) return {};
+				return serializeResponse<App.IPriceBreakUp, IPriceBreakUp>(s.details, {
+					SubscriptionAmount: 'subscription',
+					DiscountPercent: 'discountPercent',
+					DiscountAmount: 'discountValue',
+					ProtectionPlanAmount: 'protectionPlan',
+				});
+			},
+		});
+
+		return { subscriptionOrderInfo };
 	} catch (e) {
 		const message = (e as Error).message || 'Unkown error';
 		addError(message, 5);
@@ -683,6 +707,7 @@ export async function cofirmOrder(params: IConfirmOrderParams) {
 	}
 }
 
+// get user info ✅
 export async function getUserInfo() {
 	try {
 		const $APP = get(APP);
@@ -732,6 +757,44 @@ export async function getUserInfo() {
 			SubscriptionValidityPeriod: 'subscriptionValidityPeriod',
 		});
 		return { userInfo };
+	} catch (e) {
+		const message = (e as Error).message || 'Unkown error';
+		addError(message, 5);
+		console.error(message);
+	}
+}
+
+export async function fetchCouponInfo(text: string) {
+	interface ICouponInfo {
+		_id: string;
+		code: string;
+		description: string;
+		discount: number;
+	}
+	try {
+		const $APP = get(APP);
+		const headers = {
+			'Content-Type': 'application/json',
+			...(await fetchAuthHeadrs($APP)),
+		};
+		const requestOptions = {
+			method: 'GET',
+			headers,
+		};
+		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/coupons/${text}`, requestOptions);
+		const jsonResp: IServerResponse<ICouponInfo> = await res.json();
+		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
+		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
+		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
+		const data = jsonResp.data as ICouponInfo;
+
+		const discountInfo = serializeResponse<App.ICouopnInfo, ICouponInfo>(data, {
+			ID: '_id',
+			Code: 'code',
+			Description: 'description',
+			Discount: 'discount',
+		});
+		return { discountInfo };
 	} catch (e) {
 		const message = (e as Error).message || 'Unkown error';
 		addError(message, 5);

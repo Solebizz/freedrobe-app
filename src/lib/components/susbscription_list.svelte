@@ -5,16 +5,19 @@
 	import { goto } from '$app/navigation';
 	import { bottomSheetStore } from '$lib/stores/bottom_sheet';
 	import SubscriptionSummaryAddons from './subscription_summary_addons.svelte';
+	import DiscountCoupon from './discount_coupon.svelte';
+	import SubscriptionOrderDetails from './subscription_order_details.svelte';
 
 	let subscriptions: Record<string, App.ISubscriptionInfo> = {};
 	let selected: App.ISubscriptionInfo;
 	let loading = true;
 	let submitLoading = false;
 	let plansAddOnsLoading = false;
+	let discountCouponsLoading = false;
 
 	let plans: Record<string, App.IProtectionPlanInfo> | undefined = {};
-	let selectedProtectionPlan: string;
-	let selectedCouponText: string = '';
+	let selectedProtectionPlan: string = '';
+	let discountCoupon: App.ICouopnInfo | undefined;
 	let termsText = 'Subscription will start from the date of your first pick up.';
 
 	onMount(async () => {
@@ -26,23 +29,6 @@
 		selected = subscriptions && Object.values(subscriptions)[0];
 		loading = false;
 	});
-
-	async function startPaymentFlow() {
-		submitLoading = true;
-		try {
-			const resp = await buySubscription(selected.ID);
-			if (!resp) return;
-			goto('/payment/initiate', {
-				state: {
-					amount: selected.Price,
-					paymentGatewayEntityId: resp.paymentGatewayEntityId,
-					referrer: 'subscription_list',
-				},
-			});
-		} finally {
-			submitLoading = false;
-		}
-	}
 
 	async function handleAddOnsClick() {
 		plansAddOnsLoading = true;
@@ -59,6 +45,44 @@
 			},
 		});
 		plansAddOnsLoading = false;
+	}
+
+	async function handleDiscountCoupons() {
+		submitLoading = true;
+
+		bottomSheetStore.setSheet({
+			show: true,
+			children: DiscountCoupon,
+			props: {
+				updateDiscountCoupon: (coupon: App.ICouopnInfo) => {
+					discountCoupon = coupon;
+				},
+			},
+		});
+		submitLoading = false;
+	}
+
+	async function handleOrderDetails() {
+		submitLoading = true;
+		try {
+			const params = {
+				subscriptionId: selected.ID,
+				protectionId: selectedProtectionPlan || '',
+				couponId: discountCoupon?.ID || '',
+			};
+			const resp = await buySubscription(params);
+			if (!resp) return;
+
+			bottomSheetStore.setSheet({
+				show: true,
+				children: SubscriptionOrderDetails,
+				props: {
+					data: resp.subscriptionOrderInfo,
+				},
+			});
+		} finally {
+			submitLoading = false;
+		}
 	}
 </script>
 
@@ -89,24 +113,48 @@
 		{/each}
 
 		<h1 class="fw-bold mt-4">Additional Add-ons</h1>
-		<div class="rounded-3 border p-3" on:click={handleAddOnsClick}>
+		<div class="rounded-3 border p-3" class:border-secondary={!!(plans && selectedProtectionPlan)} class:border-3={!!(plans && selectedProtectionPlan)} on:click={handleAddOnsClick}>
 			<p class="fw-bold fs-6 m-0">Protection Plans</p>
 			<p>Stay worry-free with comprehensive protection from damage, loss & more, ensuring peace of mind for your wardrobe.</p>
 			{#if plans && selectedProtectionPlan}
 				<p class="fw-bold fs-6 m-0">Selected: {plans[selectedProtectionPlan].Title}</p>
 			{/if}
-			<div class="d-flex gap-3">
-				<p class="mt-1 m-0 fw-bold text-primary">Compare Plans →</p>
+			<div class="d-flex gap-3 mt-4">
+				<p class="m-0 fw-bold text-primary">Compare Plans →</p>
+				{#if plans && selectedProtectionPlan}
+					<button
+						class="m-0 fw-bold text-danger border-0 bg-transparent"
+						on:click|stopPropagation={() => {
+							selectedProtectionPlan = '';
+						}}>
+						Remove
+					</button>
+				{/if}
 				{#if plansAddOnsLoading}<Loader />{/if}
 			</div>
 		</div>
 
-		<div class="rounded-3 border p-3">
+		<div class="rounded-3 border p-3" class:border-secondary={!!discountCoupon} class:border-3={!!discountCoupon} on:click={handleDiscountCoupons}>
 			<p class="fw-bold fs-6 m-0">Discount Coupons</p>
 			<p>Get the best discounts on your favourite subscription with our exclusive coupons.</p>
-			<p class="mt-1 m-0 fw-bold">Apply now →</p>
+			{#if discountCoupon}
+				<p class="fw-bold fs-6 m-0">Applied: {discountCoupon.Code}</p>
+			{/if}
+			<div class="d-flex gap-3 mt-4">
+				<p class="mt-1 m-0 fw-bold text-primary">Apply Now →</p>
+				{#if discountCoupon}
+					<button
+						class="m-0 fw-bold text-danger border-0 bg-transparent"
+						on:click|stopPropagation={() => {
+							discountCoupon = undefined;
+						}}>
+						Remove
+					</button>
+				{/if}
+				{#if discountCouponsLoading}<Loader />{/if}
+			</div>
 		</div>
-		<button on:click={startPaymentFlow} disabled={submitLoading} class="submit-cta btn btn-primary w-100 mt-3 d-flex align-items-center justify-content-center gap-2 shadow"
+		<button on:click={handleOrderDetails} disabled={submitLoading} class="submit-cta btn btn-primary w-100 mt-3 d-flex align-items-center justify-content-center gap-2 shadow"
 			><span>Continue with {selected?.Title}</span>{#if submitLoading}<Loader />{/if}</button>
 		<p class="text-primary">* {termsText}</p>
 	</div>

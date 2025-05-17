@@ -31,8 +31,8 @@
 </svelte:head>
 <div id="outer-wrapper" style="--os_top_padding:{top_padding}">
 	<slot />
-	<Notices notices={$notices} />
 	<BottomSheet />
+	<Notices notices={$notices} />
 </div>
 
 <style lang="scss">
