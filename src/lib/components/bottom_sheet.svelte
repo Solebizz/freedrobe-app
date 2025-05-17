@@ -38,7 +38,6 @@
 <style lang="scss">
 	.sheetWrapper {
 		width: 100%;
-		max-width: 30rem;
 		z-index: 1000;
 		position: fixed;
 		&.showSheetWrapper {
