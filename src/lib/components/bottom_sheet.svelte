@@ -24,13 +24,13 @@
 	}
 </script>
 
-<div class:showSheetWrapper={show} class="sheetWrapper d-flex align-items-end" on:click={onClickClose}>
+<div class:showSheetWrapper={show} class="sheetWrapper d-flex align-items-end">
 	<div class:show class="contentWrapper h-75 overflow-hidden">
 		<div class="d-flex justify-content-end">
 			<i class="bi bi-x m-0 fs-2 text-black" on:click={onClickClose}></i>
 		</div>
 		<div class="overflow-auto h-100 mb-5 pb-4">
-			<svelte:component this={children} {...props} />
+			<svelte:component this={children} {...props} on:close={onClickClose} />
 		</div>
 	</div>
 </div>

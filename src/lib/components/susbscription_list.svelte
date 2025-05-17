@@ -3,17 +3,25 @@
 	import Loader from '$lib/components/loader.svelte';
 	import { buySubscription, getSubscriptionsList } from '$lib/utils/apis';
 	import { goto } from '$app/navigation';
+	import { bottomSheetStore } from '$lib/stores/bottom_sheet';
+	import SubscriptionSummaryAddons from './subscription_summary_addons.svelte';
 
 	let subscriptions: Record<string, App.ISubscriptionInfo> = {};
 	let selected: App.ISubscriptionInfo;
 	let loading = true;
 	let submitLoading = false;
-	let termsText = 'Subscription will be start from the date of payment.';
+	let plansAddOnsLoading = false;
+
+	let plans: Record<string, App.IProtectionPlanInfo> | undefined = {};
+	let selectedProtectionPlan: string;
+	let selectedCouponText: string = '';
+	let termsText = 'Subscription will start from the date of your first pick up.';
 
 	onMount(async () => {
 		const resp = await getSubscriptionsList();
 		if (!resp) return;
 
+		// @ts-ignore making this handling complex
 		subscriptions = resp;
 		selected = subscriptions && Object.values(subscriptions)[0];
 		loading = false;
@@ -21,15 +29,36 @@
 
 	async function startPaymentFlow() {
 		submitLoading = true;
-		const resp = await buySubscription(selected.ID);
-		if (!resp) return;
-		goto('/payment/initiate', {
-			state: {
-				amount: selected.Price,
-				paymentGatewayEntityId: resp.paymentGatewayEntityId,
-				referrer: 'subscription_list',
+		try {
+			const resp = await buySubscription(selected.ID);
+			if (!resp) return;
+			goto('/payment/initiate', {
+				state: {
+					amount: selected.Price,
+					paymentGatewayEntityId: resp.paymentGatewayEntityId,
+					referrer: 'subscription_list',
+				},
+			});
+		} finally {
+			submitLoading = false;
+		}
+	}
+
+	async function handleAddOnsClick() {
+		plansAddOnsLoading = true;
+		plans = await getSubscriptionsList(true);
+		if (!plans) return;
+		bottomSheetStore.setSheet({
+			show: true,
+			children: SubscriptionSummaryAddons,
+			props: {
+				plans,
+				selectProtectionPlan: (planId: string) => {
+					selectedProtectionPlan = planId;
+				},
 			},
 		});
+		plansAddOnsLoading = false;
 	}
 </script>
 
@@ -44,18 +73,39 @@
 				<input type="radio" name="radio" id={subscription.ID} value={subscription} bind:group={selected} />
 				<label class="rounded-3 border" for={subscription.ID}>
 					<div class="d-flex justify-content-between">
-						<p class="fw-bold fs-5">{subscription.Title}</p>
-						<p class="m-0"><span class="currency fw-bold">₹</span><span class="fs-5 fw-bold">{subscription.Price}</span></p>
+						<p class="fw-bold fs-5 m-0">{subscription.Title}</p>
+						<p class="m-0"><span class="currency fw-bold">₹</span><span class="fs-5 fw-bold">{subscription.Price}</span><span>/mo</span></p>
 					</div>
+					<p class="mt-1">Billed half yearly</p>
+
 					<p class="m-0 mt-1">{subscription.Description}</p>
 					<ul class="px-3 pt-2">
-						<li>{subscription.Benifits.StorageValue} Articles Storage</li>
-						<li>{subscription.Benifits.DryCleanValue} Articles Dryclean</li>
-						<li>{subscription.Benifits.WashValue} Articles Wash</li>
+						{#each subscription.Features as f}
+							<li>{f}</li>
+						{/each}
 					</ul>
 				</label>
 			</div>
 		{/each}
+
+		<h1 class="fw-bold mt-4">Additional Add-ons</h1>
+		<div class="rounded-3 border p-3" on:click={handleAddOnsClick}>
+			<p class="fw-bold fs-6 m-0">Protection Plans</p>
+			<p>Stay worry-free with comprehensive protection from damage, loss & more, ensuring peace of mind for your wardrobe.</p>
+			{#if plans && selectedProtectionPlan}
+				<p class="fw-bold fs-6 m-0">Selected: {plans[selectedProtectionPlan].Title}</p>
+			{/if}
+			<div class="d-flex gap-3">
+				<p class="mt-1 m-0 fw-bold text-primary">Compare Plans →</p>
+				{#if plansAddOnsLoading}<Loader />{/if}
+			</div>
+		</div>
+
+		<div class="rounded-3 border p-3">
+			<p class="fw-bold fs-6 m-0">Discount Coupons</p>
+			<p>Get the best discounts on your favourite subscription with our exclusive coupons.</p>
+			<p class="mt-1 m-0 fw-bold">Apply now →</p>
+		</div>
 		<button on:click={startPaymentFlow} disabled={submitLoading} class="submit-cta btn btn-primary w-100 mt-3 d-flex align-items-center justify-content-center gap-2 shadow"
 			><span>Continue with {selected?.Title}</span>{#if submitLoading}<Loader />{/if}</button>
 		<p class="text-primary">* {termsText}</p>

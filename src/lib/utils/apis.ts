@@ -249,7 +249,7 @@ export async function saveUserInfo(params: ISaveUserInfoParams) {
 }
 
 // Fetch Locations ✅
-export async function getSubscriptionsList() {
+export async function getSubscriptionsList(protection = false) {
 	interface IBenifitsInfo {
 		totalStorageValue: number;
 		freeWashValue: number;
@@ -261,7 +261,7 @@ export async function getSubscriptionsList() {
 		title: string;
 		description: string;
 		features: string[];
-		price: number;
+		displayPrice: number;
 		currency: string;
 		currentlySubscribed: number;
 		private: boolean;
@@ -270,41 +270,61 @@ export async function getSubscriptionsList() {
 		deleted: boolean;
 		benifits: IBenifitsInfo;
 	}
-	interface ISubscriptionsInfoFromServer {
-		subscriptions: ISubscriptionInfo[];
+	interface IProtectionPlan {
+		_id: string;
+		title: string;
+		description: string;
+		displayPrice: number;
 	}
+	interface ISubscriptionsInfoFromServer {
+		subscriptions: ISubscriptionInfo[] | IProtectionPlan[];
+	}
+
 	try {
 		const requestOptions = {
 			method: 'GET',
 		};
-		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/public/subscriptions`, requestOptions);
+		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/public/subscriptions${protection ? '?filter={"protection": "true"}' : ''}`, requestOptions);
 		const jsonResp: IServerResponse<ISubscriptionsInfoFromServer> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
 		const data = jsonResp.data as ISubscriptionsInfoFromServer;
-		const subscriptions: Record<string, App.ISubscriptionInfo> = {};
-		for (let subscription of data.subscriptions) {
-			subscriptions[subscription._id] = serializeResponse<App.ISubscriptionInfo, ISubscriptionInfo>(subscription, {
-				ID: '_id',
-				Title: 'title',
-				Description: 'description',
-				Features: 'features',
-				Price: 'price',
-				Currency: 'currency',
-				CurrentlySubscribed: 'currentlySubscribed',
-				Private: 'private',
-				PaymentCycle: 'paymentCycle',
-				Validity: 'validity',
-				Deleted: 'deleted',
-				Benifits: (s) =>
-					serializeResponse<App.IBenifitsInfo, IBenifitsInfo>(s.benifits, {
-						StorageValue: 'totalStorageValue',
-						WashValue: 'freeWashValue',
-						DryCleanValue: 'freeDryCleanValue',
-						LogisticValue: 'freeLogisticValue',
-					}),
-			});
+		const subscriptions: Record<string, App.ISubscriptionInfo | App.IProtectionPlanInfo> = {};
+		if (!protection) {
+			for (let subscription of data.subscriptions) {
+				subscriptions[subscription._id] = serializeResponse<App.ISubscriptionInfo, Partial<ISubscriptionInfo>>(subscription, {
+					ID: '_id',
+					Title: 'title',
+					Description: 'description',
+					Features: 'features',
+					Price: 'displayPrice',
+					Currency: 'currency',
+					CurrentlySubscribed: 'currentlySubscribed',
+					Private: 'private',
+					PaymentCycle: 'paymentCycle',
+					Validity: 'validity',
+					Deleted: 'deleted',
+					Benifits: (s) => {
+						if (!s.benifits) return {};
+						return serializeResponse<App.IBenifitsInfo, IBenifitsInfo>(s.benifits, {
+							StorageValue: 'totalStorageValue',
+							WashValue: 'freeWashValue',
+							DryCleanValue: 'freeDryCleanValue',
+							LogisticValue: 'freeLogisticValue',
+						});
+					},
+				});
+			}
+		} else {
+			for (let subscription of data.subscriptions) {
+				subscriptions[subscription._id] = serializeResponse<App.IProtectionPlanInfo, IProtectionPlan>(subscription, {
+					ID: '_id',
+					Title: 'title',
+					Description: 'description',
+					Price: 'displayPrice',
+				});
+			}
 		}
 		return subscriptions;
 	} catch (e) {

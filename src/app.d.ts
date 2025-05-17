@@ -52,12 +52,15 @@ declare global {
 			DryCleanValue: number;
 			LogisticValue: number;
 		}
-		interface ISubscriptionInfo {
+
+		interface IProtectionPlanInfo {
 			ID: string;
 			Title: string;
 			Description: string;
+			Price: string;
+		}
+		interface ISubscriptionInfo extends IProtectionPlanInfo {
 			Features: string[];
-			Price: number;
 			Currency: string;
 			CurrentlySubscribed: number;
 			Private: boolean;
