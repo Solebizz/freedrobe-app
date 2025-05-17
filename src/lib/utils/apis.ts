@@ -397,6 +397,7 @@ interface IActivateSubscriptionParams {
 	paymentId: string;
 	signature: string;
 }
+// activate subscription ✅
 export async function activateSubscription(params: IActivateSubscriptionParams) {
 	try {
 		const $APP = get(APP);
@@ -764,6 +765,7 @@ export async function getUserInfo() {
 	}
 }
 
+// check if coupon and get details ✅
 export async function fetchCouponInfo(text: string) {
 	interface ICouponInfo {
 		_id: string;
@@ -795,6 +797,46 @@ export async function fetchCouponInfo(text: string) {
 			Discount: 'discount',
 		});
 		return { discountInfo };
+	} catch (e) {
+		const message = (e as Error).message || 'Unkown error';
+		addError(message, 5);
+		console.error(message);
+	}
+}
+
+export async function fetchPrices(type: string) {
+	interface IPricesInfo {
+		_id: string;
+		category: string;
+		price: number;
+	}
+	interface IPricesResponseFromServer {
+		prices: IPricesInfo[];
+	}
+	try {
+		const $APP = get(APP);
+		const headers = {
+			'Content-Type': 'application/json',
+			...(await fetchAuthHeadrs($APP)),
+		};
+		const requestOptions = {
+			method: 'GET',
+			headers,
+		};
+		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/prices?filter={"type": "${type}"}`, requestOptions);
+		const jsonResp: IServerResponse<IPricesResponseFromServer> = await res.json();
+		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
+		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
+		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
+		const data = jsonResp.data as IPricesResponseFromServer;
+		let pricesInfo: Record<string, App.IPricesInfo> = {};
+		for (let price of data.prices) {
+			pricesInfo[price._id] = serializeResponse<App.IPricesInfo, IPricesInfo>(price, {
+				Category: 'category',
+				Price: 'price',
+			});
+		}
+		return { pricesInfo };
 	} catch (e) {
 		const message = (e as Error).message || 'Unkown error';
 		addError(message, 5);

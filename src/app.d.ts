@@ -124,6 +124,10 @@ declare global {
 			Description: string;
 			Discount: number;
 		}
+		interface IPricesInfo {
+			Category: string;
+			Price: number;
+		}
 		interface IData {
 			LoadedFromLocalStorage: boolean;
 			Locations?: Record<string, ILocationInfo>;
