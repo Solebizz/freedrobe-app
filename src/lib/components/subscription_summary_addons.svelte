@@ -17,24 +17,22 @@
 </script>
 
 <p class="fs-5 fw-bold mb-1">Protection Plans</p>
-<main class="mt-3 d-flex flex-column gap-2">
-	<form>
-		{#each Object.values(plans) as plan}
-			<div class="selectBox-ssa radio">
-				<input type="radio" name="radio" id={plan.ID} value={plan} bind:group={selectedPlan} />
-				<label class="rounded-3 border" for={plan.ID}>
-					<div class="d-flex justify-content-between">
-						<p class="fw-bold fs-5 m-0">{plan.Title}</p>
-						<p class="m-0"><span class="currency fw-bold">₹</span><span class="fs-5 fw-bold">{plan.Price}</span>/6 months</p>
-					</div>
+<form class="mt-3 d-flex flex-column gap-2">
+	{#each Object.values(plans) as plan}
+		<div class="selectBox-ssa radio">
+			<input type="radio" name="radio" id={plan.ID} value={plan} bind:group={selectedPlan} />
+			<label class="rounded-3 border" for={plan.ID}>
+				<div class="d-flex justify-content-between">
+					<p class="fw-bold fs-5 m-0">{plan.Title}</p>
+					<p class="m-0"><span class="currency fw-bold">₹</span><span class="fs-5 fw-bold">{plan.Price}</span>/6 months</p>
+				</div>
 
-					<p class="m-0 mt-1">{plan.Description}</p>
-				</label>
-			</div>
-		{/each}
-		<button on:click={submitForm} {disabled} class="submit-cta btn p-2 btn-primary w-100 mt-3 d-flex align-items-center justify-content-center gap-2 shadow"><span>Continue</span></button>
-	</form>
-</main>
+				<p class="m-0 mt-1">{plan.Description}</p>
+			</label>
+		</div>
+	{/each}
+	<button on:click={submitForm} {disabled} class="submit-cta btn p-2 btn-primary w-100 mt-3 d-flex align-items-center justify-content-center gap-2 shadow"><span>Continue</span></button>
+</form>
 
 <style lang="scss">
 	.selectBox-ssa {

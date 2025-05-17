@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import Loader from '$lib/components/loader.svelte';
 	import { buySubscription, getSubscriptionsList } from '$lib/utils/apis';
-	import { goto } from '$app/navigation';
 	import { bottomSheetStore } from '$lib/stores/bottom_sheet';
 	import SubscriptionSummaryAddons from './subscription_summary_addons.svelte';
 	import DiscountCoupon from './discount_coupon.svelte';
