@@ -43,7 +43,7 @@
 				{#each $page.data.the_ctas as cta}
 					{@const isActive = cta.href === $page.url.pathname}
 					<a class="btn text-white position-relative" href={cta.href} class:active={isActive}>
-						{#if $APP.ArticlesInBag.length > 0}
+						{#if $APP.ArticlesInBag && $APP.ArticlesInBag.length > 0}
 							<span class="pill position-absolute rounded-pill bg-danger text-white px-2">{$APP.ArticlesInBag.length}</span>
 						{/if}
 						{#if cta.icon}<i class="bi bi-{cta.icon}{isActive ? '-fill text-secondary' : ' text-black'} me-5 fs-2" />{/if}
