@@ -46,7 +46,7 @@
 						{#if $APP.ArticlesInBag.length > 0}
 							<span class="pill position-absolute rounded-pill bg-danger text-white px-2">{$APP.ArticlesInBag.length}</span>
 						{/if}
-						{#if cta.icon}<i class="bi bi-{cta.icon}{isActive ? '-fill text-secondary' : ' text-black'} me-5 fs-3" />{/if}
+						{#if cta.icon}<i class="bi bi-{cta.icon}{isActive ? '-fill text-secondary' : ' text-black'} me-5 fs-2" />{/if}
 						{cta?.label || ''}
 					</a>
 				{/each}

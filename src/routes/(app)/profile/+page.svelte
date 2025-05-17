@@ -8,6 +8,7 @@
 	let form: HTMLFormElement;
 	let profile: Record<string, any> = {
 		Name: $APP.User?.Name,
+		Phone: $APP.User?.Phone,
 		Gender: $APP.User?.Gender,
 		AddressLine1: $APP.User?.Address?.Line1,
 		AddressLine2: $APP.User?.Address?.Line2,
@@ -20,7 +21,7 @@
 	const genderOptions = [
 		{ label: 'Male', value: 'Male' },
 		{ label: 'Female', value: 'Female' },
-		{ label: '🏳️‍🌈LGBTQ+', value: '🏳️‍🌈LGBTQ+' },
+		{ label: 'Others', value: 'Others' },
 	];
 
 	onMount(async () => {
@@ -36,6 +37,15 @@
 	});
 
 	$: fields = [
+		{
+			key: 'Phone',
+			definition: {
+				Edit: false,
+				Label: 'Phone',
+				Type: 'text',
+				Required: true,
+			},
+		},
 		{
 			key: 'Name',
 			definition: {
@@ -163,7 +173,7 @@
 	}
 </script>
 
-<h1 class="fw-bold">My Profile</h1>
+<h1 class="fw-bold fs-5">My Profile</h1>
 
 <main class="mt-3">
 	<form method="post" class="position-relative d-flex flex-column flex-grow-1 justify-content-between gap-2" bind:this={form} on:submit|preventDefault={submitForm}>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import MemberImage from '$lib/components/member_image.svelte';
 	import { APP } from '$lib/stores/appMain';
-	import { termsUrl } from '$lib/utils/globals';
+	import { privacyUrl, termsUrl } from '$lib/utils/globals';
 
 	export let trainer_mode: boolean = false;
 
@@ -26,62 +26,24 @@
 <aside class="os_top_padding d-flex flex-column" class:show>
 	<button class="tab mt-2" on:click={toggle}>
 		<MemberImage width={40} />
-
-		<!-- {#if !trainer_mode}
-			<MemberImage imageURL={viewing_as?.ImageURL} width={40} />
-		{:else}
-			<MemberImage imageURL={$APP.Staff?.Details?.ImageURL} width={40} />
-			<div class="staff_crown">
-				<i class="bi bi-star-fill"></i>
-			</div>
-		{/if} -->
 	</button>
 
 	<div class="p-3 d-flex flex-column flex-grow-1 text-black">
-		<section class="members d-flex flex-column mb-4">
-			<!-- {#if !trainer_mode && is_staff}
-				<a class="link" href="/staff/home">
-					<i class="bi bi-arrow-left-right"></i>
-					<span>Switch to Trainer</span>
-				</a>
-			{:else if trainer_mode && $APP.Auth && unit_players}
-				<a class="link" href="/home">
-					<i class="bi bi-arrow-left-right"></i>
-					<span>Switch to Member App</span>
-				</a>
-			{/if} -->
-		</section>
+		<section class="members d-flex flex-column mb-4"></section>
 
 		<section class="quick-actions d-flex flex-column">
 			<p class="f-lbl-2">Quick Links</p>
-			<a class="link" href={termsUrl}><i class="bi bi-shield-lock"></i>Terms & Conditions <i class="bi bi-box-arrow-up-right mx-1" aria-hidden="true"></i></a>
-		</section>
-
-		<section class="bottom mt-auto">
-			<!-- {#if !trainer_mode} -->
-			<!-- {#if is_staff}
-					<a class="link" href="/staff/home">
-						<i class="bi bi-person-add"></i>
-						<span>View as Trainer</span>
-					</a>
-				{:else}
-					<a class="link" href="/login/staff?with_history=1" data-sveltekit-preload-code="eager">
-						<i class="bi bi-person-add"></i>
-						<span>Login as Coach</span>
-					</a>
-				{/if} -->
-			<!-- {#if $APP.Auth} -->
+			<!-- <a class="link" href={termsUrl}> <i class="bi bi-credit-card" aria-hidden="true"></i>Payments</a> -->
+			<a class="link" href={termsUrl}><i class="bi bi-cash-coin" aria-hidden="true"></i>Prices</a>
 			<a class="link" href="/login" on:click={handleLogout}>
 				<i class="bi bi-box-arrow-right"></i>
 				<span>Logout</span>
 			</a>
-			<!-- {/if} -->
-			<!-- {:else}
-				<a class="link" href="/login/staff" on:click={handleLogout}>
-					<i class="bi bi-box-arrow-right"></i>
-					<span>Trainer Logout</span>
-				</a>
-			{/if} -->
+		</section>
+
+		<section class="bottom mt-auto">
+			<a class="link" target="_blank" href={termsUrl}> <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>Terms & Conditions</a>
+			<a class="link" target="_blank" href={privacyUrl}> <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>PrivacyPolicy</a>
 		</section>
 	</div>
 </aside>

@@ -74,10 +74,14 @@ footer.bottom-bar {
 }
 
 /* ------- bootstrap overrides begin ------- TODO: these things should be handled by the theme */
-body {
-	font-size: 14px; //doing this at the body level to leave the html 1rem = 14px
+body,
+* {
+	font-size: 14px !important; //doing this at the body level to leave the html 1rem = 14px
 	line-height: 16px;
 }
 .btn {
 	text-transform: uppercase;
+}
+a {
+	color: var(--bs-secondary);
 }

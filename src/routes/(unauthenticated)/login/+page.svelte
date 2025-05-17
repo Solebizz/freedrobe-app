@@ -47,7 +47,7 @@
 	</div>
 	<div class="rounded-top-5 p-3 w-100 d-flex flex-column align-items-center pb-5">
 		<div class="w-100">
-			<h2 class="text-primary pb-2 pt-1 text-center my-3">Welcome to <span class="fw-bold">Freedrobe</span></h2>
+			<h2 class="text-primary pb-2 pt-1 text-center my-3 fs-5 fw-bold">Welcome to Freedrobe</h2>
 			<span class="error-text text-danger" class:d-none={!error}>Please check email or password</span>
 
 			<form class="w-100" on:submit|preventDefault={handleGetOTP} enctype="multipart/form-data">

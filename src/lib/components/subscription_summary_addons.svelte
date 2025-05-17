@@ -1,54 +1,92 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
-	import type { IField } from './field.svelte';
-	import Field from './field.svelte';
 
 	export let plans: Record<string, App.IProtectionPlanInfo>;
 	export let selectProtectionPlan: (id: string) => {};
 
-	let selectedPlan: Record<string, any> = {};
-
-	let form: HTMLFormElement;
-
-	const planOptions = Object.values(plans).map((p) => {
-		return { label: p.Title, value: p.ID, description: p.Description };
-	});
-
-	const fields: IField[] = [
-		{
-			key: 'Plan',
-			definition: {
-				Label: 'Select plan',
-				Required: true,
-				Edit: true,
-				Type: 'radio',
-				Options: planOptions,
-			},
-		},
-	];
+	let selectedPlan: App.IProtectionPlanInfo;
 
 	const dispatch = createEventDispatcher();
 
 	function submitForm() {
-		selectProtectionPlan(selectedPlan.Plan);
+		selectProtectionPlan(selectedPlan.ID);
 		dispatch('close');
 	}
 
-	$: disabled = !form || !form.checkValidity() || !selectedPlan;
+	$: disabled = !selectedPlan;
 </script>
 
 <p class="fs-5 fw-bold mb-1">Protection Plans</p>
-<main class="mt-3">
-	<form method="post" class="position-relative d-flex flex-column flex-grow-1 justify-content-between gap-2" bind:this={form} on:submit|preventDefault={submitForm}>
-		<div class="narrow-form">
-			{#each fields as { key, definition }}
-				<div class="mb-3" data-field={key}>
-					<Field {key} {definition} bind:value={selectedPlan[key]} />
-				</div>
-			{/each}
-		</div>
+<main class="mt-3 d-flex flex-column gap-2">
+	<form>
+		{#each Object.values(plans) as plan}
+			<div class="selectBox-ssa radio">
+				<input type="radio" name="radio" id={plan.ID} value={plan} bind:group={selectedPlan} />
+				<label class="rounded-3 border" for={plan.ID}>
+					<div class="d-flex justify-content-between">
+						<p class="fw-bold fs-5 m-0">{plan.Title}</p>
+						<p class="m-0"><span class="currency fw-bold">₹</span><span class="fs-5 fw-bold">{plan.Price}</span>/6 months</p>
+					</div>
 
-		<button class="d-none">Needed for ENTER to submit</button>
-		<button on:click={() => form.checkValidity()} {disabled} type="submit" class="btn btn-primary text-uppercase mb-3"> continue </button>
+					<p class="m-0 mt-1">{plan.Description}</p>
+				</label>
+			</div>
+		{/each}
+		<button on:click={submitForm} {disabled} class="submit-cta btn p-2 btn-primary w-100 mt-3 d-flex align-items-center justify-content-center gap-2 shadow"><span>Continue</span></button>
 	</form>
 </main>
+
+<style lang="scss">
+	.selectBox-ssa {
+		.currency {
+			position: relative;
+			top: -0.25rem;
+		}
+		input {
+			display: none;
+			&:checked {
+				+ label {
+					display: block;
+					border-color: var(--bs-secondary);
+					z-index: 1;
+					box-shadow: 0 0 0 3px var(--bs-tertiary-bg);
+					background-color: var(--bs-secondary-bg);
+					color: var(--bs-primary);
+					&:before {
+						background: var(--bs-primary);
+						box-shadow: 0 0 0 1px var(--bs-secondary);
+					}
+				}
+			}
+		}
+		label {
+			display: block;
+			border: 1px solid var(--bs-tertiary-bg);
+			position: relative;
+			padding: 15px 15px 15px 40px;
+			cursor: pointer;
+			&:before {
+				content: '';
+				width: 15px;
+				height: 15px;
+				box-shadow: 0 0 0 1px var(--bs-tertiary-bg);
+				border: 3px solid var(--bs-white);
+				position: absolute;
+				left: 15px;
+				top: 20%;
+				transform: translateY(-50%);
+			}
+			&:hover {
+				border-color: var(--bs-secondary-bg);
+				z-index: 1;
+			}
+		}
+		&.radio {
+			label {
+				&:before {
+					border-radius: 100%;
+				}
+			}
+		}
+	}
+</style>

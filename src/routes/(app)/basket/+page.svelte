@@ -79,35 +79,36 @@
 	$: disabled = !form || !form.checkValidity() || !order;
 </script>
 
-<h1 class="fw-bold mb-3">My Basket</h1>
+<h1 class="fw-bold mb-3 fs-5">My Basket</h1>
 {#if !itemsInBag.length}
-	<p class="fs-6 text-center">No items in the bag.</p>
-{/if}
-<div class="mb-3 d-flex flex-column gap-3">
-	{#each itemsInBag as article}
-		<div class="bg-white p-2 d-flex align-items-center gap-2">
-			<img class="rounded border border-black" width="100" height="100" src={article.Images[0]} alt="Article Image" />
-			<div class="d-flex flex-column gap-2">
-				<p class="m-0 fs-5 fw-bold">{article.Name}</p>
-				<button class="border-0 chip bg-secondary text-primary p-1 rounded fw-bold shadow" on:click|stopPropagation={() => removeArticleFromBasket(article.ID)}> Remove from basket </button>
-			</div>
-		</div>
-	{/each}
-</div>
-
-<form method="post" class="position-relative d-flex flex-column flex-grow-1 justify-content-between gap-2" bind:this={form} on:submit|preventDefault={submitForm}>
-	<div class="narrow-form">
-		{#each fields as { key, definition }}
-			<div class="mb-3" data-field={key}>
-				<Field {key} {definition} bind:value={order[key]} />
+	<p class="fs-6 text-center">No items in the basket.</p>
+{:else}
+	<div class="mb-3 d-flex flex-column gap-3">
+		{#each itemsInBag as article}
+			<div class="bg-white p-2 d-flex align-items-center gap-2">
+				<img class="rounded border border-black" width="100" height="100" src={article.Images[0]} alt="Article Image" />
+				<div class="d-flex flex-column gap-2">
+					<p class="m-0 fs-5 fw-bold">{article.Name}</p>
+					<button class="border-0 chip bg-secondary text-primary p-1 rounded fw-bold shadow" on:click|stopPropagation={() => removeArticleFromBasket(article.ID)}> Remove from basket </button>
+				</div>
 			</div>
 		{/each}
 	</div>
 
-	<button class="d-none">Needed for ENTER to submit</button>
-	<button on:click={() => form.checkValidity()} type="submit" class="btn btn-primary text-uppercase mb-3 d-flex justify-content-center gap-2" {disabled}>
-		proceed to checkout {#if loading}<Loader />{/if}</button>
-</form>
+	<form method="post" class="position-relative d-flex flex-column flex-grow-1 justify-content-between gap-2" bind:this={form} on:submit|preventDefault={submitForm}>
+		<div class="narrow-form">
+			{#each fields as { key, definition }}
+				<div class="mb-3" data-field={key}>
+					<Field {key} {definition} bind:value={order[key]} />
+				</div>
+			{/each}
+		</div>
+
+		<button class="d-none">Needed for ENTER to submit</button>
+		<button on:click={() => form.checkValidity()} type="submit" class="btn btn-primary text-uppercase mb-3 d-flex justify-content-center gap-2" {disabled}>
+			proceed to checkout {#if loading}<Loader />{/if}</button>
+	</form>
+{/if}
 
 <style lang="scss">
 </style>

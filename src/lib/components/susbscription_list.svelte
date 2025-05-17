@@ -90,29 +90,30 @@
 	<Loader />
 {:else if subscriptions}
 	<div class="d-flex flex-column gap-2">
-		<h1 class="fw-bold mb-3">Available Plans</h1>
+		<form class="d-flex flex-column gap-2">
+			<h1 class="fw-bold mb-3 fs-5">Available Plans</h1>
+			{#each Object.values(subscriptions) as subscription}
+				<div class="selectBox-ssa radio">
+					<input type="radio" name="radio" id={subscription.ID} value={subscription} bind:group={selected} />
+					<label class="rounded-3 border" for={subscription.ID}>
+						<div class="d-flex justify-content-between">
+							<p class="fw-bold fs-5 m-0">{subscription.Title}</p>
+							<p class="m-0"><span class="currency fw-bold">₹</span><span class="fs-5 fw-bold">{subscription.Price}</span>/month</p>
+						</div>
+						<p class="mt-1">Billed half yearly</p>
 
-		{#each Object.values(subscriptions) as subscription}
-			<div class="selectBox radio">
-				<input type="radio" name="radio" id={subscription.ID} value={subscription} bind:group={selected} />
-				<label class="rounded-3 border" for={subscription.ID}>
-					<div class="d-flex justify-content-between">
-						<p class="fw-bold fs-5 m-0">{subscription.Title}</p>
-						<p class="m-0"><span class="currency fw-bold">₹</span><span class="fs-5 fw-bold">{subscription.Price}</span><span>/mo</span></p>
-					</div>
-					<p class="mt-1">Billed half yearly</p>
+						<p class="m-0 mt-1">{subscription.Description}</p>
+						<ul class="px-3 pt-2">
+							{#each subscription.Features as f}
+								<li>{f}</li>
+							{/each}
+						</ul>
+					</label>
+				</div>
+			{/each}
+		</form>
 
-					<p class="m-0 mt-1">{subscription.Description}</p>
-					<ul class="px-3 pt-2">
-						{#each subscription.Features as f}
-							<li>{f}</li>
-						{/each}
-					</ul>
-				</label>
-			</div>
-		{/each}
-
-		<h1 class="fw-bold mt-4">Additional Add-ons</h1>
+		<h1 class="fw-bold mt-4 fs-5">Additional Add-ons</h1>
 		<div class="rounded-3 border p-3" class:border-secondary={!!(plans && selectedProtectionPlan)} class:border-3={!!(plans && selectedProtectionPlan)} on:click={handleAddOnsClick}>
 			<p class="fw-bold fs-6 m-0">Protection Plans</p>
 			<p>Stay worry-free with comprehensive protection from damage, loss & more, ensuring peace of mind for your wardrobe.</p>
@@ -154,14 +155,14 @@
 				{#if discountCouponsLoading}<Loader />{/if}
 			</div>
 		</div>
-		<button on:click={handleOrderDetails} disabled={submitLoading} class="submit-cta btn btn-primary w-100 mt-3 d-flex align-items-center justify-content-center gap-2 shadow"
+		<button on:click={handleOrderDetails} disabled={submitLoading} class="submit-cta btn p-2 btn-primary w-100 mt-3 d-flex align-items-center justify-content-center gap-2 shadow"
 			><span>Continue with {selected?.Title}</span>{#if submitLoading}<Loader />{/if}</button>
 		<p class="text-primary">* {termsText}</p>
 	</div>
 {/if}
 
 <style lang="scss">
-	.selectBox {
+	.selectBox-ssa {
 		.currency {
 			position: relative;
 			top: -0.25rem;
@@ -209,24 +210,6 @@
 			label {
 				&:before {
 					border-radius: 100%;
-				}
-			}
-		}
-	}
-	.selectBoxGroup {
-		display: flex;
-		flex-wrap: wrap;
-		.selectBox {
-			&:first-child {
-				margin-left: 0;
-			}
-		}
-		@media screen and (max-width: 568px) {
-			flex-direction: column;
-			.selectBox {
-				margin-left: 0;
-				label {
-					width: 100%;
 				}
 			}
 		}

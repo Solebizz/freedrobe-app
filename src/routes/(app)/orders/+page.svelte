@@ -41,7 +41,7 @@
 	}
 </script>
 
-<h1 class="fw-bold mb-3">My Orders</h1>
+<h1 class="fw-bold mb-3 fs-5">My Orders</h1>
 
 {#if loading}
 	<Loader />
@@ -49,7 +49,7 @@
 	{#if $APP.User?.ActiveSubscription}
 		<div class="d-flex align-items-center flex-column mt-2">
 			<p class="fs-6 text-center">No items in the orders yet.</p>
-			<button on:click={handlePickupClick} class="btn btn-secondary w-75">Place your first pickup</button>
+			<button on:click={handlePickupClick} class="btn btn-secondary w-75">Book your first pickup</button>
 		</div>
 	{:else}
 		<p class="text-center fs-6">No active subscription.</p>
@@ -59,7 +59,7 @@
 		{#each Object.values(orders) as order}
 			<div class="order-card">
 				<div class="d-flex justify-content-between align-items-center">
-					<p class="m-0 fs-5 fw-bold">{order.Type} Order</p>
+					<p class="m-0 fs-5">{order.Type} Order</p>
 					<span class="chip bg-secondary text-primary p-1 rounded" class:bg-danger={order.Status === 'Cancelled'} class:text-white={order.Status === 'Cancelled'}>{order.Status}</span>
 				</div>
 				<p class="mt-3 m-0"><strong>Receipt ID:</strong> {order.ReceiptID}</p>

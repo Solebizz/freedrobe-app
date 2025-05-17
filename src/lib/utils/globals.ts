@@ -2,7 +2,8 @@ export const logoSrc = '/imgs/main_app_logo.png';
 
 export const logoFullSrc = '/imgs/main_app_logo_full.png';
 
-export const termsUrl = 'https://freedrobe.com/?fwe';
+export const termsUrl = 'https://freedrobe.com/terms-conditions';
+export const privacyUrl = 'https://freedrobe.com/privacy-policy';
 
 /**
  * Returns the significant part of a route so it can be evaluated to highlight navigation items

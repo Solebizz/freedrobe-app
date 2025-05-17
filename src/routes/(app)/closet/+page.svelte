@@ -27,7 +27,7 @@
 </script>
 
 <div class="heading-wrapper d-flex align-items-center gap-3 mb-2 justify-content-between">
-	<h1 class="fw-bold">My Closet</h1>
+	<h1 class="fw-bold fs-5">My Closet</h1>
 	{#if $APP.User?.ActiveSubscription && $APP.Articles && Object.keys($APP.Articles).length}
 		<button on:click={handlePickupClick} class="btn btn-secondary">Pickup</button>
 	{/if}
@@ -38,7 +38,7 @@
 	{#if $APP.User?.ActiveSubscription}
 		<div class="d-flex align-items-center flex-column">
 			<p class="fs-6 text-center">No items in the closet yet.</p>
-			<button on:click={handlePickupClick} class="btn btn-secondary w-75">Place your first pickup</button>
+			<button on:click={handlePickupClick} class="btn btn-secondary w-75">Book your first pickup</button>
 		</div>
 	{:else}
 		<p class="text-center fs-6">No active subscription.</p>

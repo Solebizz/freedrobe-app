@@ -2,12 +2,14 @@
 	import { goto } from '$app/navigation';
 	import Field, { type IField } from '$lib/components/field.svelte';
 	import { APP } from '$lib/stores/appMain';
-	import { addError, addNotice } from '$lib/stores/notices';
+	import { addError } from '$lib/stores/notices';
 	import { placeOrderAndFetchPrice } from '$lib/utils/apis';
 	import { DateTime } from 'luxon';
 
 	let pickupOrder: Record<string, any> = {};
 	let form: HTMLFormElement;
+
+	const captionText = 'You may find some dates unavailable for scheduling pickup due to high demand.';
 
 	const timeRanges = [
 		{ label: '10:00am - 11:00am', value: '1030-1100' },
@@ -31,7 +33,8 @@
 				Label: 'Select Date',
 				Type: 'Date',
 				Required: true,
-				Min: DateTime.now().plus({ day: 1 }).toFormat('yyyy-MM-dd'),
+				Min: DateTime.fromSQL('2025-06-05').toFormat('yyyy-MM-dd'),
+				Default: DateTime.fromSQL('2025-06-05').toFormat('yyyy-MM-dd'),
 			},
 		},
 		{
@@ -80,7 +83,7 @@
 	$: disabled = !form || !form.checkValidity() || !pickupOrder;
 </script>
 
-<h1 class="fw-bold">Schedule Pickup</h1>
+<h1 class="fw-bold fs-5">Schedule Pickup</h1>
 
 <main class="mt-3">
 	<form method="post" class="position-relative d-flex flex-column flex-grow-1 justify-content-between gap-2" bind:this={form} on:submit|preventDefault={submitForm}>
@@ -92,6 +95,7 @@
 			{/each}
 		</div>
 
+		<p class="text-primary">* {captionText}</p>
 		<button class="d-none">Needed for ENTER to submit</button>
 		<button on:click={() => form.checkValidity()} type="submit" class="btn btn-primary text-uppercase" {disabled}> Schedule </button>
 	</form>

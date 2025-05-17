@@ -48,4 +48,8 @@
 		right: 10px;
 		z-index: 1001;
 	}
+	.toast {
+		background-color: rgba(255, 255, 255, 1);
+		width: 330px;
+	}
 </style>

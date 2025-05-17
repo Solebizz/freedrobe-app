@@ -106,7 +106,7 @@
 	{:else}
 		<form on:submit|preventDefault={handleSubmit} class="otp-form d-flex flex-column align-items-center mt-5" name="otp-form">
 			<div class="title text-center">
-				<h4>OTP Verification</h4>
+				<p class="fs-5 fw-bold">OTP Verification</p>
 				<p class="info">OTP has been successfully sent to <span class="fw-bold">{phone}</span></p>
 			</div>
 
@@ -132,8 +132,8 @@
 		gap: 8px;
 	}
 	input.otp__digit {
-		max-width: 45px;
-		height: 50px;
+		max-width: 40px;
+		height: 40px;
 		text-align: center;
 		font-size: 24px;
 		border: 2px solid #ccc;
