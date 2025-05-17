@@ -34,7 +34,7 @@
 		<section class="quick-actions d-flex flex-column">
 			<p class="f-lbl-2">Quick Links</p>
 			<!-- <a class="link" href={termsUrl}> <i class="bi bi-credit-card" aria-hidden="true"></i>Payments</a> -->
-			<a class="link" href="/prices"><i class="bi bi-cash-coin" aria-hidden="true"></i>Prices</a>
+			<a class="link" href="/prices" on:click={toggle}><i class="bi bi-cash-coin" aria-hidden="true"></i>Prices</a>
 			<a class="link" href="/login" on:click={handleLogout}>
 				<i class="bi bi-box-arrow-right"></i>
 				<span>Logout</span>
