@@ -47,6 +47,7 @@ export const addError = (err: string | Error | NoticeWithoutMeta, snooze = 0) =>
 		error_obj = {
 			type: 'error',
 			msg: 'Unable to display error. Check console',
+			snooze: 5,
 		};
 	}
 	if (snooze) error_obj.snooze = snooze;

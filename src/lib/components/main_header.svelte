@@ -38,7 +38,7 @@
 			{/if}
 			<span class="fs-2 py-2 me-auto">{$page.data.the_title ?? ''}</span>
 		</div>
-		<div>
+		<div class="me-3">
 			{#if $page.data.the_ctas}
 				{#each $page.data.the_ctas as cta}
 					{@const isActive = cta.href === $page.url.pathname}

@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { env } from '$env/dynamic/public';
 	import { APP } from '$lib/stores/appMain';
-	import { addError, addNotice } from '$lib/stores/notices';
+	import { addError, addNotice, type NoticeWithoutMeta } from '$lib/stores/notices';
 	import { activateSubscription, cofirmOrder } from '$lib/utils/apis';
 	import { entityName, logoFullSrc } from '$lib/utils/globals';
 
@@ -83,7 +83,12 @@
 						return goto('/basket');
 					}
 
-					addNotice('Order placed successfully.');
+					const noticeObj: NoticeWithoutMeta = {
+						type: 'info',
+						msg: 'Order placed successfully..',
+						snooze: 5,
+					};
+					addNotice(noticeObj);
 					$APP.ArticlesInBag = [];
 					return goto('/orders');
 				}
@@ -103,7 +108,12 @@
 						return goto('/subscription-list');
 					}
 
-					addNotice('Subscription bought.');
+					const noticeObj: NoticeWithoutMeta = {
+						type: 'info',
+						msg: 'Subscription bought.',
+						snooze: 5,
+					};
+					addNotice(noticeObj);
 					$APP.User = userInfo;
 					goto('/profile');
 				}

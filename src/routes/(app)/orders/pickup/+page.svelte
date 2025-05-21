@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import Field, { type IField } from '$lib/components/field.svelte';
 	import { APP } from '$lib/stores/appMain';
-	import { addError } from '$lib/stores/notices';
+	import { addError, addNotice, type NoticeWithoutMeta } from '$lib/stores/notices';
 	import { placeOrderAndFetchPrice } from '$lib/utils/apis';
 	import { DateTime } from 'luxon';
 
@@ -33,8 +33,8 @@
 				Label: 'Select Date',
 				Type: 'Date',
 				Required: true,
-				Min: DateTime.fromSQL('2025-06-05').toFormat('yyyy-MM-dd'),
-				Default: DateTime.fromSQL('2025-06-05').toFormat('yyyy-MM-dd'),
+				Min: DateTime.fromSQL('2025-06-11').toFormat('yyyy-MM-dd'),
+				Default: DateTime.fromSQL('2025-06-11').toFormat('yyyy-MM-dd'),
 			},
 		},
 		{
@@ -77,7 +77,15 @@
 		};
 
 		const resp = await placeOrderAndFetchPrice(params);
-		if (resp && resp.ID) pickupOrder = {};
+		if (resp && resp.ID) {
+			const noticeObj: NoticeWithoutMeta = {
+				type: 'info',
+				msg: 'Pick up placed successfully',
+				snooze: 5,
+			};
+			addNotice(noticeObj);
+			pickupOrder = {};
+		}
 	}
 
 	$: disabled = !form || !form.checkValidity() || !pickupOrder;

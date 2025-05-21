@@ -17,6 +17,7 @@
 
 	onMount(async () => {
 		try {
+			if (!$APP.User?.LocationId) return;
 			const resp = await getArticles();
 			if (!resp) loading = false;
 			$APP.Articles = resp;

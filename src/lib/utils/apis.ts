@@ -1,6 +1,6 @@
 import { env } from '$env/dynamic/public';
 import { APP } from '$lib/stores/appMain';
-import { addError, addNotice } from '$lib/stores/notices';
+import { addError, addNotice, type NoticeWithoutMeta } from '$lib/stores/notices';
 import { get } from 'svelte/store';
 import { fetchAuthHeadrs, serializeResponse } from './globals';
 
@@ -239,7 +239,12 @@ export async function saveUserInfo(params: ISaveUserInfoParams) {
 			SubscriptionValidTill: 'subscriptionValidTill',
 			SubscriptionValidityPeriod: 'subscriptionValidityPeriod',
 		});
-		addNotice('Profile Updated Successfully.');
+		const noticeObj: NoticeWithoutMeta = {
+			type: 'info',
+			msg: 'Profile Updated Successfully.',
+			snooze: 5,
+		};
+		addNotice(noticeObj);
 		return userInfo;
 	} catch (e) {
 		const message = (e as Error).message || 'Unkown error';

@@ -12,10 +12,15 @@
 	let checked = false;
 
 	async function handleGetOTP() {
-		const resp = await getOTP(`91${phone}`);
-		const sessionID = resp?.SessionID;
-		loading = true;
-		goto(`/login/otp?session_id=${sessionID}&phone=${phone}`);
+		try {
+			loading = true;
+			const resp = await getOTP(`91${phone}`);
+			const sessionID = resp?.SessionID;
+			if (!sessionID) return;
+			goto(`/login/otp?session_id=${sessionID}&phone=${phone}`);
+		} finally {
+			loading = false;
+		}
 	}
 
 	function handleInput(event: Event) {

@@ -18,7 +18,7 @@
 </script>
 
 <footer class:show_shadow={$page.data.show_nav_shadow}>
-	<nav>
+	<nav class="pb-2">
 		{#each items as link}
 			{#if !link.hidden}
 				{@const isActive = extractRoute(link.href) === extractRoute(current_href)}

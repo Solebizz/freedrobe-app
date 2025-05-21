@@ -31,6 +31,10 @@
 			</label>
 		</div>
 	{/each}
+	<span
+		>* Check full terms and conditions <a href="https://freedrobe.com/protection-plan-terms/" target="_blank" class="fw-bold text-primary"
+			>here <i class="bi bi-box-arrow-up-right s-ftwMW_L67Zqx" aria-hidden="true"></i></a
+		></span>
 	<button on:click={submitForm} {disabled} class="submit-cta btn p-2 btn-primary w-100 mt-3 d-flex align-items-center justify-content-center gap-2 shadow"><span>Continue</span></button>
 </form>
 

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import Field, { type IField } from '$lib/components/field.svelte';
 	import { APP } from '$lib/stores/appMain';
-	import { addError, addNotice } from '$lib/stores/notices';
 	import { getLocationsInfo, saveUserInfo } from '$lib/utils/apis';
 	import { onMount } from 'svelte';
 
@@ -16,7 +15,7 @@
 
 	let locationInfo: App.ILocationInfo[] | undefined = [];
 	let locationId = '';
-	$: editable = !$APP.User?.LocationId;
+	const editable = true;
 
 	const genderOptions = [
 		{ label: 'Male', value: 'Male' },
@@ -143,19 +142,15 @@
 		}
 	}
 
-	$: disabled = !form || !form.checkValidity() || !profile;
-
-	function checkSubmit() {
-		const selectedLocation = locationInfo?.filter((l) => l.State === profile.State && l.City === profile.City && l.Area === profile.Area);
-		if (!selectedLocation?.length) {
-			addError('Wrong Location Selection');
-			return false;
+	$: {
+		if (profile?.Area) {
+			const selectedLocation = locationInfo?.filter((l) => l.State === profile.State && l.City === profile.City && l.Area === profile.Area);
+			if (selectedLocation?.length) locationId = selectedLocation[0].ID;
+			else locationId = '';
 		}
-
-		locationId = selectedLocation[0].ID;
-
-		return true;
 	}
+
+	$: disabled = !form || !form.checkValidity() || !profile || (locationId && $APP.User?.LocationId && $APP.User.LocationId !== locationId && $APP.User.StorageValue);
 
 	async function submitForm() {
 		const params = {
@@ -185,9 +180,7 @@
 			{/each}
 		</div>
 
-		{#if !$APP.User?.LocationId}
-			<button class="d-none">Needed for ENTER to submit</button>
-			<button on:click={() => checkSubmit() && form.checkValidity()} type="submit" class="btn btn-primary text-uppercase mb-3" {disabled}> Update </button>
-		{/if}
+		<button class="d-none">Needed for ENTER to submit</button>
+		<button on:click={() => form.checkValidity()} type="submit" class="btn btn-primary text-uppercase mb-3" disabled={!!disabled}> Update </button>
 	</form>
 </main>

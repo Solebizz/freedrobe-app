@@ -115,7 +115,7 @@
 		<h1 class="fw-bold mt-4 fs-5">Additional Add-ons</h1>
 		<div class="rounded-3 border p-3" class:border-secondary={!!(plans && selectedProtectionPlan)} class:border-3={!!(plans && selectedProtectionPlan)} on:click={handleAddOnsClick}>
 			<p class="fw-bold fs-6 m-0">Protection Plans</p>
-			<p>Stay worry-free with comprehensive protection from damage, loss & more, ensuring peace of mind for your wardrobe.</p>
+			<p>Our Protection Plans are designed to give you peace of mind, safeguarding your stored goods from risks like theft, fire, and accidental damage—so you can store with confidence.</p>
 			{#if plans && selectedProtectionPlan}
 				<p class="fw-bold fs-6 m-0">Selected: {plans[selectedProtectionPlan].Title}</p>
 			{/if}

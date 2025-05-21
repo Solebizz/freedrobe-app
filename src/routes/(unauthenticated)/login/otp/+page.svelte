@@ -4,7 +4,7 @@
 	import Loader from '$lib/components/loader.svelte';
 	import { APP } from '$lib/stores/appMain';
 	import { addError } from '$lib/stores/notices';
-	import { verifyOTPAndGetUserInfo } from '$lib/utils/apis';
+	import { getOTP, verifyOTPAndGetUserInfo } from '$lib/utils/apis';
 	import { onMount } from 'svelte';
 
 	let otp = Array(6).fill('');
@@ -13,6 +13,8 @@
 	let loading = false;
 	let phone = $page.url.searchParams.get('phone');
 	let sessionId = $page.url.searchParams.get('session_id');
+	let interval = 30;
+	let intervalRef: number;
 
 	onMount(() => {
 		let errorMessage = '';
@@ -71,17 +73,52 @@
 		history.back();
 	}
 
+	function startInterval() {
+		intervalRef = window.setInterval(() => {
+			if (interval === 0) {
+				window.clearInterval(intervalRef);
+			} else {
+				interval -= 1;
+			}
+		}, 1000);
+	}
+
+	onMount(() => {
+		startInterval();
+		return () => {
+			if (intervalRef) window.clearInterval(intervalRef);
+		};
+	});
+
+	async function onClickResendOtp() {
+		try {
+			window.clearInterval(intervalRef);
+			interval = 30;
+			const resp = await getOTP(`91${phone}`);
+			const sessionID = resp?.SessionID;
+			if (!sessionID) return;
+			goto(`/login/otp?session_id=${sessionID}&phone=${phone}`);
+		} finally {
+			startInterval();
+		}
+	}
+
 	async function handleSubmit() {
 		if (!sessionId) return;
-		const resp = await verifyOTPAndGetUserInfo({ sessionId, otp: otpDisplay });
-		if (!resp || !resp.authInfo || !resp.authInfo.AuthToken || !resp.userInfo || resp.userInfo.UserRole !== 'endUser') {
-			// TODO store logs somewhere.
-			addError('Unable to get the user. Please try again after sometime.');
-			goto('/login');
-		} else {
-			$APP.Auth = resp.authInfo;
-			$APP.User = resp.userInfo;
-			goto('/profile');
+		try {
+			loading = true;
+			const resp = await verifyOTPAndGetUserInfo({ sessionId, otp: otpDisplay });
+			if (!resp || !resp.authInfo || !resp.authInfo.AuthToken || !resp.userInfo || resp.userInfo.UserRole !== 'endUser') {
+				// TODO store logs somewhere.
+				addError('Unable to get the user. Please try again after sometime.');
+				goto('/login');
+			} else {
+				$APP.Auth = resp.authInfo;
+				$APP.User = resp.userInfo;
+				goto('/profile');
+			}
+		} finally {
+			loading = false;
 		}
 	}
 
@@ -116,7 +153,12 @@
 				{/each}
 			</div>
 
-			<button type="submit" class:disabled class="btn btn-primary w-100 my-4 d-flex justify-content-center gap-2">
+			<div class="w-100 pt-1 d-flex align-items-center gap-1">
+				<button class="btn text-capitalize p-0 border-0 text-underline" disabled={!!interval} on:click|preventDefault={onClickResendOtp}>Resend OTP</button>
+				<span class:d-none={!interval}> in {interval}s</span>
+			</div>
+
+			<button type="submit" class:disabled class="btn btn-primary w-100 my-3 d-flex justify-content-center gap-2">
 				Verify
 				{#if loading}
 					<Loader />

@@ -5,7 +5,7 @@
 	import OrderDetails from '$lib/components/order_details.svelte';
 	import { APP } from '$lib/stores/appMain';
 	import { bottomSheetStore } from '$lib/stores/bottom_sheet';
-	import { addError, addNotice } from '$lib/stores/notices';
+	import { addError, addNotice, type NoticeWithoutMeta } from '$lib/stores/notices';
 	import { cofirmOrder, placeOrderAndFetchPrice } from '$lib/utils/apis';
 	import type { SvelteComponent } from 'svelte';
 
@@ -58,7 +58,12 @@
 						orderId: resp.ID,
 					});
 					if (!confirm_resp) return addError('Something went wrong. Please try again after sometime', 10);
-					addNotice('Order placed successfully.');
+					const noticeObj: NoticeWithoutMeta = {
+						type: 'info',
+						msg: 'Order placed Successfully.',
+						snooze: 5,
+					};
+					addNotice(noticeObj);
 					$APP.ArticlesInBag = [];
 					return goto('/orders');
 				}
