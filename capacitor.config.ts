@@ -38,6 +38,7 @@ if (streamFrom) {
 
 	if (url.protocol === 'http:') config.server.cleartext = true;
 
+	config.server.url = streamFrom;
 	config.server.allowNavigation = [
 		url.hostname, // capacitor does not like having a protocol here, so need to parse via url
 	];

@@ -168,7 +168,7 @@
 	}
 </script>
 
-<h1 class="fw-bold fs-5">My Profile Changed</h1>
+<h1 class="fw-bold fs-5">My Profile</h1>
 
 <main class="mt-3">
 	<form method="post" class="position-relative d-flex flex-column flex-grow-1 justify-content-between gap-2" bind:this={form} on:submit|preventDefault={submitForm}>
