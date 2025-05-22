@@ -10,10 +10,9 @@
 	const amount = state['sveltekit:states'].amount * 100;
 	const paymentGatewayEntityId = state['sveltekit:states']?.paymentGatewayEntityId;
 	const referrer = state['sveltekit:states']?.referrer;
-	const orderId = state['sveltekit:states']?.orderId;
 	const orderUnderscoreId = state['sveltekit:states']?.orderUnderscoreId;
 
-	let orderOptions = { order_id: orderId };
+	let orderOptions = { order_id: paymentGatewayEntityId };
 
 	const options = {
 		key: env.PUBLIC_RAZORPAY_KEY_ID,
