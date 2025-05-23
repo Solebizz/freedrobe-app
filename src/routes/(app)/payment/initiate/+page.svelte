@@ -66,10 +66,11 @@
 		},
 		handler: async function (response: App.IRazorpayResponse) {
 			switch (referrer) {
+				case 'orders/pickup':
 				case 'basket': {
 					if (!response || !response.razorpay_payment_id || !response.razorpay_signature || !response.razorpay_order_id) {
 						addError('Payment failed. Try again.');
-						return goto('/basket');
+						return goto(`/${referrer}`);
 					}
 					const params = {
 						signature: response.razorpay_signature,
@@ -79,7 +80,7 @@
 					const confirm_resp = await cofirmOrder(params);
 					if (!confirm_resp) {
 						addError('Something went wrong. Please try again after sometime', 10);
-						return goto('/basket');
+						return goto(`/${referrer}`);
 					}
 
 					const noticeObj: NoticeWithoutMeta = {
@@ -88,8 +89,9 @@
 						snooze: 5,
 					};
 					addNotice(noticeObj);
-					$APP.ArticlesInBag = [];
-					return goto('/orders');
+					if (referrer === 'basket') $APP.ArticlesInBag = [];
+
+					return goto(`/${referrer}`);
 				}
 				default: {
 					if (!response || !response.razorpay_payment_id || !response.razorpay_signature || !response.razorpay_order_id) {

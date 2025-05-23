@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Field, { type IField } from '$lib/components/field.svelte';
+	import OrderDetails from '$lib/components/order_details.svelte';
 	import { APP } from '$lib/stores/appMain';
+	import { bottomSheetStore } from '$lib/stores/bottom_sheet';
 	import { addError, addNotice, type NoticeWithoutMeta } from '$lib/stores/notices';
-	import { placeOrderAndFetchPrice } from '$lib/utils/apis';
+	import { cofirmOrder, placeOrderAndFetchPrice } from '$lib/utils/apis';
 	import { DateTime } from 'luxon';
+	import type { SvelteComponent } from 'svelte';
 
 	let pickupOrder: Record<string, any> = {};
 	let form: HTMLFormElement;
@@ -78,13 +81,29 @@
 
 		const resp = await placeOrderAndFetchPrice(params);
 		if (resp && resp.ID) {
-			const noticeObj: NoticeWithoutMeta = {
-				type: 'info',
-				msg: 'Pick up placed successfully',
-				snooze: 5,
-			};
-			addNotice(noticeObj);
 			pickupOrder = {};
+			if (resp.Price.Total === 0) {
+				const confirm_resp = await cofirmOrder({
+					orderId: resp.ID,
+				});
+				if (!confirm_resp) return addError('Something went wrong. Please try again after sometime', 10);
+				const noticeObj: NoticeWithoutMeta = {
+					type: 'info',
+					msg: 'Pickup order placed Successfully.',
+					snooze: 5,
+				};
+				addNotice(noticeObj);
+				$APP.ArticlesInBag = [];
+				return goto('/orders');
+			}
+			bottomSheetStore.setSheet({
+				show: true,
+				children: OrderDetails as typeof SvelteComponent,
+				props: {
+					order: resp,
+					referrerComponent: 'order/pickup',
+				},
+			});
 		}
 	}
 

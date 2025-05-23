@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import CardDetail from '$lib/components/card_detail.svelte';
 	import Loader from '$lib/components/loader.svelte';
 	import OrderDetails from '$lib/components/order_details.svelte';
 	import { APP } from '$lib/stores/appMain';
@@ -13,7 +12,6 @@
 
 	let orders: Record<string, App.IOrdersInfo> = {};
 	let loading = true;
-	let showMoreText = false;
 	let expandedOrders: Record<string, boolean> = {};
 
 	function toggleExpanded(order: App.IOrdersInfo) {
@@ -26,7 +24,19 @@
 		});
 	}
 
-	onMount(async () => {
+	function toggleCancel(order: App.IOrdersInfo) {
+		bottomSheetStore.setSheet({
+			show: true,
+			children: OrderDetails,
+			props: {
+				order,
+				referrerComponent: 'order/cancel',
+				onCancelOrder: fetchOrdersList,
+			},
+		});
+	}
+
+	async function fetchOrdersList() {
 		try {
 			if (!$APP.User?.LocationId) return;
 			const resp = await getOrdersList();
@@ -35,7 +45,9 @@
 		} finally {
 			loading = false;
 		}
-	});
+	}
+
+	onMount(fetchOrdersList);
 
 	function handlePickupClick() {
 		goto('/orders/pickup');
@@ -63,6 +75,7 @@
 					<p class="m-0 fs-5">{order.Type} Order</p>
 					<span class="chip bg-secondary text-primary p-1 rounded" class:bg-danger={order.Status === 'Cancelled'} class:text-white={order.Status === 'Cancelled'}>{order.Status}</span>
 				</div>
+				<p class="mt-3 m-0"><strong>OTP:</strong> {order.ConfirmationCode}</p>
 				<p class="mt-3 m-0"><strong>Receipt ID:</strong> {order.ReceiptID}</p>
 				<p class="m-0"><strong>Placed on:</strong> {DateTime.fromISO(order.CreatedAt).toFormat('dd LLL yyyy, hh:mma')}</p>
 				<p><strong>No. of Articles:</strong> {order.NoOfArticles}</p>
@@ -94,9 +107,14 @@
 						{/if}
 					</div>
 				{/if}
-				<button class="btn btn-link p-0 mt-2 text-capitalize" on:click={() => toggleExpanded(order)}>
-					{#if expandedOrders[order.ID]}<i class="bi bi-caret-up-fill"></i> Show less{:else}<i class="bi bi-caret-down-fill"></i> Show details{/if}
-				</button>
+				<div class="d-flex gap-3 mt-4">
+					<button class="btn btn-link p-0 mt-2 text-capitalize" on:click={() => toggleExpanded(order)}>
+						{#if expandedOrders[order.ID]}<i class="bi bi-caret-up-fill"></i> Show less{:else}<i class="bi bi-caret-down-fill"></i> Show details{/if}
+					</button>
+					{#if order.Status === 'Order Placed'}
+						<button class="btn btn-link p-0 mt-2 text-capitalize text-danger" on:click|stopPropagation={() => toggleCancel(order)}> Cancel </button>
+					{/if}
+				</div>
 			</div>
 		{/each}
 	</div>

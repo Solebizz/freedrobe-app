@@ -491,6 +491,7 @@ interface IOrdersInfo {
 	paymentId: string;
 	createdAt: string;
 	paymentGatewayId: string;
+	confirmationCode: string;
 }
 // fetch orders list ✅
 export async function getOrdersList() {
@@ -527,6 +528,7 @@ export async function getOrdersList() {
 				CompletionTimeSlotEnd: 'completionTimeSlotEnd',
 				NoOfArticles: 'noOfArticles',
 				Currency: 'currency',
+				ConfirmationCode: 'confirmationCode',
 				Articles: (p) => {
 					const articlesArray = [];
 					for (let article of p.articles) {
@@ -699,6 +701,35 @@ export async function cofirmOrder(params: IConfirmOrderParams) {
 			method: 'PUT',
 			headers,
 			body: JSON.stringify(paramsForResquest),
+		};
+		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/orders/${orderId}`, requestOptions);
+		const jsonResp: IServerResponse<IOrdersInfo> = await res.json();
+		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
+		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
+		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
+		return true;
+	} catch (e) {
+		const message = (e as Error).message || 'Unkown error';
+		addError(message, 5);
+		console.error(message);
+	}
+}
+
+interface ICancelOrderParams {
+	orderId: string;
+}
+//  confirm order ✅
+export async function cancelOrder(params: ICancelOrderParams) {
+	const { orderId } = params;
+	try {
+		const $APP = get(APP);
+		const headers = {
+			'Content-Type': 'application/json',
+			...(await fetchAuthHeadrs($APP)),
+		};
+		const requestOptions = {
+			method: 'PATCH',
+			headers,
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/orders/${orderId}`, requestOptions);
 		const jsonResp: IServerResponse<IOrdersInfo> = await res.json();

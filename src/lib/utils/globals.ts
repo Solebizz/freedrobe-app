@@ -74,3 +74,5 @@ export async function fetchAuthHeadrs($APP: App.IData, staff = false): Promise<H
 }
 
 export const entityName = 'Freedrobe';
+
+export function noop() {}

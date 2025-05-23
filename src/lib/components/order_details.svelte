@@ -2,11 +2,38 @@
 	import { DateTime } from 'luxon';
 	import Loader from './loader.svelte';
 	import { goto } from '$app/navigation';
+	import { cancelOrder } from '$lib/utils/apis';
+	import { addError, addNotice, type NoticeWithoutMeta } from '$lib/stores/notices';
+	import { createEventDispatcher } from 'svelte';
+	import { noop } from '$lib/utils/globals';
 
 	export let order: App.IOrdersInfo;
-	export let referrerComponent;
+	export let referrerComponent = 'orders';
+	export let onCancelOrder = noop;
+
+	const dispatch = createEventDispatcher();
+
+	const showPaymentOptionFor = ['basket', 'order/pickup'];
 
 	let loading = false;
+
+	async function handleCancelOrder() {
+		const params = {
+			orderId: order.ID,
+		};
+		const resp = await cancelOrder(params);
+		if (!resp) return;
+		const noticeObj: NoticeWithoutMeta = {
+			type: 'info',
+			msg: 'Order Cancelled Successfully.',
+			snooze: 5,
+		};
+		addNotice(noticeObj);
+		onCancelOrder();
+		dispatch('close');
+
+		window.location.reload();
+	}
 
 	async function handleClickPayment() {
 		loading = true;
@@ -14,7 +41,7 @@
 			state: {
 				amount: order.Price,
 				orderId: order.PaymentGatewayID,
-				referrer: 'basket',
+				referrer: referrerComponent,
 				orderUnderscoreId: order.ID,
 			},
 		});
@@ -27,6 +54,7 @@
 		<p class="m-0 fs-5 fw-bold">{order.Type} Order</p>
 		<span class="chip bg-secondary text-primary p-1 rounded" class:bg-danger={order.Status === 'Cancelled'} class:text-white={order.Status === 'Cancelled'}>{order.Status}</span>
 	</div>
+	<p class="mt-3 m-0"><strong>OTP:</strong> {order.ConfirmationCode}</p>
 	<p class="mt-3 m-0"><strong>Receipt ID:</strong> {order.ReceiptID}</p>
 	<p class="m-0"><strong>Placed on:</strong> {DateTime.fromISO(order.CreatedAt).toFormat('dd LLL yyyy, hh:mma')}</p>
 	<p><strong>No. of Articles:</strong> {order.NoOfArticles}</p>
@@ -34,10 +62,16 @@
 	<p class="m-0"><strong>Discount:</strong> ₹{order.Price.Discount}</p>
 	<p class="m-0"><strong>Sub Total:</strong> ₹{order.Price.Total}</p>
 
-	{#if referrerComponent === 'basket'}
+	{#if showPaymentOptionFor.includes(referrerComponent)}
 		<button on:click={handleClickPayment} class="btn btn-primary text-uppercase mb-3 d-flex justify-content-center gap-2 w-100 mt-3">
 			Confirm & Pay {#if loading}<Loader />{/if}</button>
 	{/if}
+
+	{#if referrerComponent === 'order/cancel'}
+		<p>
+			<button on:click={handleCancelOrder} class="btn btn-danger text-uppercase mb-3 d-flex justify-content-center gap-2 w-100 mt-3">
+				Confirm Cancel {#if loading}<Loader />{/if}</button>
+		</p>{/if}
 
 	{#if order.Articles.length > 0}
 		<hr />
