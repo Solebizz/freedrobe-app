@@ -80,7 +80,7 @@
 					const confirm_resp = await cofirmOrder(params);
 					if (!confirm_resp) {
 						addError('Something went wrong. Please try again after sometime', 10);
-						return goto(`/${referrer}`);
+						return goto('/orders');
 					}
 
 					const noticeObj: NoticeWithoutMeta = {
@@ -89,9 +89,10 @@
 						snooze: 5,
 					};
 					addNotice(noticeObj);
+					$APP.ArticlesInBag = [];
 					if (referrer === 'basket') $APP.ArticlesInBag = [];
 
-					return goto(`/${referrer}`);
+					return goto('/orders');
 				}
 				default: {
 					if (!response || !response.razorpay_payment_id || !response.razorpay_signature || !response.razorpay_order_id) {

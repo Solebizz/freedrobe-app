@@ -37,15 +37,19 @@
 
 	async function handleClickPayment() {
 		loading = true;
-		goto('/payment/initiate', {
-			state: {
-				amount: order.Price,
-				paymentGatewayEntityId: order.PaymentGatewayID,
-				referrer: referrerComponent,
-				orderUnderscoreId: order.ID,
-			},
-		});
-		loading = false;
+		try {
+			goto('/payment/initiate', {
+				state: {
+					amount: order.Price,
+					paymentGatewayEntityId: order.PaymentGatewayID,
+					referrer: referrerComponent,
+					orderUnderscoreId: order.ID,
+				},
+			});
+		} finally {
+			dispatch('close');
+			loading = false;
+		}
 	}
 </script>
 
