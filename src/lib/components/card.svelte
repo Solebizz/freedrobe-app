@@ -44,7 +44,7 @@
 		position: relative;
 		border-radius: 1rem;
 		img {
-			min-height: 20rem;
+			min-height: 15rem;
 		}
 	}
 
