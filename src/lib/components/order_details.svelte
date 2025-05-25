@@ -40,7 +40,7 @@
 		goto('/payment/initiate', {
 			state: {
 				amount: order.Price,
-				orderId: order.PaymentGatewayID,
+				paymentGatewayEntityId: order.PaymentGatewayID,
 				referrer: referrerComponent,
 				orderUnderscoreId: order.ID,
 			},
@@ -54,7 +54,9 @@
 		<p class="m-0 fs-5 fw-bold">{order.Type} Order</p>
 		<span class="chip bg-secondary text-primary p-1 rounded" class:bg-danger={order.Status === 'Cancelled'} class:text-white={order.Status === 'Cancelled'}>{order.Status}</span>
 	</div>
-	<p class="mt-3 m-0"><strong>OTP:</strong> {order.ConfirmationCode}</p>
+	{#if order?.ConfirmationCode}
+		<p class="mt-3 m-0"><strong>OTP:</strong> {order.ConfirmationCode}</p>
+	{/if}
 	<p class="mt-3 m-0"><strong>Receipt ID:</strong> {order.ReceiptID}</p>
 	<p class="m-0"><strong>Placed on:</strong> {DateTime.fromISO(order.CreatedAt).toFormat('dd LLL yyyy, hh:mma')}</p>
 	<p><strong>No. of Articles:</strong> {order.NoOfArticles}</p>

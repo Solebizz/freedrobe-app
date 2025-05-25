@@ -90,11 +90,11 @@
 {:else}
 	<div class="mb-3 d-flex flex-column gap-3">
 		{#each itemsInBag as article}
-			<div class="bg-white p-2 d-flex align-items-center gap-2">
-				<img class="rounded border border-black" width="100" height="100" src={article.Images[0]} alt="Article Image" />
+			<div class="bg-white p-2 d-flex align-items-center">
+				<img class="rounded border border-black" width="100" height="140" src={article.Images[0]} alt="Article Image" />
 				<div class="d-flex flex-column gap-2">
-					<p class="m-0 fs-5 fw-bold">{article.Name}</p>
-					<button class="border-0 chip bg-secondary text-primary p-1 rounded fw-bold shadow" on:click|stopPropagation={() => removeArticleFromBasket(article.ID)}> Remove from basket </button>
+					<p class="m-0 fs-5 fw-bold ms-3">{article.Name}</p>
+					<button class="m-0 fw-bold text-danger border-0 bg-transparent px-0" on:click|stopPropagation={() => removeArticleFromBasket(article.ID)}> Remove </button>
 				</div>
 			</div>
 		{/each}

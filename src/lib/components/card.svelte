@@ -7,7 +7,7 @@
 	export let article: App.IArticleInfo;
 
 	function toggleBasket(id: string) {
-		let articleIdsInBag = $APP.ArticlesInBag;
+		let articleIdsInBag = $APP.ArticlesInBag || [];
 		let index = articleIdsInBag.findIndex((val) => val === id);
 
 		if (index === -1) articleIdsInBag.push(id);
@@ -16,18 +16,18 @@
 		$APP.ArticlesInBag = articleIdsInBag;
 	}
 	function handleCardClick() {
-		bottomSheetStore.setSheet({
-			show: true,
-			children: CardDetail as typeof SvelteComponent,
-			props: {
-				article,
-			},
-		});
+		// bottomSheetStore.setSheet({
+		// 	show: true,
+		// 	children: CardDetail as typeof SvelteComponent,
+		// 	props: {
+		// 		article,
+		// 	},
+		// });
 	}
 </script>
 
 <div class="card bg-white" on:click={handleCardClick}>
-	<img class="d-block w-100 rounded-top-5" src={article.Images[0]} alt={article.Name} />
+	<img class="d-block w-100 rounded-top-4" src={article.Images[0]} alt={article.Name} />
 	<div class="card-body">
 		<h5 class="card-title fw-bold">{article.Name}</h5>
 		<button class="border-0 chip bg-secondary text-primary p-1 rounded fw-bold shadow" on:click|stopPropagation={() => toggleBasket(article.ID)}>
@@ -44,7 +44,7 @@
 		position: relative;
 		border-radius: 1rem;
 		img {
-			min-height: 10rem;
+			min-height: 20rem;
 		}
 	}
 
