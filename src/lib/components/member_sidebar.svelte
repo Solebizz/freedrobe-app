@@ -1,7 +1,7 @@
 <script lang="ts">
 	import MemberImage from '$lib/components/member_image.svelte';
 	import { APP } from '$lib/stores/appMain';
-	import { contactusUrl, privacyUrl, protectionPlanUrl, termsUrl } from '$lib/utils/globals';
+	import { contactusUrl, deleteUrl, privacyUrl, protectionPlanUrl, termsUrl } from '$lib/utils/globals';
 
 	export let trainer_mode: boolean = false;
 
@@ -46,6 +46,7 @@
 			<a class="link" target="_blank" href={protectionPlanUrl}> <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>Protection Plan</a>
 			<a class="link" target="_blank" href={termsUrl}> <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>Terms & Conditions</a>
 			<a class="link" target="_blank" href={privacyUrl}> <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>PrivacyPolicy</a>
+			<a class="link" target="_blank" href={deleteUrl}> <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>Delete My Data</a>
 		</section>
 	</div>
 </aside>

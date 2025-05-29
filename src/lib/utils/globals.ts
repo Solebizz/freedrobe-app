@@ -6,6 +6,7 @@ export const termsUrl = 'https://freedrobe.com/terms-conditions';
 export const privacyUrl = 'https://freedrobe.com/privacy-policy';
 export const contactusUrl = 'https://freedrobe.com/contact/';
 export const protectionPlanUrl = 'https://freedrobe.com/protection-plan-terms/';
+export const deleteUrl = 'https://freedrobe.com/delete-my-data/';
 
 /**
  * Returns the significant part of a route so it can be evaluated to highlight navigation items
