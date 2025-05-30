@@ -24,46 +24,6 @@
 		prefill: {
 			contact: $APP.User?.Phone,
 		},
-		config: {
-			display: {
-				blocks: {
-					utib: {
-						name: 'Pay Using Axis Bank',
-						instruments: [
-							{
-								method: 'card',
-								issuers: ['UTIB'],
-							},
-							{
-								method: 'netbanking',
-								banks: ['UTIB'],
-							},
-						],
-					},
-					other: {
-						name: 'Other Payment Methods',
-						instruments: [
-							{
-								method: 'card',
-								issuers: ['ICIC'],
-							},
-							{
-								method: 'netbanking',
-							},
-						],
-					},
-				},
-				hide: [
-					{
-						method: 'upi',
-					},
-				],
-				sequence: ['block.utib', 'block.other'],
-				preferences: {
-					show_default_blocks: false, // Should Checkout show its default blocks?
-				},
-			},
-		},
 		handler: async function (response: App.IRazorpayResponse) {
 			switch (referrer) {
 				case 'orders/pickup':
