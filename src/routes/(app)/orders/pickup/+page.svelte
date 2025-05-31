@@ -1,11 +1,10 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import Field, { type IField } from '$lib/components/field.svelte';
 	import OrderDetails from '$lib/components/order_details.svelte';
 	import { APP } from '$lib/stores/appMain';
 	import { bottomSheetStore } from '$lib/stores/bottom_sheet';
-	import { addError, addNotice, type NoticeWithoutMeta } from '$lib/stores/notices';
-	import { cofirmOrder, placeOrderAndFetchPrice } from '$lib/utils/apis';
+	import { addError } from '$lib/stores/notices';
+	import { placeOrderAndFetchPrice } from '$lib/utils/apis';
 	import { DateTime } from 'luxon';
 	import type { SvelteComponent } from 'svelte';
 
