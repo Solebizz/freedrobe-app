@@ -36,7 +36,7 @@
 				Label: 'Select Date',
 				Type: 'Date',
 				Required: true,
-				Min: DateTime.fromSQL('2025-06-11').toFormat('yyyy-MM-dd'),
+				// Min: DateTime.fromSQL('2025-06-11').toFormat('yyyy-MM-dd'),
 				Default: DateTime.fromSQL('2025-06-11').toFormat('yyyy-MM-dd'),
 			},
 		},
@@ -68,6 +68,11 @@
 		const { hour: endHour, minute: endMinute } = parseTime(endTimeStr);
 
 		const baseDate = DateTime.fromISO(pickupOrder.Date);
+		const today = DateTime.now();
+		if (today > baseDate) return addError('Cannot schdule pickups for previous dates.', 5);
+
+		const launchDate = DateTime.fromISO('2025-06-11');
+		if (launchDate > baseDate) return addError('Pick up date should be after 10th June', 5);
 
 		const startDateTime = baseDate.set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
 		const endDateTime = baseDate.set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
