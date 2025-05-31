@@ -2,10 +2,11 @@
 	import { DateTime } from 'luxon';
 	import Loader from './loader.svelte';
 	import { goto } from '$app/navigation';
-	import { cancelOrder } from '$lib/utils/apis';
+	import { cancelOrder, cofirmOrder } from '$lib/utils/apis';
 	import { addError, addNotice, type NoticeWithoutMeta } from '$lib/stores/notices';
 	import { createEventDispatcher } from 'svelte';
 	import { noop } from '$lib/utils/globals';
+	import { APP } from '$lib/stores/appMain';
 
 	export let order: App.IOrdersInfo;
 	export let referrerComponent = 'orders';
@@ -38,6 +39,21 @@
 	async function handleClickPayment() {
 		loading = true;
 		try {
+			if (order.Price.Total === 0) {
+				const confirm_resp = await cofirmOrder({
+					orderId: order.ID,
+				});
+				if (!confirm_resp) return addError('Something went wrong. Please try again after sometime', 10);
+				const noticeObj: NoticeWithoutMeta = {
+					type: 'info',
+					msg: 'Order placed Successfully.',
+					snooze: 5,
+				};
+				addNotice(noticeObj);
+				$APP.ArticlesInBag = [];
+				return goto('/orders');
+			}
+
 			goto('/payment/initiate', {
 				state: {
 					amount: order.Price,
@@ -70,7 +86,9 @@
 
 	{#if showPaymentOptionFor.includes(referrerComponent)}
 		<button on:click={handleClickPayment} class="btn btn-primary text-uppercase mb-3 d-flex justify-content-center gap-2 w-100 mt-3">
-			Confirm & Pay {#if loading}<Loader />{/if}</button>
+			Confirm
+			{#if order.Price.Total}& Pay{/if}
+			{#if loading}<Loader />{/if}</button>
 	{/if}
 
 	{#if referrerComponent === 'order/cancel'}

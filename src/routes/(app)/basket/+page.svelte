@@ -53,20 +53,6 @@
 			};
 			const resp = await placeOrderAndFetchPrice(params);
 			if (resp && resp.ID) {
-				if (resp.Price.Total === 0) {
-					const confirm_resp = await cofirmOrder({
-						orderId: resp.ID,
-					});
-					if (!confirm_resp) return addError('Something went wrong. Please try again after sometime', 10);
-					const noticeObj: NoticeWithoutMeta = {
-						type: 'info',
-						msg: 'Order placed Successfully.',
-						snooze: 5,
-					};
-					addNotice(noticeObj);
-					$APP.ArticlesInBag = [];
-					return goto('/orders');
-				}
 				bottomSheetStore.setSheet({
 					show: true,
 					children: OrderDetails as typeof SvelteComponent,

@@ -10,7 +10,6 @@
 
 	const maxVisibleArticles = 1;
 
-	let orders: Record<string, App.IOrdersInfo> = {};
 	let loading = true;
 	let expandedOrders: Record<string, boolean> = {};
 
@@ -41,7 +40,7 @@
 			if (!$APP.User?.LocationId) return;
 			const resp = await getOrdersList();
 			if (!resp) return (loading = false);
-			orders = resp;
+			$APP.Orders = resp;
 		} finally {
 			loading = false;
 		}
@@ -58,18 +57,18 @@
 
 {#if loading}
 	<Loader />
-{:else if !Object.keys(orders).length}
+{:else if !Object.keys($APP.Orders || {}).length}
 	{#if $APP.User?.ActiveSubscription}
 		<div class="d-flex align-items-center flex-column mt-2">
 			<p class="fs-6 text-center">No items in the orders yet.</p>
-			<button on:click={handlePickupClick} class="btn btn-secondary w-75">Book your first pickup</button>
+			<button on:click={handlePickupClick} class:d-none={Object.values($APP?.Orders || {}).length} class="btn btn-secondary w-75">Book your first pickup</button>
 		</div>
 	{:else}
 		<p class="text-center fs-6">No active subscription.</p>
 	{/if}
 {:else}
 	<div class="d-flex flex-column gap-2 mb-3">
-		{#each Object.values(orders) as order}
+		{#each Object.values($APP?.Orders || {}) as order}
 			<div class="order-card">
 				<div class="d-flex justify-content-between align-items-center">
 					<p class="m-0 fs-5">{order.Type} Order</p>

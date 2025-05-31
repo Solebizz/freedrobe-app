@@ -15,8 +15,9 @@
 	const captionText = 'You may find some dates unavailable for scheduling pickup due to high demand.';
 
 	const timeRanges = [
-		{ label: '10:00am - 11:00am', value: '1030-1100' },
-		{ label: '12:00am - 02:00pm', value: '1200-0200' },
+		{ label: '11:00 AM - 2:00 PM', value: '1100-1400' },
+		{ label: '3:00 PM - 6:00 PM', value: '1500-1800' },
+		{ label: '6:00 PM - 9:00 PM', value: '1800-2100' },
 	];
 
 	let fields: IField[] = [
@@ -81,21 +82,6 @@
 
 		const resp = await placeOrderAndFetchPrice(params);
 		if (resp && resp.ID) {
-			pickupOrder = {};
-			if (resp.Price.Total === 0) {
-				const confirm_resp = await cofirmOrder({
-					orderId: resp.ID,
-				});
-				if (!confirm_resp) return addError('Something went wrong. Please try again after sometime', 10);
-				const noticeObj: NoticeWithoutMeta = {
-					type: 'info',
-					msg: 'Pickup order placed Successfully.',
-					snooze: 5,
-				};
-				addNotice(noticeObj);
-				$APP.ArticlesInBag = [];
-				return goto('/orders');
-			}
 			bottomSheetStore.setSheet({
 				show: true,
 				children: OrderDetails as typeof SvelteComponent,

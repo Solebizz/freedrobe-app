@@ -30,9 +30,11 @@
 	<img class="d-block w-100 rounded-top-4" src={article.Images[0]} alt={article.Name} />
 	<div class="card-body">
 		<h5 class="card-title fw-bold">{article.Name}</h5>
-		<button class="border-0 chip bg-secondary text-primary p-1 rounded fw-bold shadow" on:click|stopPropagation={() => toggleBasket(article.ID)}>
-			{$APP.ArticlesInBag && $APP.ArticlesInBag.includes(article.ID) ? 'Added ✅' : 'Add now ✙'}
-		</button>
+		{#if article.Status === 'Available'}
+			<button class="border-0 chip bg-secondary text-primary p-1 rounded fw-bold shadow" on:click|stopPropagation={() => toggleBasket(article.ID)}>
+				{$APP.ArticlesInBag && $APP.ArticlesInBag.includes(article.ID) ? 'Added ✅' : 'Add now ✙'}
+			</button>
+		{/if}
 		<span class="status position-absolute" class:opacity-90={article.Status === 'Available'} class:bg-success={article.Status === 'Available'} style="top: 0.5rem; right: 0.5rem;">
 			{article.Status}
 		</span>

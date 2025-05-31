@@ -17,7 +17,7 @@
 	let plans: Record<string, App.IProtectionPlanInfo> | undefined = {};
 	let selectedProtectionPlan: string = '';
 	let discountCoupon: App.ICouopnInfo | undefined;
-	let termsText = 'Subscription will start from the date of your first pick up.';
+	let termsText = 'Subscription will start from 11th June';
 
 	onMount(async () => {
 		const resp = await getSubscriptionsList();
@@ -139,6 +139,7 @@
 			<p>Get the best discounts on your favourite subscription with our exclusive coupons.</p>
 			{#if discountCoupon}
 				<p class="fw-bold fs-6 m-0">Applied: {discountCoupon.Code}</p>
+				<p>{discountCoupon.Description}</p>
 			{/if}
 			<div class="d-flex gap-3 mt-4">
 				<p class="mt-1 m-0 fw-bold text-primary">Apply Now →</p>

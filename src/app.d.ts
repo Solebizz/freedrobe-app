@@ -130,6 +130,7 @@ declare global {
 			Price: number;
 		}
 		interface IData {
+			Orders?: Record<string, IOrdersInfo>;
 			LoadedFromLocalStorage: boolean;
 			Locations?: Record<string, ILocationInfo>;
 			Auth?: IAuthInfo;
