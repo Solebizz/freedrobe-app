@@ -27,7 +27,18 @@
 		if (errorMessage) {
 			addError(errorMessage, 10);
 			goto('/login');
+			return;
 		}
+
+		startInterval();
+
+		// Auto-focus first OTP input field
+		const firstInput = document.querySelector<HTMLInputElement>('.otp__field__1');
+		firstInput?.focus();
+
+		return () => {
+			if (intervalRef) window.clearInterval(intervalRef);
+		};
 	});
 
 	function handleInput(index: number, event: KeyboardEvent) {
@@ -82,13 +93,6 @@
 			}
 		}, 1000);
 	}
-
-	onMount(() => {
-		startInterval();
-		return () => {
-			if (intervalRef) window.clearInterval(intervalRef);
-		};
-	});
 
 	async function onClickResendOtp() {
 		try {
