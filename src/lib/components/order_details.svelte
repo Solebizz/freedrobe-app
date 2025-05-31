@@ -75,7 +75,7 @@
 		<span class="chip bg-secondary text-primary p-1 rounded" class:bg-danger={order.Status === 'Cancelled'} class:text-white={order.Status === 'Cancelled'}>{order.Status}</span>
 	</div>
 	{#if order?.ConfirmationCode}
-		<p class="mt-3 m-0"><strong>OTP:</strong> {order.ConfirmationCode}</p>
+		<p class="mt-3 m-0"><strong>Code:</strong> {order.ConfirmationCode}</p>
 	{/if}
 	<p class="mt-3 m-0"><strong>Receipt ID:</strong> {order.ReceiptID}</p>
 	<p class="m-0"><strong>Placed on:</strong> {DateTime.fromISO(order.CreatedAt).toFormat('dd LLL yyyy, hh:mma')}</p>
