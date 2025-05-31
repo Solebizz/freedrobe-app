@@ -24,7 +24,7 @@
 			<label class="rounded-3 border" for={plan.ID}>
 				<div class="d-flex justify-content-between">
 					<p class="fw-bold fs-5 m-0">{plan.Title}</p>
-					<p class="m-0"><span class="currency fw-bold">₹</span><span class="fs-5 fw-bold">{plan.Price}</span>/6 months</p>
+					<p class="m-0"><span class="currency fw-bold">₹</span><span class="fs-5 fw-bold">{plan.Price}</span>/3 months</p>
 				</div>
 
 				<p class="m-0 mt-1">{plan.Description}</p>

@@ -99,7 +99,7 @@
 							<p class="fw-bold fs-5 m-0">{subscription.Title}</p>
 							<p class="m-0"><span class="currency fw-bold">₹</span><span class="fs-5 fw-bold">{subscription.Price}</span>/month</p>
 						</div>
-						<p class="mt-1">Billed half yearly</p>
+						<p class="mt-1">Billed for 3 months</p>
 
 						<p class="m-0 mt-1">{subscription.Description}</p>
 						<ul class="px-3 pt-2">
