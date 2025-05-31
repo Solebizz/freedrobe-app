@@ -30,7 +30,7 @@
 <div class="heading-wrapper d-flex align-items-center gap-3 mb-2 justify-content-between">
 	<h1 class="fw-bold fs-5">My Closet</h1>
 	{#if $APP.User?.ActiveSubscription && $APP.Articles && Object.keys($APP.Articles).length}
-		<button on:click={handlePickupClick} class="btn btn-secondary">Pickup</button>
+		<button on:click={handlePickupClick} class="btn btn-primary">Pickup</button>
 	{/if}
 </div>
 {#if loading}
