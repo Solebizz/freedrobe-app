@@ -171,14 +171,8 @@
 </script>
 
 {#if $APP.User?.ActiveSubscription}
-	<div class="subscription-card p-4 rounded-4 text-white">
-		<div class="d-flex justify-content-between align-items-center mb-3">
-			<h2 class="fs-4 fw-bold m-0">My Subscription</h2>
-			<span class="status-chip px-3 py-1 rounded-pill fw-semibold" class:expired={!$APP.User?.ActiveSubscription}>
-				{$APP.User?.ActiveSubscription ? 'Active' : 'Expired'}
-			</span>
-		</div>
-
+	<h2 class="fs-4 fw-bold m-0">My Subscription</h2>
+	<div class="subscription-card p-4 rounded-4 text-black bg-white border mt-2">
 		<div class="mb-2">
 			<p class="mb-1"><strong>Type:</strong> {$APP.User?.SubscriptionName}</p>
 			<p class="mb-1">
@@ -214,9 +208,7 @@
 
 <style lang="scss">
 	.subscription-card {
-		background-color: #002b5b; /* FREE blue */
 		border-radius: 1.5rem;
-		box-shadow: 0 8px 24px rgba(0, 43, 91, 0.3);
 		font-family: 'Poppins', 'Inter', sans-serif;
 	}
 
@@ -229,9 +221,5 @@
 	.status-chip.expired {
 		background-color: #f8d7da;
 		color: #721c24;
-	}
-
-	.border-light-subtle {
-		border-color: rgba(255, 255, 255, 0.2) !important;
 	}
 </style>
