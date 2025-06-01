@@ -196,7 +196,7 @@
 	</div>
 {/if}
 
-<h1 class="fw-bold fs-5 mt-4">My Profile</h1>
+<h1 class="fw-bold fs-5" class:mt-4={$APP.User?.ActiveSubscription}>My Profile</h1>
 <main class="mt-2">
 	<form method="post" class="position-relative d-flex flex-column flex-grow-1 justify-content-between gap-2" bind:this={form} on:submit|preventDefault={submitForm}>
 		<div class="narrow-form">
