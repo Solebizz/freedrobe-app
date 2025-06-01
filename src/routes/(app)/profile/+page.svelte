@@ -182,10 +182,9 @@
 		</div>
 
 		<div class="mt-3 pt-3 border-top border-light-subtle">
-			<p class="mb-1"><strong>Free Storage Left:</strong> {($APP.User?.TotalStorageValue || 0) - ($APP.User?.StorageValue || 0)}</p>
-			<p class="mb-1"><strong>Free Wash Left:</strong> {$APP.User?.WashValue}</p>
-			<p class="mb-1"><strong>Free Dry Clean Left:</strong> {$APP.User?.DryCleanValue}</p>
-			<p class="mb-0"><strong>Free Logistics Left:</strong> {$APP.User?.LogisticValue}</p>
+			<p class="mb-1"><strong>Free Pickups/Deliveries Left:</strong> {$APP.User?.LogisticValue}</p>
+			<p class="mb-1"><strong>Free Dry Cleans Left:</strong> {$APP.User?.DryCleanValue}</p>
+			<p class="mb-1"><strong>Free Washes Left:</strong> {$APP.User?.WashValue}</p>
 		</div>
 	</div>
 {/if}

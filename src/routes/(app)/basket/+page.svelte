@@ -93,7 +93,7 @@
 			</div>
 		{/each}
 
-		<button type="submit" class="btn btn-primary text-uppercase mb-3 d-flex justify-content-center gap-2" {disabled}>
+		<button type="submit" class="btn btn-primary text-uppercase mb-3 d-flex justify-content-center gap-2 mt-2" {disabled}>
 			proceed to checkout {#if loading}<Loader />{/if}</button>
 	</form>
 {/if}
