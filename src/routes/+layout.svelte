@@ -3,16 +3,36 @@
 	import Notices from '$lib/components/notices.svelte';
 	import { notices } from '$lib/stores/notices';
 	import BottomSheet from '$lib/components/bottom_sheet.svelte';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { App } from '@capacitor/app';
+	import { bottomSheetStore } from '$lib/stores/bottom_sheet';
 
 	let platform = Capacitor.getPlatform();
 	let top_padding = '20px'; //padding for web
+	let isBottomSheetShow = false;
+	let handleBottomSheetClose = () => {};
+
 	if (platform == 'ios') top_padding = '55px';
 	if (platform == 'android') top_padding = '25px';
 
+	const unsubscribe = bottomSheetStore.subscribe((state) => {
+		isBottomSheetShow = !!state.show;
+		handleBottomSheetClose = state.handleClose ?? (() => {});
+	});
+
+	onDestroy(() => {
+		unsubscribe();
+	});
+
 	onMount(() => {
-		App.addListener('backButton', () => history.back());
+		App.addListener('backButton', () => {
+			if (isBottomSheetShow) {
+				handleBottomSheetClose();
+				bottomSheetStore.reset();
+			} else {
+				history.back();
+			}
+		});
 	});
 </script>
 

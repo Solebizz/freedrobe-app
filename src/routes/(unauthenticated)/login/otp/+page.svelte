@@ -26,7 +26,7 @@
 
 		if (errorMessage) {
 			addError(errorMessage, 10);
-			goto('/login');
+			goto('/login', { replaceState: true });
 			return;
 		}
 
@@ -81,7 +81,7 @@
 	}
 
 	function handleBack() {
-		history.back();
+		goto('/login', { replaceState: true });
 	}
 
 	function startInterval() {
