@@ -115,11 +115,11 @@
 			if (!resp || !resp.authInfo || !resp.authInfo.AuthToken || !resp.userInfo || resp.userInfo.UserRole !== 'endUser') {
 				// TODO store logs somewhere.
 				addError('Unable to get the user. Please try again after sometime.');
-				goto('/login');
+				goto('/login', { replaceState: true });
 			} else {
 				$APP.Auth = resp.authInfo;
 				$APP.User = resp.userInfo;
-				goto('/profile');
+				goto('/profile', { replaceState: true });
 			}
 		} finally {
 			loading = false;
