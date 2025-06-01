@@ -30,7 +30,7 @@
 				case 'basket': {
 					if (!response || !response.razorpay_payment_id || !response.razorpay_signature || !response.razorpay_order_id) {
 						addError('Payment failed. Try again.');
-						return goto(`/${referrer}`);
+						return goto(`/${referrer}`, { replaceState: true });
 					}
 					const params = {
 						signature: response.razorpay_signature,
@@ -40,7 +40,7 @@
 					const confirm_resp = await cofirmOrder(params);
 					if (!confirm_resp) {
 						addError('Something went wrong. Please try again after sometime', 10);
-						return goto('/orders');
+						return goto('/orders', { replaceState: true });
 					}
 
 					const noticeObj: NoticeWithoutMeta = {
@@ -52,7 +52,7 @@
 					$APP.ArticlesInBag = [];
 					if (referrer === 'basket') $APP.ArticlesInBag = [];
 
-					return goto('/orders');
+					return goto('/orders', { replaceState: true });
 				}
 				default: {
 					if (!response || !response.razorpay_payment_id || !response.razorpay_signature || !response.razorpay_order_id) {
@@ -67,7 +67,7 @@
 					const userInfo = await activateSubscription(params);
 					if (!userInfo) {
 						addError('Unable to get the user. Please try again after sometime.');
-						return goto('/subscription-list');
+						return goto('/subscription-list', { replaceState: true });
 					}
 
 					const noticeObj: NoticeWithoutMeta = {
@@ -77,7 +77,7 @@
 					};
 					addNotice(noticeObj);
 					$APP.User = userInfo;
-					goto('/profile');
+					goto('/profile', { replaceState: true });
 				}
 			}
 		},
