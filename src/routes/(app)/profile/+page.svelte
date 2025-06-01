@@ -2,6 +2,7 @@
 	import Field, { type IField } from '$lib/components/field.svelte';
 	import { APP } from '$lib/stores/appMain';
 	import { getLocationsInfo, saveUserInfo } from '$lib/utils/apis';
+	import { DateTime } from 'luxon';
 	import { onMount } from 'svelte';
 
 	let form: HTMLFormElement;
@@ -54,6 +55,16 @@
 				Required: true,
 			},
 		},
+		{
+			key: 'Gender',
+			definition: {
+				Edit: editable,
+				Label: 'Gender',
+				Type: 'select',
+				Options: genderOptions,
+				Required: true,
+			},
+		},
 
 		{
 			key: 'AddressLine1',
@@ -73,16 +84,7 @@
 				Required: true,
 			},
 		},
-		{
-			key: 'Gender',
-			definition: {
-				Edit: editable,
-				Label: 'Gender',
-				Type: 'select',
-				Options: genderOptions,
-				Required: true,
-			},
-		},
+
 		{
 			key: 'State',
 			definition: {
@@ -168,9 +170,32 @@
 	}
 </script>
 
-<h1 class="fw-bold fs-5">My Profile</h1>
+<div class="subscription-card p-4 rounded-4 text-white">
+	<div class="d-flex justify-content-between align-items-center mb-3">
+		<h2 class="fs-4 fw-bold m-0">My Subscription</h2>
+		<span class="status-chip px-3 py-1 rounded-pill fw-semibold" class:expired={!$APP.User?.ActiveSubscription}>
+			{$APP.User?.ActiveSubscription ? 'Active' : 'Expired'}
+		</span>
+	</div>
 
-<main class="mt-3">
+	<div class="mb-2">
+		<p class="mb-1"><strong>Type:</strong> {$APP.User?.SubscriptionName}</p>
+		<p class="mb-1">
+			<strong>Valid Until:</strong>
+			{DateTime.fromMillis(Number($APP.User?.SubscriptionValidityPeriod)).toFormat('dd LLL yyyy')}
+		</p>
+	</div>
+
+	<div class="mt-3 pt-3 border-top border-light-subtle">
+		<p class="mb-1"><strong>Free Storage Left:</strong> {($APP.User?.TotalStorageValue || 0) - ($APP.User?.StorageValue || 0)}</p>
+		<p class="mb-1"><strong>Free Wash Left:</strong> {$APP.User?.WashValue}</p>
+		<p class="mb-1"><strong>Free Dry Clean Left:</strong> {$APP.User?.DryCleanValue}</p>
+		<p class="mb-0"><strong>Free Logistics Left:</strong> {$APP.User?.LogisticValue}</p>
+	</div>
+</div>
+
+<h1 class="fw-bold fs-5 mt-4">My Profile</h1>
+<main class="mt-2">
 	<form method="post" class="position-relative d-flex flex-column flex-grow-1 justify-content-between gap-2" bind:this={form} on:submit|preventDefault={submitForm}>
 		<div class="narrow-form">
 			{#each fields as { key, definition }}
@@ -184,3 +209,27 @@
 		<button on:click={() => form.checkValidity()} type="submit" class="btn btn-primary text-uppercase mb-3" disabled={!!disabled}> Update </button>
 	</form>
 </main>
+
+<style lang="scss">
+	.subscription-card {
+		background-color: #002b5b; /* FREE blue */
+		border-radius: 1.5rem;
+		box-shadow: 0 8px 24px rgba(0, 43, 91, 0.3);
+		font-family: 'Poppins', 'Inter', sans-serif;
+	}
+
+	.status-chip {
+		background-color: #a0def0; /* Light cyan background */
+		color: #002b5b;
+		font-size: 0.85rem;
+	}
+
+	.status-chip.expired {
+		background-color: #f8d7da;
+		color: #721c24;
+	}
+
+	.border-light-subtle {
+		border-color: rgba(255, 255, 255, 0.2) !important;
+	}
+</style>

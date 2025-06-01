@@ -51,9 +51,9 @@ export interface IUserInfo {
 	user_role: string;
 	storageValue: number;
 	totalStorageValue: number;
-	washValue: number;
-	dryCleanValue: number;
-	logisticValue: number;
+	freeWashValue: number;
+	freeDryCleanValue: number;
+	freeLogisticValue: number;
 	activeSubscription: number;
 	deleted: boolean;
 	blocked: boolean;
@@ -65,6 +65,7 @@ export interface IUserInfo {
 	subscriptionId?: string;
 	subscriptionValidTill?: string;
 	subscriptionValidityPeriod?: string;
+	subscriptionName?: string;
 }
 interface IVerifyOTPParams {
 	sessionId: string;
@@ -112,9 +113,9 @@ export async function verifyOTPAndGetUserInfo(params: IVerifyOTPParams) {
 			UserRole: 'user_role',
 			StorageValue: 'storageValue',
 			TotalStorageValue: 'totalStorageValue',
-			WashValue: 'washValue',
-			DryCleanValue: 'dryCleanValue',
-			LogisticValue: 'logisticValue',
+			WashValue: 'freeWashValue',
+			DryCleanValue: 'freeDryCleanValue',
+			LogisticValue: 'freeLogisticValue',
 			ActiveSubscription: 'activeSubscription',
 			Deleted: 'deleted',
 			Blocked: 'blocked',
@@ -136,6 +137,7 @@ export async function verifyOTPAndGetUserInfo(params: IVerifyOTPParams) {
 			SubscriptionId: 'subscriptionId',
 			SubscriptionValidTill: 'subscriptionValidTill',
 			SubscriptionValidityPeriod: 'subscriptionValidityPeriod',
+			SubscriptionName: 'subscriptionName',
 		});
 		return { authInfo, userInfo };
 	} catch (e) {
@@ -214,9 +216,9 @@ export async function saveUserInfo(params: ISaveUserInfoParams) {
 			UserRole: 'user_role',
 			StorageValue: 'storageValue',
 			TotalStorageValue: 'totalStorageValue',
-			WashValue: 'washValue',
-			DryCleanValue: 'dryCleanValue',
-			LogisticValue: 'logisticValue',
+			WashValue: 'freeWashValue',
+			DryCleanValue: 'freeDryCleanValue',
+			LogisticValue: 'freeLogisticValue',
 			ActiveSubscription: 'activeSubscription',
 			Deleted: 'deleted',
 			Blocked: 'blocked',
@@ -238,6 +240,7 @@ export async function saveUserInfo(params: ISaveUserInfoParams) {
 			SubscriptionId: 'subscriptionId',
 			SubscriptionValidTill: 'subscriptionValidTill',
 			SubscriptionValidityPeriod: 'subscriptionValidityPeriod',
+			SubscriptionName: 'subscriptionName',
 		});
 		const noticeObj: NoticeWithoutMeta = {
 			type: 'info',
@@ -426,9 +429,9 @@ export async function activateSubscription(params: IActivateSubscriptionParams) 
 			UserRole: 'user_role',
 			StorageValue: 'storageValue',
 			TotalStorageValue: 'totalStorageValue',
-			WashValue: 'washValue',
-			DryCleanValue: 'dryCleanValue',
-			LogisticValue: 'logisticValue',
+			WashValue: 'freeWashValue',
+			DryCleanValue: 'freeDryCleanValue',
+			LogisticValue: 'freeLogisticValue',
 			ActiveSubscription: 'activeSubscription',
 			Deleted: 'deleted',
 			Blocked: 'blocked',
@@ -450,6 +453,7 @@ export async function activateSubscription(params: IActivateSubscriptionParams) 
 			SubscriptionId: 'subscriptionId',
 			SubscriptionValidTill: 'subscriptionValidTill',
 			SubscriptionValidityPeriod: 'subscriptionValidityPeriod',
+			SubscriptionName: 'subscriptionName',
 		});
 		return userInfo;
 	} catch (e) {
@@ -768,9 +772,9 @@ export async function getUserInfo() {
 			UserRole: 'user_role',
 			StorageValue: 'storageValue',
 			TotalStorageValue: 'totalStorageValue',
-			WashValue: 'washValue',
-			DryCleanValue: 'dryCleanValue',
-			LogisticValue: 'logisticValue',
+			WashValue: 'freeWashValue',
+			DryCleanValue: 'freeDryCleanValue',
+			LogisticValue: 'freeLogisticValue',
 			ActiveSubscription: 'activeSubscription',
 			Deleted: 'deleted',
 			Blocked: 'blocked',
@@ -792,6 +796,7 @@ export async function getUserInfo() {
 			SubscriptionId: 'subscriptionId',
 			SubscriptionValidTill: 'subscriptionValidTill',
 			SubscriptionValidityPeriod: 'subscriptionValidityPeriod',
+			SubscriptionName: 'subscriptionName',
 		});
 		return { userInfo };
 	} catch (e) {

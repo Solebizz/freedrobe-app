@@ -33,6 +33,7 @@ declare global {
 			SubscriptionId?: string;
 			SubscriptionValidTill?: string;
 			SubscriptionValidityPeriod?: string;
+			SubscriptionName?: string;
 		}
 		interface IAuthInfo {
 			RefreshToken: string;
