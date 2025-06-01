@@ -61,7 +61,7 @@
 	{#if $APP.User?.ActiveSubscription}
 		<div class="d-flex align-items-center flex-column mt-2">
 			<p class="fs-6 text-center">No items in the orders yet.</p>
-			<button on:click={handlePickupClick} class:d-none={Object.values($APP?.Orders || {}).length} class="btn btn-secondary w-75">Book your first pickup</button>
+			<button on:click={handlePickupClick} class:d-none={Object.values($APP?.Orders || {}).length} class="btn btn-primary w-75">Book your first pickup</button>
 		</div>
 	{:else}
 		<p class="text-center fs-6">No active subscription.</p>
