@@ -170,29 +170,31 @@
 	}
 </script>
 
-<div class="subscription-card p-4 rounded-4 text-white">
-	<div class="d-flex justify-content-between align-items-center mb-3">
-		<h2 class="fs-4 fw-bold m-0">My Subscription</h2>
-		<span class="status-chip px-3 py-1 rounded-pill fw-semibold" class:expired={!$APP.User?.ActiveSubscription}>
-			{$APP.User?.ActiveSubscription ? 'Active' : 'Expired'}
-		</span>
-	</div>
+{#if $APP.User?.ActiveSubscription}
+	<div class="subscription-card p-4 rounded-4 text-white">
+		<div class="d-flex justify-content-between align-items-center mb-3">
+			<h2 class="fs-4 fw-bold m-0">My Subscription</h2>
+			<span class="status-chip px-3 py-1 rounded-pill fw-semibold" class:expired={!$APP.User?.ActiveSubscription}>
+				{$APP.User?.ActiveSubscription ? 'Active' : 'Expired'}
+			</span>
+		</div>
 
-	<div class="mb-2">
-		<p class="mb-1"><strong>Type:</strong> {$APP.User?.SubscriptionName}</p>
-		<p class="mb-1">
-			<strong>Valid Until:</strong>
-			{DateTime.fromMillis(Number($APP.User?.SubscriptionValidityPeriod)).toFormat('dd LLL yyyy')}
-		</p>
-	</div>
+		<div class="mb-2">
+			<p class="mb-1"><strong>Type:</strong> {$APP.User?.SubscriptionName}</p>
+			<p class="mb-1">
+				<strong>Valid Until:</strong>
+				{DateTime.fromMillis(Number($APP.User?.SubscriptionValidityPeriod)).toFormat('dd LLL yyyy')}
+			</p>
+		</div>
 
-	<div class="mt-3 pt-3 border-top border-light-subtle">
-		<p class="mb-1"><strong>Free Storage Left:</strong> {($APP.User?.TotalStorageValue || 0) - ($APP.User?.StorageValue || 0)}</p>
-		<p class="mb-1"><strong>Free Wash Left:</strong> {$APP.User?.WashValue}</p>
-		<p class="mb-1"><strong>Free Dry Clean Left:</strong> {$APP.User?.DryCleanValue}</p>
-		<p class="mb-0"><strong>Free Logistics Left:</strong> {$APP.User?.LogisticValue}</p>
+		<div class="mt-3 pt-3 border-top border-light-subtle">
+			<p class="mb-1"><strong>Free Storage Left:</strong> {($APP.User?.TotalStorageValue || 0) - ($APP.User?.StorageValue || 0)}</p>
+			<p class="mb-1"><strong>Free Wash Left:</strong> {$APP.User?.WashValue}</p>
+			<p class="mb-1"><strong>Free Dry Clean Left:</strong> {$APP.User?.DryCleanValue}</p>
+			<p class="mb-0"><strong>Free Logistics Left:</strong> {$APP.User?.LogisticValue}</p>
+		</div>
 	</div>
-</div>
+{/if}
 
 <h1 class="fw-bold fs-5 mt-4">My Profile</h1>
 <main class="mt-2">
