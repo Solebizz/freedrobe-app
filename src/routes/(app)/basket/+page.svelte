@@ -1,38 +1,27 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
-	import Field, { type IField } from '$lib/components/field.svelte';
 	import Loader from '$lib/components/loader.svelte';
 	import OrderDetails from '$lib/components/order_details.svelte';
 	import { APP } from '$lib/stores/appMain';
 	import { bottomSheetStore } from '$lib/stores/bottom_sheet';
-	import { addError, addNotice, type NoticeWithoutMeta } from '$lib/stores/notices';
-	import { cofirmOrder, placeOrderAndFetchPrice } from '$lib/utils/apis';
+	import { placeOrderAndFetchPrice } from '$lib/utils/apis';
 	import type { SvelteComponent } from 'svelte';
 
 	export let width = 200;
 	export let border = 2;
 
-	let form: HTMLFormElement;
-	let order: Record<string, any> = {};
 	let loading = false;
+
+	let selectedService: Record<string, string>;
 
 	$: itemsInBag = Array.isArray($APP.ArticlesInBag) && $APP.Articles ? $APP.ArticlesInBag.map((id) => $APP.Articles?.[id]).filter((item) => item !== undefined) : [];
 
-	let fields: IField[] = [
+	const serviceType = [
 		{
-			key: 'Type',
-			definition: {
-				Edit: true,
-				Label: 'Select Service Type',
-				Type: 'radio',
-				Required: true,
-				Options: [
-					{ label: 'Delivery (1 day delivery)', value: 'Delivery' },
-					{ label: 'Laundry (Takes 2-3 days)', value: 'Laundry' },
-					{ label: 'Dry Clean (Takes 3-4 day)', value: 'Dry Clean' },
-				],
-			},
+			Label: '1 day delivery',
+			Value: 'Delivery',
 		},
+		{ Label: 'Takes 2-3 days', Value: 'Laundry' },
+		{ Label: 'Takes 3-4 day', Value: 'Dry Clean' },
 	];
 
 	function removeArticleFromBasket(id: string) {
@@ -49,7 +38,7 @@
 		try {
 			const params = {
 				articles: $APP.ArticlesInBag,
-				type: order.Type,
+				type: selectedService.Value,
 			};
 			const resp = await placeOrderAndFetchPrice(params);
 			if (resp && resp.ID) {
@@ -67,7 +56,8 @@
 		}
 	}
 
-	$: disabled = !form || !form.checkValidity() || !order;
+	// $: disabled = !form || !form.checkValidity() || !order;
+	$: disabled = !selectedService;
 </script>
 
 <h1 class="fw-bold mb-3 fs-5">My Basket</h1>
@@ -86,20 +76,76 @@
 		{/each}
 	</div>
 
-	<form method="post" class="position-relative d-flex flex-column flex-grow-1 justify-content-between gap-2" bind:this={form} on:submit|preventDefault={submitForm}>
-		<div class="narrow-form">
-			{#each fields as { key, definition }}
-				<div class="mb-3" data-field={key}>
-					<Field {key} {definition} bind:value={order[key]} />
-				</div>
-			{/each}
-		</div>
+	<p class="mt-3 fw-bold fs-5">Select Service</p>
+	<form class="d-flex flex-column gap-2" on:submit|preventDefault={submitForm}>
+		{#each serviceType as st}
+			<div class="selectBox-ssa radio">
+				<input type="radio" name="radio" id={st.Value} value={st} bind:group={selectedService} />
+				<label class="rounded-3 border" for={st.Value}>
+					<div class="d-flex justify-content-between">
+						<p class="fw-bold fs-5 m-0">{st.Value}</p>
+					</div>
+					<p class="m-0 mt-1">{st.Label}</p>
+				</label>
+			</div>
+		{/each}
 
-		<button class="d-none">Needed for ENTER to submit</button>
-		<button on:click={() => form.checkValidity()} type="submit" class="btn btn-primary text-uppercase mb-3 d-flex justify-content-center gap-2" {disabled}>
+		<button type="submit" class="btn btn-primary text-uppercase mb-3 d-flex justify-content-center gap-2" {disabled}>
 			proceed to checkout {#if loading}<Loader />{/if}</button>
 	</form>
 {/if}
 
 <style lang="scss">
+	.selectBox-ssa {
+		.currency {
+			position: relative;
+			top: -0.25rem;
+		}
+		input {
+			display: none;
+			&:checked {
+				+ label {
+					display: block;
+					border-color: var(--bs-secondary);
+					z-index: 1;
+					box-shadow: 0 0 0 3px var(--bs-tertiary-bg);
+					background-color: var(--bs-secondary-bg);
+					color: var(--bs-primary);
+					&:before {
+						background: var(--bs-primary);
+						box-shadow: 0 0 0 1px var(--bs-secondary);
+					}
+				}
+			}
+		}
+		label {
+			display: block;
+			border: 1px solid var(--bs-tertiary-bg);
+			position: relative;
+			padding: 15px 15px 15px 40px;
+			cursor: pointer;
+			&:before {
+				content: '';
+				width: 15px;
+				height: 15px;
+				box-shadow: 0 0 0 1px var(--bs-tertiary-bg);
+				border: 3px solid var(--bs-white);
+				position: absolute;
+				left: 15px;
+				top: 37%;
+				transform: translateY(-50%);
+			}
+			&:hover {
+				border-color: var(--bs-secondary-bg);
+				z-index: 1;
+			}
+		}
+		&.radio {
+			label {
+				&:before {
+					border-radius: 100%;
+				}
+			}
+		}
+	}
 </style>

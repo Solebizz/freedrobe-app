@@ -72,7 +72,11 @@
 <div class="order-card">
 	<div class="d-flex justify-content-between align-items-center mt-2">
 		<p class="m-0 fs-5 fw-bold">{order.Type} Order</p>
-		<span class="chip bg-secondary text-primary p-1 rounded" class:bg-danger={order.Status === 'Cancelled'} class:text-white={order.Status === 'Cancelled'}>{order.Status}</span>
+		<span
+			class="chip bg-secondary text-primary p-1 rounded"
+			class:d-none={referrerComponent === 'basket'}
+			class:bg-danger={order.Status === 'Cancelled'}
+			class:text-white={order.Status === 'Cancelled'}>{order.Status}</span>
 	</div>
 	{#if order?.ConfirmationCode}
 		<p class="mt-3 m-0"><strong>Code:</strong> {order.ConfirmationCode}</p>
