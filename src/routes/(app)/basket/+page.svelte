@@ -17,11 +17,11 @@
 
 	const serviceType = [
 		{
-			Label: '1 day delivery',
+			Label: 'Get your stored item delivered to your doorstep within 24 hours.',
 			Value: 'Delivery',
 		},
-		{ Label: 'Takes 2-3 days', Value: 'Laundry' },
-		{ Label: 'Takes 3-4 day', Value: 'Dry Clean' },
+		{ Label: 'Standard wash and fold to keep your clothes fresh and clean.', Value: 'Laundry' },
+		{ Label: 'Gentle, professional cleaning for delicate or special garments.', Value: 'Dry Clean' },
 	];
 
 	function removeArticleFromBasket(id: string) {
