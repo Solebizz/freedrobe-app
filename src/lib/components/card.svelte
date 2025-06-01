@@ -31,8 +31,8 @@
 	<div class="card-body">
 		<h5 class="card-title fw-bold">{article.Name}</h5>
 		{#if article.Status === 'Available'}
-			<button class="border-0 bg-primary text-white p-1 rounded shadow p-2" on:click|stopPropagation={() => toggleBasket(article.ID)}>
-				{$APP.ArticlesInBag && $APP.ArticlesInBag.includes(article.ID) ? 'Remove ❌' : 'Add to bag ✙'}
+			<button class="border-0 bg-secondary text-primary p-1 rounded shadow p-2" on:click|stopPropagation={() => toggleBasket(article.ID)}>
+				{$APP.ArticlesInBag && $APP.ArticlesInBag.includes(article.ID) ? 'Remove' : 'Add to bag'}
 			</button>
 		{/if}
 		<span class="status position-absolute" class:opacity-90={article.Status === 'Available'} class:bg-success={article.Status === 'Available'} style="top: 0.5rem; right: 0.5rem;">
