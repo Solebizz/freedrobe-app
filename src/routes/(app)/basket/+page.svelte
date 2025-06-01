@@ -66,10 +66,13 @@
 {:else}
 	<div class="mb-3 d-flex flex-column gap-3">
 		{#each itemsInBag as article}
-			<div class="bg-white p-2 d-flex align-items-center">
-				<img class="rounded border border-black" width="100" height="140" src={article.Images[0]} alt="Article Image" />
-				<div class="d-flex flex-column gap-2">
-					<p class="m-0 fs-5 fw-bold ms-3">{article.Name}</p>
+			<div class="bg-white p-2 d-flex align-items-center h-100">
+				<img class="rounded border border-black" width="80" height="100" src={article.Images[0]} alt="Article Image" />
+				<div class="d-flex flex-column align-items-between h-100 py-2">
+					<div class="h-100">
+						<p class="m-0 fs-5 fw-bold ms-3">{article.Name}</p>
+						<p class="mt-1 ms-3">{article.Category}</p>
+					</div>
 					<button class="m-0 fw-bold text-danger border-0 bg-transparent px-0" on:click|stopPropagation={() => removeArticleFromBasket(article.ID)}> Remove </button>
 				</div>
 			</div>
