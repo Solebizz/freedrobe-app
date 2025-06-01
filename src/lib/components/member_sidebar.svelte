@@ -14,7 +14,10 @@
 
 	function handleLogout() {
 		$APP.User = undefined;
+		$APP.Articles = undefined;
+		$APP.Orders = undefined;
 		$APP.Auth = undefined;
+		$APP.ArticlesInBag = [];
 		toggle();
 	}
 </script>
