@@ -172,7 +172,7 @@
 
 {#if $APP.User?.ActiveSubscription}
 	<h2 class="fs-4 fw-bold m-0">My Subscription</h2>
-	<div class="subscription-card p-4 rounded-4 text-black bg-white border mt-2">
+	<div class="subscription-card p-3 rounded-4 text-black bg-white border mt-2">
 		<div class="mb-2">
 			<p class="mb-1"><strong>Type:</strong> {$APP.User?.SubscriptionName}</p>
 			<p class="mb-1">
