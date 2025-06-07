@@ -12,10 +12,10 @@
 	let disabled = true;
 	let loading = false;
 	let phone = $page.url.searchParams.get('phone');
-	let sessionId = $page.url.searchParams.get('session_id');
 	let interval = 30;
 	let intervalRef: number;
 
+	$: sessionId = $page.url.searchParams.get('session_id');
 	onMount(() => {
 		let errorMessage = '';
 		if (!sessionId) {
