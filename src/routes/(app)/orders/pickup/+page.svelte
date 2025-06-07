@@ -61,6 +61,9 @@
 
 	async function submitForm() {
 		if (!$APP.User?.ActiveSubscription) return addError('No active subscriptions. Subscribe to continue.', 5);
+		const maxPickupArticles = $APP.User.TotalStorageValue - $APP.User.StorageValue;
+
+		if (maxPickupArticles < pickupOrder.NoOfArticles) return addError('Value must be less than available storage', 5);
 
 		const [startTimeStr, endTimeStr] = pickupOrder.Time.split('-');
 
