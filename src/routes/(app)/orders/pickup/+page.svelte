@@ -74,7 +74,7 @@
 		if (today > baseDate) return addError('Cannot schdule pickups for previous dates.', 5);
 
 		const launchDate = DateTime.fromISO('2025-07-01');
-		if (launchDate > baseDate) return addError('Pick up date should be after 10th June', 5);
+		if (launchDate > baseDate) return addError('Pick up date should be after 30th June', 5);
 
 		const startDateTime = baseDate.set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
 		const endDateTime = baseDate.set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
