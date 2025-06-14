@@ -108,8 +108,8 @@
 							</div>
 							<div class="d-flex flex-column align-items-end">
 								<p class="m-0">
-									<span class="currency fw-bold">₹</span><span class="fs-5 fw-bold">{finalPrice}</span>
-									<span class="fs-5 fw-bold ms-1 td-thickness" class:text-decoration-line-through={discountCoupon} class:d-none={!discountCoupon}>{subscription.Price} </span>
+									<span class="currency fw-bold">₹</span><span class="fs-5 fw-bold me-1" class:d-none={!discountCoupon}>{finalPrice}</span>
+									<span class="fs-5 fw-bold td-thickness" class:text-decoration-line-through={discountCoupon}>{subscription.Price} </span>
 								</p>
 								<p>/month</p>
 							</div>
