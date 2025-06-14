@@ -16,8 +16,13 @@
 
 	let plans: Record<string, App.IProtectionPlanInfo> | undefined = {};
 	let selectedProtectionPlan: string = '';
-	let discountCoupon: App.ICouopnInfo | undefined;
-	let termsText = 'Subscription will start from 11th June';
+	let discountCoupon: App.ICouopnInfo | undefined = {
+		ID: '684d468807a2c336ee197038',
+		Code: 'FDD50',
+		Description: 'Discount Offer: 50% Off',
+		Discount: 50,
+	};
+	let termsText = 'Subscription will start from 1st July.';
 
 	onMount(async () => {
 		const resp = await getSubscriptionsList();
@@ -92,14 +97,23 @@
 		<form class="d-flex flex-column gap-2">
 			<h1 class="fw-bold mb-3 fs-5">Available Plans</h1>
 			{#each Object.values(subscriptions) as subscription}
+				{@const finalPrice = Number(subscription.Price) - Math.floor(Number(subscription.Price) * ((discountCoupon?.Discount || 100) / 100))}
 				<div class="selectBox-ssa radio">
 					<input type="radio" name="radio" id={subscription.ID} value={subscription} bind:group={selected} />
 					<label class="rounded-3 border" for={subscription.ID}>
 						<div class="d-flex justify-content-between">
-							<p class="fw-bold fs-5 m-0">{subscription.Title}</p>
-							<p class="m-0"><span class="currency fw-bold">₹</span><span class="fs-5 fw-bold">{subscription.Price}</span>/month</p>
+							<div>
+								<p class="fw-bold fs-5 m-0">{subscription.Title}</p>
+								<p class="mt-1">Billed for 3 months</p>
+							</div>
+							<div class="d-flex flex-column align-items-end">
+								<p class="m-0">
+									<span class="currency fw-bold">₹</span><span class="fs-5 fw-bold">{finalPrice}</span>
+									<span class="fs-5 fw-bold ms-1 td-thickness" class:text-decoration-line-through={discountCoupon} class:d-none={!discountCoupon}>{subscription.Price} </span>
+								</p>
+								<p>/month</p>
+							</div>
 						</div>
-						<p class="mt-1">Billed for 3 months</p>
 
 						<p class="m-0 mt-1">{subscription.Description}</p>
 						<ul class="px-3 pt-2">

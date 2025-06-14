@@ -16,7 +16,7 @@
 	const timeRanges = [
 		{ label: '11:00 AM - 2:00 PM', value: '1100-1400' },
 		{ label: '3:00 PM - 6:00 PM', value: '1500-1800' },
-		{ label: '6:00 PM - 9:00 PM', value: '1800-2100' },
+		// { label: '6:00 PM - 9:00 PM', value: '1800-2100' },
 	];
 
 	let fields: IField[] = [
@@ -36,8 +36,7 @@
 				Label: 'Select Date',
 				Type: 'Date',
 				Required: true,
-				// Min: DateTime.fromSQL('2025-06-11').toFormat('yyyy-MM-dd'),
-				Default: DateTime.fromSQL('2025-06-11').toFormat('yyyy-MM-dd'),
+				Default: DateTime.fromSQL('2025-07-01').toFormat('yyyy-MM-dd'),
 			},
 		},
 		{
@@ -74,7 +73,7 @@
 		const today = DateTime.now();
 		if (today > baseDate) return addError('Cannot schdule pickups for previous dates.', 5);
 
-		const launchDate = DateTime.fromISO('2025-06-11');
+		const launchDate = DateTime.fromISO('2025-07-01');
 		if (launchDate > baseDate) return addError('Pick up date should be after 10th June', 5);
 
 		const startDateTime = baseDate.set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
