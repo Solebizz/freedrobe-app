@@ -2,15 +2,21 @@
 	import { DateTime } from 'luxon';
 	import Loader from './loader.svelte';
 	import { goto } from '$app/navigation';
-	import { cancelOrder, cofirmOrder } from '$lib/utils/apis';
+	import { cancelOrder, changeOrderStatus, cofirmOrder } from '$lib/utils/apis';
 	import { addError, addNotice, type NoticeWithoutMeta } from '$lib/stores/notices';
 	import { createEventDispatcher } from 'svelte';
 	import { noop } from '$lib/utils/globals';
 	import { APP } from '$lib/stores/appMain';
+	import Field, { type IField } from './field.svelte';
 
 	export let order: App.IOrdersInfo;
 	export let referrerComponent = 'orders';
 	export let onCancelOrder = noop;
+
+	$: isLogistics = $APP.User?.UserRole === 'logistics';
+
+	let form: HTMLFormElement;
+	let data: any = {};
 
 	const dispatch = createEventDispatcher();
 
@@ -67,6 +73,38 @@
 			loading = false;
 		}
 	}
+
+	async function submitForm() {
+		const params = {
+			otp: data.OTP,
+			noOfArticles: data.NoOfArticles,
+			orderId: order.ID,
+		};
+		const resp = await changeOrderStatus(params);
+		if (resp) dispatch('close');
+	}
+
+	let fields: IField[] = [
+		{
+			key: 'NoOfArticles',
+			definition: {
+				Edit: true,
+				Label: 'No. of articles',
+				Type: 'number',
+			},
+		},
+		{
+			key: 'OTP',
+			definition: {
+				Edit: true,
+				Label: 'Enter OTP',
+				Type: 'number',
+				Required: true,
+			},
+		},
+	];
+
+	$: disabled = !form || !form.checkValidity() || !data;
 </script>
 
 <div class="order-card">
@@ -114,6 +152,18 @@
 				</div>
 			{/each}
 		</div>
+	{/if}
+	{#if isLogistics}
+		<form class="position-relative d-flex flex-column flex-grow-1 justify-content-between gap-1 mt-4" bind:this={form} on:submit|preventDefault={submitForm}>
+			{#each fields as { key, definition }}
+				<div data-field={key}>
+					<Field {key} {definition} bind:value={data[key]} />
+				</div>
+			{/each}
+
+			<button class="d-none">Needed for ENTER to submit</button>
+			<button on:click={() => form.checkValidity()} type="submit" class="btn btn-primary text-uppercase" {disabled}>Confirm {order.Type}</button>
+		</form>
 	{/if}
 </div>
 

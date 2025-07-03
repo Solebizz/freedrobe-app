@@ -888,3 +888,44 @@ export async function fetchPrices(type: string) {
 		console.error(message);
 	}
 }
+
+interface IChangeOrderStatusParams {
+	orderId: string;
+	otp: number;
+	noOfArticles?: number;
+}
+export async function changeOrderStatus(params: IChangeOrderStatusParams) {
+	const { otp, orderId, noOfArticles = 0 } = params;
+	try {
+		const $APP = get(APP);
+		const headers = {
+			'Content-Type': 'application/json',
+			...(await fetchAuthHeadrs($APP)),
+		};
+		const body = {
+			confirmationCode: otp,
+			noOfArticles,
+		};
+		const requestOptions = {
+			method: 'PUT',
+			headers,
+			body: JSON.stringify(params),
+		};
+		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/orders/logistics/${orderId}`, requestOptions);
+		const jsonResp: IServerResponse<IUserInfo> = await res.json();
+		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
+		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
+		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
+		const noticeObj: NoticeWithoutMeta = {
+			type: 'info',
+			msg: 'OTP Confirmed',
+			snooze: 5,
+		};
+		addNotice(noticeObj);
+		return true;
+	} catch (e) {
+		const message = (e as Error).message || 'Unkown error';
+		addError(message, 5);
+		console.error(message);
+	}
+}

@@ -105,7 +105,7 @@
 <h1 class="fw-bold fs-5">Schedule Pickup</h1>
 
 <main class="mt-3">
-	<form method="post" class="position-relative d-flex flex-column flex-grow-1 justify-content-between gap-2" bind:this={form} on:submit|preventDefault={submitForm}>
+	<form class="position-relative d-flex flex-column flex-grow-1 justify-content-between gap-2" bind:this={form} on:submit|preventDefault={submitForm}>
 		<div class="narrow-form">
 			{#each fields as { key, definition }}
 				<div class="mb-3" data-field={key}>
