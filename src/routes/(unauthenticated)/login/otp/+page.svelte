@@ -112,7 +112,7 @@
 		try {
 			loading = true;
 			const resp = await verifyOTPAndGetUserInfo({ sessionId, otp: otpDisplay });
-			if (!resp || !resp.authInfo || !resp.authInfo.AuthToken || !resp.userInfo || resp.userInfo.UserRole !== 'endUser') {
+			if (!resp || !resp.authInfo || !resp.authInfo.AuthToken || !resp.userInfo) {
 				// TODO store logs somewhere.
 				addError('Unable to get the user. Please try again after sometime.');
 				goto('/login', { replaceState: true });

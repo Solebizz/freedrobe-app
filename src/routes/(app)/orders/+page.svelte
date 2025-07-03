@@ -38,7 +38,8 @@
 	async function fetchOrdersList() {
 		try {
 			if (!$APP.User?.LocationId) return;
-			const resp = await getOrdersList();
+			const isLogistics = $APP.User.UserRole === 'logistics';
+			const resp = await getOrdersList(isLogistics);
 			if (!resp) return (loading = false);
 			$APP.Orders = resp;
 		} finally {
@@ -112,7 +113,7 @@
 					<button class="btn btn-link p-0 mt-2 text-capitalize" on:click={() => toggleExpanded(order)}>
 						{#if expandedOrders[order.ID]}<i class="bi bi-caret-up-fill"></i> Show less{:else}<i class="bi bi-caret-down-fill"></i> Show details{/if}
 					</button>
-					{#if order.Status === 'Order Placed'}
+					{#if $APP.User?.UserRole === 'endUser' && order.Status === 'Order Placed'}
 						<button class="btn btn-link p-0 mt-2 text-capitalize text-danger" on:click|stopPropagation={() => toggleCancel(order)}> Cancel </button>
 					{/if}
 				</div>

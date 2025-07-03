@@ -498,11 +498,15 @@ interface IOrdersInfo {
 	confirmationCode: string;
 }
 // fetch orders list ✅
-export async function getOrdersList() {
+export async function getOrdersList(isLogistics: boolean) {
 	interface IOrdersInfoFromServer {
 		orders: IOrdersInfo[];
 	}
 	try {
+		let url = `${env.PUBLIC_ADMIN_URL}/secure/orders`;
+		if (isLogistics) {
+			url += '?filter={"status":"Order Placed"}';
+		}
 		const $APP = get(APP);
 		const headers = {
 			'Content-Type': 'application/json',
@@ -512,7 +516,7 @@ export async function getOrdersList() {
 			method: 'GET',
 			headers,
 		};
-		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/orders`, requestOptions);
+		const res = await fetch(url, requestOptions);
 		const jsonResp: IServerResponse<IOrdersInfoFromServer> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
