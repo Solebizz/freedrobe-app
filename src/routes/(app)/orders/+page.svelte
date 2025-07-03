@@ -13,6 +13,8 @@
 	let loading = true;
 	let expandedOrders: Record<string, boolean> = {};
 
+	$: isLogistics = $APP.User?.UserRole === 'logistics';
+
 	function toggleExpanded(order: App.IOrdersInfo) {
 		bottomSheetStore.setSheet({
 			show: true,
@@ -38,7 +40,6 @@
 	async function fetchOrdersList() {
 		try {
 			if (!$APP.User?.LocationId) return;
-			const isLogistics = $APP.User.UserRole === 'logistics';
 			const resp = await getOrdersList(isLogistics);
 			if (!resp) return (loading = false);
 			$APP.Orders = resp;
@@ -75,7 +76,7 @@
 					<p class="m-0 fs-5">{order.Type} Order</p>
 					<span class="chip bg-secondary text-primary p-1 rounded" class:bg-danger={order.Status === 'Cancelled'} class:text-white={order.Status === 'Cancelled'}>{order.Status}</span>
 				</div>
-				{#if order?.ConfirmationCode}
+				{#if !isLogistics && order?.ConfirmationCode}
 					<p class="mt-3 m-0"><strong>OTP:</strong> {order.ConfirmationCode}</p>
 				{/if}
 				<p class="mt-3 m-0"><strong>Receipt ID:</strong> {order.ReceiptID}</p>
