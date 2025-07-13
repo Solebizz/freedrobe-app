@@ -91,6 +91,12 @@
 				<p class="m-0"><strong>Discount:</strong> ₹{order.Price.Discount}</p>
 				<p class="m-0"><strong>Sub Total:</strong> ₹{order.Price.Total}</p>
 
+				{#if isLogistics && order.UserInfo?.Address}
+					<p class="mt-3 m-0"><strong>Pickup Address:</strong></p>
+					<p class="m-0">Line 1: {order.UserInfo?.Address?.Line1}</p>
+					<p class="m-0">Line 2: {order.UserInfo?.Address?.Line2}</p>
+				{/if}
+
 				{#if order.Articles.length > 0}
 					<hr />
 					<p class="fw-bold fs-6">Articles:</p>

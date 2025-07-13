@@ -479,6 +479,14 @@ interface IArticleInfo {
 	price?: number;
 	status?: string;
 }
+interface IOrdersUserInfo {
+	phone: string;
+	name: string;
+	address: {
+		line1: string;
+		line2: string;
+	};
+}
 interface IOrdersInfo {
 	_id: string;
 	locationId: string;
@@ -496,6 +504,7 @@ interface IOrdersInfo {
 	createdAt: string;
 	paymentGatewayId: string;
 	confirmationCode: string;
+	userInfo?: IOrdersUserInfo;
 }
 // fetch orders list ✅
 export async function getOrdersList(isLogistics: boolean) {
@@ -563,6 +572,25 @@ export async function getOrdersList(isLogistics: boolean) {
 						Taxes: 'taxes',
 						Total: 'total',
 					}),
+				UserInfo: (o) => {
+					if (!o.userInfo) return {};
+
+					return serializeResponse<Partial<App.IUserInfo>, IOrdersUserInfo>(o.userInfo, {
+						Phone: 'phone',
+						Name: 'name',
+						Address: (u) => {
+							const defaults = {
+								Line1: '',
+								Line2: '',
+							};
+							if (!u.address) return defaults;
+							return serializeResponse<App.IAddressInfo, IAddressInfo>(u.address, {
+								Line1: 'line1',
+								Line2: 'line2',
+							});
+						},
+					});
+				},
 			});
 		}
 		return orders;

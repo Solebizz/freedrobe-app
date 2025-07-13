@@ -119,6 +119,7 @@ declare global {
 			ReceiptID: string;
 			PaymentGatewayID?: string;
 			ConfirmationCode?: string;
+			UserInfo?: Partial<IUserInfo>;
 		}
 		interface ICouopnInfo {
 			ID: string;

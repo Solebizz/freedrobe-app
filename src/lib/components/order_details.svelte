@@ -126,6 +126,12 @@
 	<p class="m-0"><strong>Discount:</strong> ₹{order.Price.Discount}</p>
 	<p class="m-0"><strong>Sub Total:</strong> ₹{order.Price.Total}</p>
 
+	{#if isLogistics && order.UserInfo?.Address}
+		<p class="mt-3 m-0"><strong>Pickup Address:</strong></p>
+		<p class="m-0">Line 1: {order.UserInfo?.Address?.Line1}</p>
+		<p class="m-0">Line 2: {order.UserInfo?.Address?.Line2}</p>
+	{/if}
+
 	{#if showPaymentOptionFor.includes(referrerComponent)}
 		<button on:click={handleClickPayment} class="btn btn-primary text-uppercase mb-3 d-flex justify-content-center gap-2 w-100 mt-3">
 			Confirm
