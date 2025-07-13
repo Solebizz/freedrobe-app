@@ -14,6 +14,7 @@
 	let expandedOrders: Record<string, boolean> = {};
 
 	$: isLogistics = $APP.User?.UserRole === 'logistics';
+	$: isEndUser = $APP.User?.UserRole === 'endUser';
 
 	function toggleExpanded(order: App.IOrdersInfo) {
 		bottomSheetStore.setSheet({
@@ -55,7 +56,9 @@
 	}
 </script>
 
-<h1 class="fw-bold mb-3 fs-5">My Orders</h1>
+<h1 class="fw-bold mb-3 fs-5">
+	{#if isEndUser}My{/if} Orders
+</h1>
 
 {#if loading}
 	<Loader />
@@ -65,8 +68,10 @@
 			<p class="fs-6 text-center">No items in the orders yet.</p>
 			<button on:click={handlePickupClick} class:d-none={Object.values($APP?.Orders || {}).length} class="btn btn-primary w-75">Book your first pickup</button>
 		</div>
-	{:else}
+	{:else if isEndUser}
 		<p class="text-center fs-6">No active subscription.</p>
+	{:else}
+		<p class="text-center fs-6">No items in the orders yet.</p>
 	{/if}
 {:else}
 	<div class="d-flex flex-column gap-2 mb-3">

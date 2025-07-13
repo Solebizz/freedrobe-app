@@ -523,7 +523,7 @@ export async function getOrdersList(isLogistics: boolean) {
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
 		const data = jsonResp.data as IOrdersInfoFromServer;
 		const orders: Record<string, App.IOrdersInfo> = {};
-		if (!data.orders) return;
+		if (!data.orders) return {};
 
 		for (let order of data.orders) {
 			orders[order._id] = serializeResponse<App.IOrdersInfo, IOrdersInfo>(order, {
