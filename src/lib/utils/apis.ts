@@ -507,16 +507,19 @@ interface IOrdersInfo {
 	userInfo?: IOrdersUserInfo;
 }
 // fetch orders list ✅
-export async function getOrdersList(isLogistics: boolean) {
+export async function getOrdersList() {
 	interface IOrdersInfoFromServer {
 		orders: IOrdersInfo[];
 	}
 	try {
 		let url = `${env.PUBLIC_ADMIN_URL}/secure/orders`;
-		if (isLogistics) {
-			url += '?filter={"status":"Order Placed"}';
-		}
 		const $APP = get(APP);
+		const userRole = $APP.User?.UserRole || 'endUser';
+		const isLogisticsOrAdmin = ['logistics', 'admin'].includes(userRole);
+
+		if (isLogisticsOrAdmin) {
+			url = `${env.PUBLIC_ADMIN_URL}/secure/orders/staff?filter={"status":"Order Placed"}`;
+		}
 		const headers = {
 			'Content-Type': 'application/json',
 			...(await fetchAuthHeadrs($APP)),
@@ -594,6 +597,96 @@ export async function getOrdersList(isLogistics: boolean) {
 			});
 		}
 		return orders;
+	} catch (e) {
+		const message = (e as Error).message || 'Unkown error';
+		addError(message, 5);
+		console.error(message);
+	}
+}
+
+export async function getOrderDetailsByID(id: string) {
+	try {
+		let url = `${env.PUBLIC_ADMIN_URL}/secure/orders/${id}`;
+		const $APP = get(APP);
+		const userRole = $APP.User?.UserRole || 'endUser';
+		const isLogisticsOrAdmin = ['logistics', 'admin'].includes(userRole);
+
+		if (isLogisticsOrAdmin) {
+			url = `${env.PUBLIC_ADMIN_URL}/secure/orders/staff/${id}`;
+		}
+		const headers = {
+			'Content-Type': 'application/json',
+			...(await fetchAuthHeadrs($APP)),
+		};
+		const requestOptions = {
+			method: 'GET',
+			headers,
+		};
+		const res = await fetch(url, requestOptions);
+		const jsonResp: IServerResponse<IOrdersInfo> = await res.json();
+		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
+		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
+		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
+		const data = jsonResp.data as IOrdersInfo;
+		if (!data) return {};
+
+		const resp = serializeResponse<App.IOrdersInfo, IOrdersInfo>(data, {
+			ID: '_id',
+			LocationID: 'locationId',
+			UserID: 'userId',
+			Type: 'type',
+			Status: 'status',
+			CompletionTimeSlotStart: 'completionTimeSlotStart',
+			CompletionTimeSlotEnd: 'completionTimeSlotEnd',
+			NoOfArticles: 'noOfArticles',
+			Currency: 'currency',
+			Articles: (p) => {
+				const articlesArray = [];
+				for (let article of p.articles) {
+					const s = serializeResponse<App.IArticleInfo, IArticleInfo>(article, {
+						ID: '_id',
+						Name: 'name',
+						Category: 'category',
+						Images: 'images',
+						Price: 'price',
+					});
+					articlesArray.push(s);
+				}
+				return articlesArray;
+			},
+			PaymentID: 'paymentId',
+			CreatedAt: 'createdAt',
+			ReceiptID: 'receiptId',
+			Price: (p) =>
+				serializeResponse<App.IPriceInfo, IPriceFromServer>(p.price, {
+					Currency: 'currency',
+					BasePrice: 'basePrice',
+					Discount: 'discount',
+					DiscountReason: 'discountReason',
+					Taxes: 'taxes',
+					Total: 'total',
+				}),
+			UserInfo: (o) => {
+				if (!o.userInfo) return {};
+
+				return serializeResponse<Partial<App.IUserInfo>, IOrdersUserInfo>(o.userInfo, {
+					Phone: 'phone',
+					Name: 'name',
+					Address: (u) => {
+						const defaults = {
+							Line1: '',
+							Line2: '',
+						};
+						if (!u.address) return defaults;
+						return serializeResponse<App.IAddressInfo, IAddressInfo>(u.address, {
+							Line1: 'line1',
+							Line2: 'line2',
+						});
+					},
+				});
+			},
+		});
+		return resp;
 	} catch (e) {
 		const message = (e as Error).message || 'Unkown error';
 		addError(message, 5);

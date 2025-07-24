@@ -14,6 +14,7 @@
 	let expandedOrders: Record<string, boolean> = {};
 
 	$: isLogistics = $APP.User?.UserRole === 'logistics';
+	$: isAdmin = $APP.User?.UserRole === 'admin';
 	$: isEndUser = $APP.User?.UserRole === 'endUser';
 
 	function toggleExpanded(order: App.IOrdersInfo) {
@@ -41,12 +42,16 @@
 	async function fetchOrdersList() {
 		try {
 			if (!$APP.User?.LocationId) return;
-			const resp = await getOrdersList(isLogistics);
+			const resp = await getOrdersList();
 			if (!resp) return (loading = false);
 			$APP.Orders = resp;
 		} finally {
 			loading = false;
 		}
+	}
+
+	function handleAddDetails(orderID: string) {
+		goto(`/orders/add-details/${orderID}`);
 	}
 
 	onMount(fetchOrdersList);
@@ -122,9 +127,15 @@
 					</div>
 				{/if}
 				<div class="d-flex gap-3 mt-4">
-					<button class="btn btn-link p-0 mt-2 text-capitalize" on:click={() => toggleExpanded(order)}>
-						{#if expandedOrders[order.ID]}<i class="bi bi-caret-up-fill"></i> Show less{:else}<i class="bi bi-caret-down-fill"></i> Show details{/if}
-					</button>
+					{#if isAdmin}
+						<button class="btn btn-link p-0 mt-2 text-capitalize" on:click={() => handleAddDetails(order.ID)}>
+							<i class="bi bi-plus-circle"></i> Add details
+						</button>
+					{:else}
+						<button class="btn btn-link p-0 mt-2 text-capitalize" on:click={() => toggleExpanded(order)}>
+							{#if expandedOrders[order.ID]}<i class="bi bi-caret-up-fill"></i> Show less{:else}<i class="bi bi-caret-down-fill"></i> Show details{/if}
+						</button>
+					{/if}
 					{#if $APP.User?.UserRole === 'endUser' && order.Status === 'Order Placed'}
 						<button class="btn btn-link p-0 mt-2 text-capitalize text-danger" on:click|stopPropagation={() => toggleCancel(order)}> Cancel </button>
 					{/if}
