@@ -1030,7 +1030,7 @@ export async function changeOrderStatus(params: IChangeOrderStatusParams) {
 		const requestOptions = {
 			method: 'PUT',
 			headers,
-			body: JSON.stringify(params),
+			body: JSON.stringify(body),
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/orders/logistics/${orderId}`, requestOptions);
 		const jsonResp: IServerResponse<IUserInfo> = await res.json();
