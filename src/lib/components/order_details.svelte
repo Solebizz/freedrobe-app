@@ -159,7 +159,7 @@
 			{/each}
 		</div>
 	{/if}
-	{#if isLogistics}
+	{#if isLogistics && order.Status === 'Order Placed'}
 		<form class="position-relative d-flex flex-column flex-grow-1 justify-content-between gap-1 mt-4" bind:this={form} on:submit|preventDefault={submitForm}>
 			{#each fields as { key, definition }}
 				<div data-field={key}>
