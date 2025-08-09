@@ -518,7 +518,7 @@ export async function getOrdersList() {
 		const isLogisticsOrAdmin = ['logistics', 'admin'].includes(userRole);
 
 		if (isLogisticsOrAdmin) {
-			url = `${env.PUBLIC_ADMIN_URL}/secure/orders/staff?filter={"status":"Order Placed"}`;
+			url = `${env.PUBLIC_ADMIN_URL}/secure/orders/staff`;
 		}
 		const headers = {
 			'Content-Type': 'application/json',
