@@ -13,7 +13,8 @@ export async function load() {
 	if ($APP.Auth?.AuthToken) {
 		const resp = await getUserInfo();
 		if (!resp?.userInfo) {
-			addError('Error getting user info. Please login again');
+			// TODO revisit this again
+			//addError('Error getting user info. Please login again');
 			throw redirect(307, '/login');
 		}
 

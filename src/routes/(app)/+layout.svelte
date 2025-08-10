@@ -11,7 +11,8 @@
 
 	onMount(() => {
 		if (!$APP.Auth?.AuthToken || !$APP.Auth?.RefreshToken) {
-			addError('Something went wrong. Please login again.');
+			// TODO revisit this again
+			// addError('Something went wrong. Please login again.');
 			goto('/login');
 		}
 	});
