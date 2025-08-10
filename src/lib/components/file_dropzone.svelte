@@ -1,8 +1,10 @@
 <script lang="ts">
-	// import ImageInput from './image_input.svelte';
+	import { env } from '$env/dynamic/public';
+	import { APP } from '$lib/stores/appMain';
+	import { getUploadProgress, uploadImage } from '$lib/utils/apis';
 
 	enum FileTypes {
-		image = 'image',
+		image = 'image/jpeg',
 		csv = 'csv',
 		test = 'test',
 	}
@@ -13,12 +15,13 @@
 	export let disabled = false;
 	export let file_type: FileType = FileTypes.image;
 	export let returnURL = true;
-	export let required = false;
 
 	let error = '';
 	let input: HTMLInputElement;
 	let dragging = false;
-	let showCameraPreview = false;
+
+	let file_type_icon = 'image';
+	if (file_type == FileTypes.csv) file_type_icon = 'file-csv';
 
 	function drop(e: DragEvent) {
 		e.preventDefault();
@@ -36,7 +39,7 @@
 		else error = 'Invalid file list';
 	}
 
-	function handleFileList(files: FileList) {
+	async function handleFileList(files: FileList) {
 		if (disabled) return;
 		if (!files.length) return;
 		let file = files[0];
@@ -47,26 +50,27 @@
 			if (maxSize && file.size > maxSize) {
 				throw new Error(`File size ${file.size} exceeds allowed ${maxSize}`);
 			}
+
+			console.log('her=e====', returnURL);
 			//upload and return URL to file
 			if (returnURL) {
 				//upload file
-				const formData = new FormData();
-				formData.append('file', file);
-				fetch('/app/api/utils/upload', {
-					method: 'POST',
-					body: formData,
-				})
-					.then((res) => res.json())
-					.then((res) => {
-						if (res.url) {
-							value = res.url;
-						} else {
-							error = res.error;
-						}
-					})
-					.catch((err) => {
-						error = err.message;
-					});
+				const id = await uploadImage(file);
+				if (!id) throw Error('Server error.');
+
+				const intervalID = setInterval(() => {
+					getUploadProgress(id)
+						.then((res) => {
+							if (res?.UploadProgress === 100) {
+								value = res.URL || '';
+								clearInterval(intervalID);
+							}
+						})
+						.catch((err) => {
+							error = err.message;
+							clearInterval(intervalID);
+						});
+				}, 1000);
 			}
 			//return data
 			else {
@@ -87,12 +91,12 @@
 </script>
 
 <button
-	class="drop rounded-pill border"
-	class:p-3={!showCameraPreview}
+	class="drop rounded"
 	class:has_file={!!value}
 	class:dragging
 	type="button"
 	on:drop={drop}
+	on:click={() => (!disabled ? input.click() : null)}
 	on:dragover={(ev) => {
 		ev.preventDefault();
 	}}
@@ -101,30 +105,32 @@
 	{#if value}
 		{#if file_type === FileTypes.image}
 			<div class="d-flex align-items-center gap-2 mb-2">
-				<img class="preview" src={value} alt="Uploaded preview" />
+				<i class="fas fa-circle-check text-success"></i>
+				<img src={value} alt="Uploaded preview" />
 			</div>
+		{:else}
+			<i class="fal fa-{file_type_icon} file_icon"></i>
 		{/if}
-		<!-- <span class="btn btn-outline-dark" class:d-none={showCameraPreview} on:click={() => (!disabled ? input.click() : null)}><i class="bi bi-arrow-clockwise"></i> Replace</span> -->
+		<span class="btn btn-outline-dark"><i class="far fa-refresh"></i> Replace</span>
 	{:else}
-		<!-- <span class="btn btn-outline-dark" class:d-none={showCameraPreview} on:click={() => (!disabled ? input.click() : null)}><i class="bi bi-file-arrow-up"></i> Upload</span> -->
+		<span class="btn btn-outline-dark"><i class="far fa-upload"></i> Upload</span>
 	{/if}
-	<!-- <span class="mt-2" class:d-none={showCameraPreview}>OR</span> -->
-	<span class="btn" class:d-none={showCameraPreview} on:click={() => (showCameraPreview = true)}><i class="bi bi-camera fs-1"></i></span>
 	{#if error}<small class="text-danger mt-1">{error}</small>{/if}
-	<input type="file" on:change={selected} class="d-none" bind:this={input} {disabled} {required} />
-	{#if showCameraPreview}
-		<!-- <ImageInput bind:input bind:showCameraPreview /> -->
-	{/if}
+	<input type="file" on:change={selected} class="d-none" bind:this={input} {disabled} />
 </button>
 
 <style lang="scss">
-	.preview {
-		height: 5rem;
-		width: 5rem;
-	}
 	.drop {
+		border: 2px dashed var(--bs-border-color);
+		display: block;
+		width: 100%;
+		padding: 0 10px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
 		background: transparent;
-		// min-height: 120px;
+		min-height: 120px;
 		&.has_file {
 			border-color: var(--bs-success);
 		}

@@ -970,6 +970,7 @@ export async function fetchCouponInfo(text: string) {
 	}
 }
 
+// get prices for each category ✅
 export async function fetchPrices(type: string) {
 	interface IPricesInfo {
 		_id: string;
@@ -1015,6 +1016,7 @@ interface IChangeOrderStatusParams {
 	otp: number;
 	noOfArticles?: number;
 }
+// change order status to done or cancelled ✅
 export async function changeOrderStatus(params: IChangeOrderStatusParams) {
 	const { otp, orderId, noOfArticles = 0 } = params;
 	try {
@@ -1040,6 +1042,115 @@ export async function changeOrderStatus(params: IChangeOrderStatusParams) {
 		const noticeObj: NoticeWithoutMeta = {
 			type: 'info',
 			msg: 'OTP Confirmed',
+			snooze: 5,
+		};
+		addNotice(noticeObj);
+		return true;
+	} catch (e) {
+		const message = (e as Error).message || 'Unkown error';
+		addError(message, 5);
+		console.error(message);
+	}
+}
+
+// start uploading image ✅
+export async function uploadImage(file: File) {
+	try {
+		interface IUploadInfo {
+			_id: string;
+			uploadProgress: number;
+		}
+		const $APP = get(APP);
+		const headers = {
+			...(await fetchAuthHeadrs($APP)),
+		};
+		const formData = new FormData();
+		formData.append('file', file);
+		const requestOptions = {
+			method: 'POST',
+			headers,
+			body: formData,
+		};
+		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/uploads`, requestOptions);
+		const jsonResp: IServerResponse<IUploadInfo> = await res.json();
+		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
+		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
+		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
+
+		const data = jsonResp.data;
+		return data._id;
+	} catch (e) {
+		const message = (e as Error).message || 'Unkown error';
+		addError(message, 5);
+		console.error(message);
+	}
+}
+
+// get image upload progress ✅
+export async function getUploadProgress(id: string) {
+	try {
+		interface IUploadInfo {
+			_id: string;
+			uploadProgress: number;
+			url?: string;
+		}
+		const $APP = get(APP);
+		const headers = {
+			'Content-Type': 'application/json',
+			...(await fetchAuthHeadrs($APP)),
+		};
+		const requestOptions = {
+			method: 'GET',
+			headers,
+		};
+		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/uploads/${id}`, requestOptions);
+		const jsonResp: IServerResponse<IUploadInfo> = await res.json();
+		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
+		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
+		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
+
+		const data = jsonResp.data;
+		const resp = {
+			ID: data._id,
+			UploadProgress: data.uploadProgress,
+			URL: data.url,
+		};
+		return resp;
+	} catch (e) {
+		const message = (e as Error).message || 'Unkown error';
+		addError(message, 5);
+		console.error(message);
+	}
+}
+
+interface ICompleteOrderPrams {
+	items: Record<string, any>[];
+	orderId: string;
+}
+export async function completeOrder(params: ICompleteOrderPrams) {
+	const { items, orderId } = params;
+	try {
+		const $APP = get(APP);
+		const headers = {
+			'Content-Type': 'application/json',
+			...(await fetchAuthHeadrs($APP)),
+		};
+		const body = {
+			items,
+		};
+		const requestOptions = {
+			method: 'PUT',
+			headers,
+			body: JSON.stringify(body),
+		};
+		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/orders/admin/${orderId}`, requestOptions);
+		const jsonResp: IServerResponse<IUserInfo> = await res.json();
+		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
+		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
+		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
+		const noticeObj: NoticeWithoutMeta = {
+			type: 'info',
+			msg: 'Articles added successfully.',
 			snooze: 5,
 		};
 		addNotice(noticeObj);

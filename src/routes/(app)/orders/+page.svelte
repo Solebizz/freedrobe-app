@@ -126,8 +126,8 @@
 						{/if}
 					</div>
 				{/if}
-				<div class="d-flex gap-3 mt-4">
-					{#if isAdmin}
+				<div class="d-flex gap-3 mt-1">
+					{#if isAdmin && !order.Articles.length && order.Status === 'Picked Up'}
 						<button class="btn btn-link p-0 mt-2 text-capitalize" on:click={() => handleAddDetails(order.ID)}>
 							<i class="bi bi-plus-circle"></i> Add details
 						</button>

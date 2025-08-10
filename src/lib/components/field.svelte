@@ -273,7 +273,7 @@
 
 				<textarea {value} {...attributes} class="d-none" aria-hidden="true" /> -->
 			{:else if type === 'image'}
-				<FileDropzone bind:value maxSize={attributes.maxlength} disabled={attributes.disabled} required={attributes.required} returnURL={false} />
+				<FileDropzone bind:value maxSize={attributes.maxlength} disabled={attributes.disabled} />
 				<textarea name={attributes.name} class="d-none" {...attributes}>{value}</textarea>
 				<!-- {:else if type === 'camera'}
 				<ImageInput required={attributes.required} /> -->
