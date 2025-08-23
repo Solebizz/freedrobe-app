@@ -22,7 +22,7 @@
 		Description: 'Discount Offer: 50% Off',
 		Discount: 50,
 	};
-	let termsText = 'Subscription will start from 1st July.';
+	let termsText = 'Subscription will start from the date of first pick up.';
 
 	onMount(async () => {
 		const resp = await getSubscriptionsList();
