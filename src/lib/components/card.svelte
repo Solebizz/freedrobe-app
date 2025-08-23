@@ -26,7 +26,7 @@
 	}
 </script>
 
-<div class="card bg-white" on:click={handleCardClick}>
+<div class="card bg-white" class:opacity-50={article.Status === 'Out of Store'} on:click={handleCardClick}>
 	<img class="d-block w-100 rounded-top-4" src={article.Images[0]} alt={article.Name} />
 	<div class="card-body">
 		<h5 class="card-title fw-bold">{article.Name}</h5>
