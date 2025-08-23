@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Field, { type IField } from '$lib/components/field.svelte';
 	import Loader from '$lib/components/loader.svelte';
+	import { APP } from '$lib/stores/appMain';
 	import { addError } from '$lib/stores/notices';
 	import { fetchPrices } from '$lib/utils/apis';
 
@@ -35,6 +36,8 @@
 		try {
 			loading = true;
 			if (!category.Type) return;
+			if (!$APP.User?.LocationId) return addError('Please update address in Profile.');
+
 			const resp = await fetchPrices(category.Type);
 			if (!resp?.pricesInfo) return addError('No Pirces exists for this category.');
 			priceInfo = resp.pricesInfo;
