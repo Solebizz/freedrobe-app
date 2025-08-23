@@ -177,7 +177,7 @@
 			<p class="mb-1"><strong>Type:</strong> {$APP.User?.SubscriptionName}</p>
 			<p class="mb-1">
 				<strong>Valid Until:</strong>
-				{DateTime.fromMillis(Number($APP.User?.SubscriptionValidityPeriod)).toFormat('dd LLL yyyy')}
+				{DateTime.fromMillis(Number($APP.User?.SubscriptionValidTill)).toFormat('dd LLL yyyy')}
 			</p>
 		</div>
 
