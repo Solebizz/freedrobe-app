@@ -30,11 +30,13 @@
 	<img class="d-block w-100 rounded-top-4" src={article.Images[0]} alt={article.Name} />
 	<div class="card-body">
 		<h5 class="card-title fw-bold">{article.Name}</h5>
-		{#if article.Status === 'In Store'}
-			<button class="border-0 bg-secondary text-primary p-1 rounded shadow p-2" on:click|stopPropagation={() => toggleBasket(article.ID)}>
-				{$APP.ArticlesInBag && $APP.ArticlesInBag.includes(article.ID) ? 'Remove' : 'Add to bag'}
-			</button>
-		{/if}
+		<button
+			disabled={article.Status !== 'In Store'}
+			class:opacity-50={article.Status !== 'In Store'}
+			class="border-0 bg-secondary text-primary rounded shadow p-2"
+			on:click|stopPropagation={() => toggleBasket(article.ID)}>
+			{$APP.ArticlesInBag && $APP.ArticlesInBag.includes(article.ID) ? 'Remove' : 'Add to bag'}
+		</button>
 		<span class="status position-absolute" class:opacity-90={article.Status === 'In Store'} class:bg-success={article.Status === 'In Store'} style="top: 0.5rem; right: 0.5rem;">
 			{article.Status}
 		</span>
