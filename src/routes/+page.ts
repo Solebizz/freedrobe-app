@@ -20,6 +20,7 @@ export async function load() {
 
 		$APP.User = resp?.userInfo;
 		APP.set($APP);
+		if ($APP.User.ActiveSubscription) throw redirect(307, '/closet');
 		throw redirect(307, '/profile');
 	}
 	throw redirect(307, '/login');
