@@ -242,12 +242,6 @@ export async function saveUserInfo(params: ISaveUserInfoParams) {
 			SubscriptionValidityPeriod: 'subscriptionValidityPeriod',
 			SubscriptionName: 'subscriptionName',
 		});
-		const noticeObj: NoticeWithoutMeta = {
-			type: 'info',
-			msg: 'Profile Updated Successfully.',
-			snooze: 5,
-		};
-		addNotice(noticeObj);
 		return userInfo;
 	} catch (e) {
 		const message = (e as Error).message || 'Unkown error';

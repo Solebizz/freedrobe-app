@@ -1,6 +1,9 @@
 <script lang="ts">
 	import Field, { type IField } from '$lib/components/field.svelte';
+	import ProfileUpdateNextSteps from '$lib/components/profile_update_next_steps.svelte';
 	import { APP } from '$lib/stores/appMain';
+	import { bottomSheetStore } from '$lib/stores/bottom_sheet';
+	import { addNotice, type NoticeWithoutMeta } from '$lib/stores/notices';
 	import { getLocationsInfo, saveUserInfo } from '$lib/utils/apis';
 	import { DateTime } from 'luxon';
 	import { onMount } from 'svelte';
@@ -13,6 +16,8 @@
 		AddressLine1: $APP.User?.Address?.Line1,
 		AddressLine2: $APP.User?.Address?.Line2,
 	};
+
+	const isProfileUpdatedForFirstTime = !$APP.User?.LocationId;
 
 	let locationInfo: App.ILocationInfo[] | undefined = [];
 	let locationId = '';
@@ -166,7 +171,22 @@
 		};
 		// save this data in user
 		const user = await saveUserInfo(params);
-		if (user) $APP.User = user;
+		if (!user) return;
+
+		$APP.User = user;
+		if (isProfileUpdatedForFirstTime)
+			bottomSheetStore.setSheet({
+				show: true,
+				children: ProfileUpdateNextSteps,
+			});
+		else {
+			const noticeObj: NoticeWithoutMeta = {
+				type: 'info',
+				msg: 'Profile Updated Successfully.',
+				snooze: 5,
+			};
+			addNotice(noticeObj);
+		}
 	}
 </script>
 
