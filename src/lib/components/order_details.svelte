@@ -104,6 +104,9 @@
 		},
 	];
 
+	let completionTime = order.CompletionTimeSlotEnd ? DateTime.fromMillis(Number(order.CompletionTimeSlotEnd)).toFormat('dd LLL yyyy, hh:mma') : null;
+	let currentTime = DateTime.now().toMillis();
+
 	$: disabled = !form || !form.checkValidity() || !data;
 </script>
 
@@ -121,6 +124,9 @@
 	{/if}
 	<p class="mt-3 m-0"><strong>Receipt ID:</strong> {order.ReceiptID}</p>
 	<p class="m-0"><strong>Placed on:</strong> {DateTime.fromISO(order.CreatedAt).toFormat('dd LLL yyyy, hh:mma')}</p>
+	{#if completionTime}
+		<p class="m-0"><strong>{Number(order.CompletionTimeSlotEnd) > currentTime ? `${order.Type} by: ` : `${order.Type} completed: `}</strong> {completionTime}</p>
+	{/if}
 	<p><strong>No. of Articles:</strong> {order.NoOfArticles}</p>
 	<p class="m-0"><strong>Order Total:</strong> ₹{order.Price.BasePrice}</p>
 	<p class="m-0"><strong>Discount:</strong> ₹{order.Price.Discount}</p>

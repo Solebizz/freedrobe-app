@@ -12,6 +12,7 @@
 
 	let loading = true;
 	let expandedOrders: Record<string, boolean> = {};
+	let currentTime = DateTime.now().toMillis();
 
 	$: isLogistics = $APP.User?.UserRole === 'logistics';
 	$: isAdmin = $APP.User?.UserRole === 'admin';
@@ -81,6 +82,7 @@
 {:else}
 	<div class="d-flex flex-column gap-2 mb-3">
 		{#each Object.values($APP?.Orders || {}) as order}
+			{@const completionTime = order.CompletionTimeSlotEnd ? DateTime.fromMillis(Number(order.CompletionTimeSlotEnd)).toFormat('dd LLL yyyy, hh:mma') : null}
 			<div class="order-card">
 				<div class="d-flex justify-content-between align-items-center">
 					<p class="m-0 fs-5">{order.Type} Order</p>
@@ -91,6 +93,9 @@
 				{/if}
 				<p class="mt-3 m-0"><strong>Receipt ID:</strong> {order.ReceiptID}</p>
 				<p class="m-0"><strong>Placed on:</strong> {DateTime.fromISO(order.CreatedAt).toFormat('dd LLL yyyy, hh:mma')}</p>
+				{#if completionTime}
+					<p class="m-0"><strong>{Number(order.CompletionTimeSlotEnd) > currentTime ? `${order.Type} by: ` : `${order.Type} completed: `}</strong> {completionTime}</p>
+				{/if}
 				<p><strong>No. of Articles:</strong> {order.NoOfArticles}</p>
 				<p class="m-0"><strong>Order Total:</strong> ₹{order.Price.BasePrice}</p>
 				<p class="m-0"><strong>Discount:</strong> ₹{order.Price.Discount}</p>
