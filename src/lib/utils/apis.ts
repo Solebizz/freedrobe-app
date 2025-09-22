@@ -1040,3 +1040,67 @@ export async function completeOrder(params: Api.ICompleteOrderPrams) {
 		console.error(message);
 	}
 }
+
+// get all the user with active subscription ✅
+export async function fetchUsersWithActiveSubscription() {
+	try {
+		interface IServerUserInfo {
+			user: Api.IUserInfo[];
+		}
+		const $APP = get(APP);
+		const headers = {
+			'Content-Type': 'application/json',
+			...(await fetchAuthHeadrs($APP)),
+		};
+		const requestOptions = {
+			method: 'GET',
+			headers,
+		};
+		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/users/admin?filter={"activeSubscription":true}`, requestOptions);
+		const jsonResp: Api.IServerResponse<IServerUserInfo> = await res.json();
+		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
+		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
+		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
+		const data = jsonResp.data.user;
+		const resp: App.IUserInfo[] = [];
+		data.forEach((user) => {
+			const userInfo = serializeResponse<App.IUserInfo, Api.IUserInfo>(user, {
+				Phone: 'phone',
+				UserRole: 'user_role',
+				StorageValue: 'storageValue',
+				TotalStorageValue: 'totalStorageValue',
+				WashValue: 'freeWashValue',
+				DryCleanValue: 'freeDryCleanValue',
+				LogisticValue: 'freeLogisticValue',
+				ActiveSubscription: 'activeSubscription',
+				Deleted: 'deleted',
+				Blocked: 'blocked',
+				BlockedReason: 'blockedReason',
+				Address: (d) => {
+					const defaults = {
+						Line1: '',
+						Line2: '',
+					};
+					if (!d.address) return defaults;
+					return serializeResponse<App.IAddressInfo, Api.IAddressInfo>(d.address, {
+						Line1: 'line1',
+						Line2: 'line2',
+					});
+				},
+				Gender: 'gender',
+				LocationId: 'locationId',
+				Name: 'name',
+				SubscriptionId: 'subscriptionId',
+				SubscriptionValidTill: 'subscriptionValidTill',
+				SubscriptionValidityPeriod: 'subscriptionValidityPeriod',
+				SubscriptionName: 'subscriptionName',
+			});
+			resp.push(userInfo);
+		});
+		return resp;
+	} catch (e) {
+		const message = (e as Error).message || 'Unkown error';
+		addError(message, 5);
+		console.error(message);
+	}
+}
