@@ -63,7 +63,7 @@
 </script>
 
 <h1 class="fw-bold mb-3 fs-5">
-	{#if isEndUser}My{/if} Orders
+	{#if isEndUser}My{/if} Orders ({Object.keys($APP.Orders || {}).length})
 </h1>
 
 {#if loading}
