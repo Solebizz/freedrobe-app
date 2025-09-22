@@ -1,6 +1,126 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
 declare global {
+	namespace Api {
+		interface IAddressInfo {
+			line1: string;
+			line2: string;
+		}
+		interface IUserInfo {
+			phone: string;
+			user_role: string;
+			storageValue: number;
+			totalStorageValue: number;
+			freeWashValue: number;
+			freeDryCleanValue: number;
+			freeLogisticValue: number;
+			activeSubscription: number;
+			deleted: boolean;
+			blocked: boolean;
+			blockedReason: string;
+			address?: IAddressInfo;
+			gender?: string;
+			locationId?: string;
+			name?: string;
+			subscriptionId?: string;
+			subscriptionValidTill?: string;
+			subscriptionValidityPeriod?: string;
+			subscriptionName?: string;
+		}
+		interface IServerResponse<T = unknown> {
+			status: number;
+			success: boolean;
+			message: string;
+			data: T;
+		}
+		interface IVerifyOTPParams {
+			sessionId: string;
+			otp: string;
+		}
+		interface ISaveUserInfoParams {
+			name: string;
+			gender: string;
+			address: IAddressInfo;
+			locationId: string;
+		}
+		interface IBuySubscriptionParams {
+			subscriptionId: string;
+			protectionId?: string;
+			couponId?: string;
+		}
+		interface IActivateSubscriptionParams {
+			gatewayEntityId: string;
+			paymentId: string;
+			signature: string;
+		}
+		interface ICompleteOrderPrams {
+			items: Record<string, any>[];
+			orderId: string;
+		}
+		interface IPriceFromServer {
+			currency: string;
+			basePrice: number;
+			discount: number;
+			discountReason: string;
+			taxes: number;
+			total: number;
+		}
+		interface IArticleInfo {
+			_id: string;
+			name: string;
+			category: string;
+			images: string[];
+			price?: number;
+			status?: string;
+		}
+		interface IOrdersUserInfo {
+			phone: string;
+			name: string;
+			address: {
+				line1: string;
+				line2: string;
+			};
+		}
+		interface IOrdersInfo {
+			_id: string;
+			locationId: string;
+			userId: string;
+			type: string; // TODO can we convert this to enum
+			status: string; // TODO can we convert this to enum
+			completionTimeSlotStart: string;
+			completionTimeSlotEnd: string;
+			noOfArticles: number;
+			price: IPriceFromServer;
+			currency: string;
+			receiptId: string;
+			articles: IArticleInfo[]; // TODO change this later
+			paymentId: string;
+			createdAt: string;
+			paymentGatewayId: string;
+			confirmationCode: string;
+			userInfo?: IOrdersUserInfo;
+		}
+		interface IPlaceOrdersParams {
+			type: string; // TODO can we make this enum
+			noOfArticles?: number;
+			articles?: string[];
+			completionTimeSlotStart?: number;
+			completionTimeSlotEnd?: number;
+		}
+		interface IConfirmOrderParams {
+			paymentId?: string;
+			signature?: string;
+			orderId: string;
+		}
+		interface ICancelOrderParams {
+			orderId: string;
+		}
+		interface IChangeOrderStatusParams {
+			orderId: string;
+			otp: number;
+			noOfArticles?: number;
+		}
+	}
 	namespace App {
 		// interface Error {}
 		// interface Locals {}

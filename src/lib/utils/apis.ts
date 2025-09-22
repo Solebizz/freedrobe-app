@@ -4,12 +4,6 @@ import { addError, addNotice, type NoticeWithoutMeta } from '$lib/stores/notices
 import { get } from 'svelte/store';
 import { fetchAuthHeadrs, serializeResponse } from './globals';
 
-interface IServerResponse<T = unknown> {
-	status: number;
-	success: boolean;
-	message: string;
-	data: T;
-}
 // Get OTP ✅
 export async function getOTP(phone: string) {
 	interface IOTP {
@@ -27,7 +21,7 @@ export async function getOTP(phone: string) {
 			body: JSON.stringify(body),
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/public/users/request-otp`, requestOptions);
-		const jsonResp: IServerResponse<IOTP> = await res.json();
+		const jsonResp: Api.IServerResponse<IOTP> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
@@ -42,37 +36,9 @@ export async function getOTP(phone: string) {
 		console.error(message);
 	}
 }
-export interface IAddressInfo {
-	line1: string;
-	line2: string;
-}
-export interface IUserInfo {
-	phone: string;
-	user_role: string;
-	storageValue: number;
-	totalStorageValue: number;
-	freeWashValue: number;
-	freeDryCleanValue: number;
-	freeLogisticValue: number;
-	activeSubscription: number;
-	deleted: boolean;
-	blocked: boolean;
-	blockedReason: string;
-	address?: IAddressInfo;
-	gender?: string;
-	locationId?: string;
-	name?: string;
-	subscriptionId?: string;
-	subscriptionValidTill?: string;
-	subscriptionValidityPeriod?: string;
-	subscriptionName?: string;
-}
-interface IVerifyOTPParams {
-	sessionId: string;
-	otp: string;
-}
+
 // Verify OTP and get user info ✅
-export async function verifyOTPAndGetUserInfo(params: IVerifyOTPParams) {
+export async function verifyOTPAndGetUserInfo(params: Api.IVerifyOTPParams) {
 	const { sessionId, otp } = params;
 	interface IAuthInfo {
 		refreshToken: string;
@@ -82,7 +48,7 @@ export async function verifyOTPAndGetUserInfo(params: IVerifyOTPParams) {
 	}
 
 	interface IVerifyOTPReponseFromServer extends IAuthInfo {
-		user: IUserInfo;
+		user: Api.IUserInfo;
 	}
 	try {
 		const headers = new Headers();
@@ -97,7 +63,7 @@ export async function verifyOTPAndGetUserInfo(params: IVerifyOTPParams) {
 			body: JSON.stringify(body),
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/public/users/verify-otp`, requestOptions);
-		const jsonResp: IServerResponse<IVerifyOTPReponseFromServer> = await res.json();
+		const jsonResp: Api.IServerResponse<IVerifyOTPReponseFromServer> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
@@ -108,7 +74,7 @@ export async function verifyOTPAndGetUserInfo(params: IVerifyOTPParams) {
 			RefreshToken: 'refreshToken',
 			RefershTokenExpiryAt: 'refershTokenExpiryAt',
 		});
-		const userInfo = serializeResponse<App.IUserInfo, IUserInfo>(data.user, {
+		const userInfo = serializeResponse<App.IUserInfo, Api.IUserInfo>(data.user, {
 			Phone: 'phone',
 			UserRole: 'user_role',
 			StorageValue: 'storageValue',
@@ -126,7 +92,7 @@ export async function verifyOTPAndGetUserInfo(params: IVerifyOTPParams) {
 					Line2: '',
 				};
 				if (!u.address) return defaults;
-				return serializeResponse<App.IAddressInfo, IAddressInfo>(u.address, {
+				return serializeResponse<App.IAddressInfo, Api.IAddressInfo>(u.address, {
 					Line1: 'line1',
 					Line2: 'line2',
 				});
@@ -163,7 +129,7 @@ export async function getLocationsInfo() {
 			method: 'GET',
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/public/locations`, requestOptions);
-		const jsonResp: IServerResponse<ILocationsInfoFromServer> = await res.json();
+		const jsonResp: Api.IServerResponse<ILocationsInfoFromServer> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
@@ -186,14 +152,8 @@ export async function getLocationsInfo() {
 	}
 }
 
-interface ISaveUserInfoParams {
-	name: string;
-	gender: string;
-	address: IAddressInfo;
-	locationId: string;
-}
 // save user info ✅
-export async function saveUserInfo(params: ISaveUserInfoParams) {
+export async function saveUserInfo(params: Api.ISaveUserInfoParams) {
 	try {
 		const $APP = get(APP);
 		const headers = {
@@ -206,12 +166,12 @@ export async function saveUserInfo(params: ISaveUserInfoParams) {
 			body: JSON.stringify(params),
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/users`, requestOptions);
-		const jsonResp: IServerResponse<IUserInfo> = await res.json();
+		const jsonResp: Api.IServerResponse<Api.IUserInfo> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
-		const data = jsonResp.data as IUserInfo;
-		const userInfo = serializeResponse<App.IUserInfo, IUserInfo>(data, {
+		const data = jsonResp.data as Api.IUserInfo;
+		const userInfo = serializeResponse<App.IUserInfo, Api.IUserInfo>(data, {
 			Phone: 'phone',
 			UserRole: 'user_role',
 			StorageValue: 'storageValue',
@@ -229,7 +189,7 @@ export async function saveUserInfo(params: ISaveUserInfoParams) {
 					Line2: '',
 				};
 				if (!d.address) return defaults;
-				return serializeResponse<App.IAddressInfo, IAddressInfo>(d.address, {
+				return serializeResponse<App.IAddressInfo, Api.IAddressInfo>(d.address, {
 					Line1: 'line1',
 					Line2: 'line2',
 				});
@@ -287,7 +247,7 @@ export async function getSubscriptionsList(protection = false) {
 			method: 'GET',
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/public/subscriptions${protection ? '?filter={"protection": "true"}' : ''}`, requestOptions);
-		const jsonResp: IServerResponse<ISubscriptionsInfoFromServer> = await res.json();
+		const jsonResp: Api.IServerResponse<ISubscriptionsInfoFromServer> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
@@ -336,13 +296,8 @@ export async function getSubscriptionsList(protection = false) {
 	}
 }
 
-interface IBuySubscriptionParams {
-	subscriptionId: string;
-	protectionId?: string;
-	couponId?: string;
-}
 // save user info ✅
-export async function buySubscription(params: IBuySubscriptionParams) {
+export async function buySubscription(params: Api.IBuySubscriptionParams) {
 	interface IPriceBreakUp {
 		subscription: number;
 		discountPercent: number;
@@ -366,7 +321,7 @@ export async function buySubscription(params: IBuySubscriptionParams) {
 			body: JSON.stringify(params),
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/subscriptions/buy`, requestOptions);
-		const jsonResp: IServerResponse<ISubscriptionOrderResponseFromServer> = await res.json();
+		const jsonResp: Api.IServerResponse<ISubscriptionOrderResponseFromServer> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
@@ -394,13 +349,8 @@ export async function buySubscription(params: IBuySubscriptionParams) {
 	}
 }
 
-interface IActivateSubscriptionParams {
-	gatewayEntityId: string;
-	paymentId: string;
-	signature: string;
-}
 // activate subscription ✅
-export async function activateSubscription(params: IActivateSubscriptionParams) {
+export async function activateSubscription(params: Api.IActivateSubscriptionParams) {
 	try {
 		const $APP = get(APP);
 		const headers = {
@@ -413,12 +363,12 @@ export async function activateSubscription(params: IActivateSubscriptionParams) 
 			body: JSON.stringify(params),
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/subscriptions/activate`, requestOptions);
-		const jsonResp: IServerResponse<IUserInfo> = await res.json();
+		const jsonResp: Api.IServerResponse<Api.IUserInfo> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
 		const data = jsonResp.data;
-		const userInfo = serializeResponse<App.IUserInfo, IUserInfo>(data, {
+		const userInfo = serializeResponse<App.IUserInfo, Api.IUserInfo>(data, {
 			Phone: 'phone',
 			UserRole: 'user_role',
 			StorageValue: 'storageValue',
@@ -436,7 +386,7 @@ export async function activateSubscription(params: IActivateSubscriptionParams) 
 					Line2: '',
 				};
 				if (!d.address) return defaults;
-				return serializeResponse<App.IAddressInfo, IAddressInfo>(d.address, {
+				return serializeResponse<App.IAddressInfo, Api.IAddressInfo>(d.address, {
 					Line1: 'line1',
 					Line2: 'line2',
 				});
@@ -457,53 +407,10 @@ export async function activateSubscription(params: IActivateSubscriptionParams) 
 	}
 }
 
-interface IPriceFromServer {
-	currency: string;
-	basePrice: number;
-	discount: number;
-	discountReason: string;
-	taxes: number;
-	total: number;
-}
-interface IArticleInfo {
-	_id: string;
-	name: string;
-	category: string;
-	images: string[];
-	price?: number;
-	status?: string;
-}
-interface IOrdersUserInfo {
-	phone: string;
-	name: string;
-	address: {
-		line1: string;
-		line2: string;
-	};
-}
-interface IOrdersInfo {
-	_id: string;
-	locationId: string;
-	userId: string;
-	type: string; // TODO can we convert this to enum
-	status: string; // TODO can we convert this to enum
-	completionTimeSlotStart: string;
-	completionTimeSlotEnd: string;
-	noOfArticles: number;
-	price: IPriceFromServer;
-	currency: string;
-	receiptId: string;
-	articles: IArticleInfo[]; // TODO change this later
-	paymentId: string;
-	createdAt: string;
-	paymentGatewayId: string;
-	confirmationCode: string;
-	userInfo?: IOrdersUserInfo;
-}
 // fetch orders list ✅
 export async function getOrdersList() {
 	interface IOrdersInfoFromServer {
-		orders: IOrdersInfo[];
+		orders: Api.IOrdersInfo[];
 	}
 	try {
 		let url = `${env.PUBLIC_ADMIN_URL}/secure/orders`;
@@ -523,7 +430,7 @@ export async function getOrdersList() {
 			headers,
 		};
 		const res = await fetch(url, requestOptions);
-		const jsonResp: IServerResponse<IOrdersInfoFromServer> = await res.json();
+		const jsonResp: Api.IServerResponse<IOrdersInfoFromServer> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
@@ -532,7 +439,7 @@ export async function getOrdersList() {
 		if (!data.orders) return {};
 
 		for (let order of data.orders) {
-			orders[order._id] = serializeResponse<App.IOrdersInfo, IOrdersInfo>(order, {
+			orders[order._id] = serializeResponse<App.IOrdersInfo, Api.IOrdersInfo>(order, {
 				ID: '_id',
 				LocationID: 'locationId',
 				UserID: 'userId',
@@ -546,7 +453,7 @@ export async function getOrdersList() {
 				Articles: (p) => {
 					const articlesArray = [];
 					for (let article of p.articles) {
-						const s = serializeResponse<App.IArticleInfo, IArticleInfo>(article, {
+						const s = serializeResponse<App.IArticleInfo, Api.IArticleInfo>(article, {
 							ID: '_id',
 							Name: 'name',
 							Category: 'category',
@@ -561,7 +468,7 @@ export async function getOrdersList() {
 				CreatedAt: 'createdAt',
 				ReceiptID: 'receiptId',
 				Price: (p) =>
-					serializeResponse<App.IPriceInfo, IPriceFromServer>(p.price, {
+					serializeResponse<App.IPriceInfo, Api.IPriceFromServer>(p.price, {
 						Currency: 'currency',
 						BasePrice: 'basePrice',
 						Discount: 'discount',
@@ -572,7 +479,7 @@ export async function getOrdersList() {
 				UserInfo: (o) => {
 					if (!o.userInfo) return {};
 
-					return serializeResponse<Partial<App.IUserInfo>, IOrdersUserInfo>(o.userInfo, {
+					return serializeResponse<Partial<App.IUserInfo>, Api.IOrdersUserInfo>(o.userInfo, {
 						Phone: 'phone',
 						Name: 'name',
 						Address: (u) => {
@@ -581,7 +488,7 @@ export async function getOrdersList() {
 								Line2: '',
 							};
 							if (!u.address) return defaults;
-							return serializeResponse<App.IAddressInfo, IAddressInfo>(u.address, {
+							return serializeResponse<App.IAddressInfo, Api.IAddressInfo>(u.address, {
 								Line1: 'line1',
 								Line2: 'line2',
 							});
@@ -598,6 +505,7 @@ export async function getOrdersList() {
 	}
 }
 
+// fetch order details by ID ⚠️
 export async function getOrderDetailsByID(id: string) {
 	try {
 		let url = `${env.PUBLIC_ADMIN_URL}/secure/orders/${id}`;
@@ -617,14 +525,14 @@ export async function getOrderDetailsByID(id: string) {
 			headers,
 		};
 		const res = await fetch(url, requestOptions);
-		const jsonResp: IServerResponse<IOrdersInfo> = await res.json();
+		const jsonResp: Api.IServerResponse<Api.IOrdersInfo> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
-		const data = jsonResp.data as IOrdersInfo;
+		const data = jsonResp.data as Api.IOrdersInfo;
 		if (!data) return {};
 
-		const resp = serializeResponse<App.IOrdersInfo, IOrdersInfo>(data, {
+		const resp = serializeResponse<App.IOrdersInfo, Api.IOrdersInfo>(data, {
 			ID: '_id',
 			LocationID: 'locationId',
 			UserID: 'userId',
@@ -637,7 +545,7 @@ export async function getOrderDetailsByID(id: string) {
 			Articles: (p) => {
 				const articlesArray = [];
 				for (let article of p.articles) {
-					const s = serializeResponse<App.IArticleInfo, IArticleInfo>(article, {
+					const s = serializeResponse<App.IArticleInfo, Api.IArticleInfo>(article, {
 						ID: '_id',
 						Name: 'name',
 						Category: 'category',
@@ -652,7 +560,7 @@ export async function getOrderDetailsByID(id: string) {
 			CreatedAt: 'createdAt',
 			ReceiptID: 'receiptId',
 			Price: (p) =>
-				serializeResponse<App.IPriceInfo, IPriceFromServer>(p.price, {
+				serializeResponse<App.IPriceInfo, Api.IPriceFromServer>(p.price, {
 					Currency: 'currency',
 					BasePrice: 'basePrice',
 					Discount: 'discount',
@@ -663,7 +571,7 @@ export async function getOrderDetailsByID(id: string) {
 			UserInfo: (o) => {
 				if (!o.userInfo) return {};
 
-				return serializeResponse<Partial<App.IUserInfo>, IOrdersUserInfo>(o.userInfo, {
+				return serializeResponse<Partial<App.IUserInfo>, Api.IOrdersUserInfo>(o.userInfo, {
 					Phone: 'phone',
 					Name: 'name',
 					Address: (u) => {
@@ -672,7 +580,7 @@ export async function getOrderDetailsByID(id: string) {
 							Line2: '',
 						};
 						if (!u.address) return defaults;
-						return serializeResponse<App.IAddressInfo, IAddressInfo>(u.address, {
+						return serializeResponse<App.IAddressInfo, Api.IAddressInfo>(u.address, {
 							Line1: 'line1',
 							Line2: 'line2',
 						});
@@ -688,15 +596,8 @@ export async function getOrderDetailsByID(id: string) {
 	}
 }
 
-interface IPlaceOrdersParams {
-	type: string; // TODO can we make this enum
-	noOfArticles?: number;
-	articles?: string[];
-	completionTimeSlotStart?: number;
-	completionTimeSlotEnd?: number;
-}
 // place pickup orders and fetch price ✅
-export async function placeOrderAndFetchPrice(params: IPlaceOrdersParams) {
+export async function placeOrderAndFetchPrice(params: Api.IPlaceOrdersParams) {
 	try {
 		const $APP = get(APP);
 
@@ -710,12 +611,12 @@ export async function placeOrderAndFetchPrice(params: IPlaceOrdersParams) {
 			body: JSON.stringify(params),
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/orders`, requestOptions);
-		const jsonResp: IServerResponse<IOrdersInfo> = await res.json();
+		const jsonResp: Api.IServerResponse<Api.IOrdersInfo> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
-		const data = jsonResp.data as IOrdersInfo;
-		const serializedResp = serializeResponse<App.IOrdersInfo, IOrdersInfo>(data, {
+		const data = jsonResp.data as Api.IOrdersInfo;
+		const serializedResp = serializeResponse<App.IOrdersInfo, Api.IOrdersInfo>(data, {
 			ID: '_id',
 			LocationID: 'locationId',
 			UserID: 'userId',
@@ -729,7 +630,7 @@ export async function placeOrderAndFetchPrice(params: IPlaceOrdersParams) {
 			Articles: (p) => {
 				const articlesArray = [];
 				for (let article of p.articles) {
-					const s = serializeResponse<App.IArticleInfo, IArticleInfo>(article, {
+					const s = serializeResponse<App.IArticleInfo, Api.IArticleInfo>(article, {
 						ID: '_id',
 						Name: 'name',
 						Category: 'category',
@@ -744,7 +645,7 @@ export async function placeOrderAndFetchPrice(params: IPlaceOrdersParams) {
 			PaymentID: 'paymentId',
 			CreatedAt: 'createdAt',
 			Price: (p) =>
-				serializeResponse<App.IPriceInfo, IPriceFromServer>(p.price, {
+				serializeResponse<App.IPriceInfo, Api.IPriceFromServer>(p.price, {
 					Currency: 'currency',
 					BasePrice: 'basePrice',
 					Discount: 'discount',
@@ -764,7 +665,7 @@ export async function placeOrderAndFetchPrice(params: IPlaceOrdersParams) {
 // get articles info ✅
 export async function getArticles() {
 	interface IArticlesInfoFromServer {
-		articles: IArticleInfo[];
+		articles: Api.IArticleInfo[];
 	}
 	try {
 		const $APP = get(APP);
@@ -777,7 +678,7 @@ export async function getArticles() {
 			headers,
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/articles`, requestOptions);
-		const jsonResp: IServerResponse<IArticlesInfoFromServer> = await res.json();
+		const jsonResp: Api.IServerResponse<IArticlesInfoFromServer> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
@@ -786,7 +687,7 @@ export async function getArticles() {
 		if (!data.articles) return;
 
 		for (let article of data.articles) {
-			articles[article._id] = serializeResponse<App.IArticleInfo, IArticleInfo>(article, {
+			articles[article._id] = serializeResponse<App.IArticleInfo, Api.IArticleInfo>(article, {
 				ID: '_id',
 				Status: 'status',
 				Name: 'name',
@@ -802,13 +703,8 @@ export async function getArticles() {
 	}
 }
 
-interface IConfirmOrderParams {
-	paymentId?: string;
-	signature?: string;
-	orderId: string;
-}
 // confirm order ✅
-export async function cofirmOrder(params: IConfirmOrderParams) {
+export async function cofirmOrder(params: Api.IConfirmOrderParams) {
 	const { paymentId, signature, orderId } = params;
 	try {
 		const $APP = get(APP);
@@ -826,7 +722,7 @@ export async function cofirmOrder(params: IConfirmOrderParams) {
 			body: JSON.stringify(paramsForResquest),
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/orders/${orderId}`, requestOptions);
-		const jsonResp: IServerResponse<IOrdersInfo> = await res.json();
+		const jsonResp: Api.IServerResponse<Api.IOrdersInfo> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
@@ -838,11 +734,8 @@ export async function cofirmOrder(params: IConfirmOrderParams) {
 	}
 }
 
-interface ICancelOrderParams {
-	orderId: string;
-}
 //  confirm order ✅
-export async function cancelOrder(params: ICancelOrderParams) {
+export async function cancelOrder(params: Api.ICancelOrderParams) {
 	const { orderId } = params;
 	try {
 		const $APP = get(APP);
@@ -855,7 +748,7 @@ export async function cancelOrder(params: ICancelOrderParams) {
 			headers,
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/orders/${orderId}`, requestOptions);
-		const jsonResp: IServerResponse<IOrdersInfo> = await res.json();
+		const jsonResp: Api.IServerResponse<Api.IOrdersInfo> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
@@ -880,13 +773,13 @@ export async function getUserInfo() {
 			headers,
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/users`, requestOptions);
-		const jsonResp: IServerResponse<IUserInfo> = await res.json();
+		const jsonResp: Api.IServerResponse<Api.IUserInfo> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
-		const data = jsonResp.data as IUserInfo;
+		const data = jsonResp.data as Api.IUserInfo;
 
-		const userInfo = serializeResponse<App.IUserInfo, IUserInfo>(data, {
+		const userInfo = serializeResponse<App.IUserInfo, Api.IUserInfo>(data, {
 			Phone: 'phone',
 			UserRole: 'user_role',
 			StorageValue: 'storageValue',
@@ -904,7 +797,7 @@ export async function getUserInfo() {
 					Line2: '',
 				};
 				if (!u.address) return defaults;
-				return serializeResponse<App.IAddressInfo, IAddressInfo>(u.address, {
+				return serializeResponse<App.IAddressInfo, Api.IAddressInfo>(u.address, {
 					Line1: 'line1',
 					Line2: 'line2',
 				});
@@ -944,7 +837,7 @@ export async function fetchCouponInfo(text: string) {
 			headers,
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/coupons/${text}`, requestOptions);
-		const jsonResp: IServerResponse<ICouponInfo> = await res.json();
+		const jsonResp: Api.IServerResponse<ICouponInfo> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
@@ -985,7 +878,7 @@ export async function fetchPrices(type: string) {
 			headers,
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/prices?filter={"type": "${type}"}`, requestOptions);
-		const jsonResp: IServerResponse<IPricesResponseFromServer> = await res.json();
+		const jsonResp: Api.IServerResponse<IPricesResponseFromServer> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
@@ -1005,13 +898,8 @@ export async function fetchPrices(type: string) {
 	}
 }
 
-interface IChangeOrderStatusParams {
-	orderId: string;
-	otp: number;
-	noOfArticles?: number;
-}
 // change order status to done or cancelled ✅
-export async function changeOrderStatus(params: IChangeOrderStatusParams) {
+export async function changeOrderStatus(params: Api.IChangeOrderStatusParams) {
 	const { otp, orderId, noOfArticles = 0 } = params;
 	try {
 		const $APP = get(APP);
@@ -1029,7 +917,7 @@ export async function changeOrderStatus(params: IChangeOrderStatusParams) {
 			body: JSON.stringify(body),
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/orders/logistics/${orderId}`, requestOptions);
-		const jsonResp: IServerResponse<IUserInfo> = await res.json();
+		const jsonResp: Api.IServerResponse<Api.IUserInfo> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
@@ -1066,7 +954,7 @@ export async function uploadImage(file: File) {
 			body: formData,
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/uploads`, requestOptions);
-		const jsonResp: IServerResponse<IUploadInfo> = await res.json();
+		const jsonResp: Api.IServerResponse<IUploadInfo> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
@@ -1098,7 +986,7 @@ export async function getUploadProgress(id: string) {
 			headers,
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/uploads/${id}`, requestOptions);
-		const jsonResp: IServerResponse<IUploadInfo> = await res.json();
+		const jsonResp: Api.IServerResponse<IUploadInfo> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
@@ -1117,11 +1005,8 @@ export async function getUploadProgress(id: string) {
 	}
 }
 
-interface ICompleteOrderPrams {
-	items: Record<string, any>[];
-	orderId: string;
-}
-export async function completeOrder(params: ICompleteOrderPrams) {
+// complete order ✅
+export async function completeOrder(params: Api.ICompleteOrderPrams) {
 	const { items, orderId } = params;
 	try {
 		const $APP = get(APP);
@@ -1138,7 +1023,7 @@ export async function completeOrder(params: ICompleteOrderPrams) {
 			body: JSON.stringify(body),
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/orders/admin/${orderId}`, requestOptions);
-		const jsonResp: IServerResponse<IUserInfo> = await res.json();
+		const jsonResp: Api.IServerResponse<Api.IUserInfo> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
