@@ -4,23 +4,29 @@
 
 	let links: NavItem[];
 	switch ($APP.User?.UserRole) {
-		case 'endUser':
+		case 'endUser': {
 			links = [
 				{ href: '/closet', icon: 'house', label: 'Closet' },
 				{ href: '/orders', icon: 'file-earmark-text', label: 'Orders' },
 				{ href: '/profile', icon: 'person', label: 'Profile' },
 			];
-		case 'logistics':
+			break;
+		}
+		case 'logistics': {
 			links = [
 				{ href: '/orders', icon: 'file-earmark-text', label: 'Orders' },
 				{ href: '/profile', icon: 'person', label: 'Profile' },
 			];
-		case 'admin':
+			break;
+		}
+		case 'admin': {
 			links = [
 				{ href: '/users', icon: 'people', label: 'Users' },
 				{ href: '/orders', icon: 'file-earmark-text', label: 'Orders' },
 				{ href: '/profile', icon: 'person', label: 'Profile' },
 			];
+			break;
+		}
 	}
 </script>
 
