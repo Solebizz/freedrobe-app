@@ -20,7 +20,7 @@
 {#if loading}
 	<Loader />
 {:else}
-	<h1 class="fw-bold mb-3 fs-5">Manage Users</h1>
+	<h1 class="fw-bold mb-3 fs-5">Manage Users ({users.length})</h1>
 	<div class="d-flex flex-column gap-3 mb-3">
 		{#each users as user}
 			<div class="user-card">
