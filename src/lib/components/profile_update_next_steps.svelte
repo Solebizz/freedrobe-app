@@ -11,7 +11,7 @@
 
 <div class="mt-2 d-flex flex-column align-items-between">
 	<div class="mt-3">
-		<p class="fs-5 text-center fw-bold">Congrats 🥳.</p>
+		<p class="fs-5 text-center fw-bold">Congratulations.</p>
 		<p class="text-center fw-bold">You have successfully updated your profile.</p>
 		<p class="text-center mt-4">Next steps. Subscribe to schedule your first pickup.</p>
 	</div>
