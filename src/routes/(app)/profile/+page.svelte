@@ -197,7 +197,7 @@
 			<p class="mb-1"><strong>Type:</strong> {$APP.User?.SubscriptionName}</p>
 			<p class="mb-1">
 				<strong>Valid Until:</strong>
-				{DateTime.fromMillis(Number($APP.User?.SubscriptionValidTill)).toFormat('dd LLL yyyy')}
+				{$APP.User?.SubscriptionValidTill ? DateTime.fromMillis(Number($APP.User?.SubscriptionValidTill)).toFormat('dd LLL yyyy') : ' Subscription not started yet.'}
 			</p>
 		</div>
 
