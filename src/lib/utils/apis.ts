@@ -1049,11 +1049,13 @@ export async function completeOrder(params: Api.ICompleteOrderPrams) {
 }
 
 // get all the user with active subscription ✅
-export async function fetchUsersWithActiveSubscription() {
+export async function fetchUsersWithActiveSubscription(params: Api.IPaginatedParams) {
 	try {
 		interface IServerUserInfo {
 			user: Api.IUserInfo[];
+			count: number;
 		}
+		const { limit, start } = params;
 		const $APP = get(APP);
 		const headers = {
 			'Content-Type': 'application/json',
@@ -1063,13 +1065,14 @@ export async function fetchUsersWithActiveSubscription() {
 			method: 'GET',
 			headers,
 		};
-		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/users/admin?filter={"activeSubscription":true}`, requestOptions);
+		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/users/admin?filter={"activeSubscription":true}&limit=${limit}&startIndex=${start}`, requestOptions);
 		const jsonResp: Api.IServerResponse<IServerUserInfo> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
 		const data = jsonResp.data.user;
-		const resp: App.IUserInfo[] = [];
+
+		const users: App.IUserInfo[] = [];
 		data.forEach((user) => {
 			const userInfo = serializeResponse<App.IUserInfo, Api.IUserInfo>(user, {
 				Phone: 'phone',
@@ -1102,9 +1105,10 @@ export async function fetchUsersWithActiveSubscription() {
 				SubscriptionValidityPeriod: 'subscriptionValidityPeriod',
 				SubscriptionName: 'subscriptionName',
 			});
-			resp.push(userInfo);
+			users.push(userInfo);
 		});
-		return resp;
+		const count = jsonResp.data.count || 0;
+		return { users, count };
 	} catch (e) {
 		const message = (e as Error).message || 'Unkown error';
 		addError(message, 5);

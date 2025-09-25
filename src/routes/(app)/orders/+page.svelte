@@ -42,7 +42,6 @@
 		const resp = await getOrdersList(params);
 		if (resp) {
 			const { orders = {}, count = 0 } = resp;
-			// Also update store if you want global availability
 			$APP.Orders = { ...$APP.Orders, ...orders };
 			return { items: Object.values(orders), total: count };
 		}
