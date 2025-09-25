@@ -9,8 +9,7 @@
 		goto('/orders/pickup');
 	}
 
-	async function fetchArticles(page: number, limit: number) {
-		const params = { limit, start: page * limit };
+	async function fetchArticles(params: Api.IPaginatedParams) {
 		const resp = await getArticles(params);
 		if (resp) {
 			const { articles, count } = resp;

@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import Loader from './loader.svelte';
 
-	export let loadMore: (page: number, limit: number) => Promise<{ items: any[]; total: number }>;
+	export let loadMore: (params: Api.IPaginatedParams) => Promise<{ items: any[]; total: number }>;
 	export let limit: number = 10;
 	export let initialLoad: boolean = true;
 
@@ -21,7 +21,12 @@
 
 		try {
 			loading = true;
-			const resp = await loadMore(page, limit);
+			const start = page * limit;
+			const params = {
+				start,
+				limit,
+			};
+			const resp = await loadMore(params);
 			if (resp) {
 				const { items: newItems, total } = resp;
 				totalCount = total;

@@ -120,7 +120,7 @@ declare global {
 			otp: number;
 			noOfArticles?: number;
 		}
-		interface IArticlesParams {
+		interface IPaginatedParams {
 			limit: number;
 			start: number;
 		}

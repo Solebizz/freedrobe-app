@@ -663,7 +663,7 @@ export async function placeOrderAndFetchPrice(params: Api.IPlaceOrdersParams) {
 }
 
 // get articles info ✅
-export async function getArticles(params: Api.IArticlesParams) {
+export async function getArticles(params: Api.IPaginatedParams) {
 	interface IArticlesInfoFromServer {
 		articles: Api.IArticleInfo[];
 		count: number;
