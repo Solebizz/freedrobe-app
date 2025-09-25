@@ -415,7 +415,7 @@ export async function getOrdersList(params: Api.IPaginatedParams) {
 	}
 	try {
 		const { limit, start } = params;
-		let url = `${env.PUBLIC_ADMIN_URL}/secure/orders?limit=${limit}&startIndex=${start}`;
+		let url = `${env.PUBLIC_ADMIN_URL}/secure/orders`;
 		const $APP = get(APP);
 		const userRole = $APP.User?.UserRole || 'endUser';
 		const isLogisticsOrAdmin = ['logistics', 'admin'].includes(userRole);
@@ -423,6 +423,7 @@ export async function getOrdersList(params: Api.IPaginatedParams) {
 		if (isLogisticsOrAdmin) {
 			url = `${env.PUBLIC_ADMIN_URL}/secure/orders/staff`;
 		}
+		url += `?limit=${limit}&startIndex=${start}`;
 		const headers = {
 			'Content-Type': 'application/json',
 			...(await fetchAuthHeadrs($APP)),

@@ -38,17 +38,6 @@
 		});
 	}
 
-	// async function fetchOrdersList() {
-	// 	try {
-	// 		if (!$APP.User?.LocationId) return;
-	// 		const resp = await getOrdersList();
-	// 		if (!resp) return (loading = false);
-	// 		$APP.Orders = resp;
-	// 	} finally {
-	// 		loading = false;
-	// 	}
-	// }
-
 	async function fetchOrdersList(params: Api.IPaginatedParams) {
 		const resp = await getOrdersList(params);
 		if (resp) {
