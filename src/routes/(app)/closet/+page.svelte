@@ -10,29 +10,73 @@
 	export let border = 2;
 
 	let loading = true;
+	let fetchingMore = false;
+	let limit = 10;
+	let start = 0;
+	let totalCount = 0;
+
+	async function loadArticles(initial = false) {
+		if (fetchingMore || (totalCount && start >= totalCount)) return;
+		fetchingMore = true;
+
+		try {
+			const params = {
+				limit,
+				start,
+			};
+			const resp = await getArticles(params);
+			if (resp) {
+				const { articles, count } = resp; // assuming { items, count }
+				totalCount = count;
+				if (initial) {
+					$APP.Articles = articles;
+				} else {
+					$APP.Articles = { ...$APP.Articles, ...articles };
+				}
+				start += limit;
+			}
+		} finally {
+			loading = false;
+			fetchingMore = false;
+		}
+	}
 
 	function handlePickupClick() {
 		goto('/orders/pickup');
 	}
 
-	onMount(async () => {
-		try {
-			if (!$APP.User?.LocationId) return;
-			const resp = await getArticles();
-			if (!resp) loading = false;
-			$APP.Articles = resp;
-		} finally {
-			loading = false;
-		}
+	let observer: IntersectionObserver;
+	let sentinel: HTMLDivElement;
+
+	onMount(() => {
+		if (!$APP.User?.LocationId) return;
+
+		loadArticles(true).then(() => {
+			observer = new IntersectionObserver(
+				(entries) => {
+					if (entries[0].isIntersecting) {
+						loadArticles();
+					}
+				},
+				{ rootMargin: '100px' },
+			);
+
+			if (sentinel) observer.observe(sentinel);
+		});
+
+		return () => observer?.disconnect();
 	});
 </script>
 
 <div class="heading-wrapper d-flex align-items-center gap-3 mb-2 justify-content-between">
-	<h1 class="fw-bold fs-5">My Closet ({($APP.Articles && Object.keys($APP.Articles).length) || Object.values($APP?.Orders || {}).length})</h1>
+	<h1 class="fw-bold fs-5">
+		My Closet ({($APP.Articles && Object.keys($APP.Articles).length) || Object.values($APP?.Orders || {}).length})
+	</h1>
 	{#if $APP.User?.ActiveSubscription && (($APP.Articles && Object.keys($APP.Articles).length) || Object.values($APP?.Orders || {}).length)}
 		<button on:click={handlePickupClick} class="btn btn-primary">Pickup</button>
 	{/if}
 </div>
+
 {#if loading}
 	<Loader />
 {:else if !$APP.Articles || !Object.keys($APP.Articles).length}
@@ -50,6 +94,12 @@
 			<Card {article} />
 		{/each}
 	</div>
+	<div bind:this={sentinel} class="sentinel"></div>
+	{#if fetchingMore}
+		<div class="text-center my-3">
+			<Loader />
+		</div>
+	{/if}
 {/if}
 
 <style lang="scss">
@@ -70,5 +120,9 @@
 
 	.chip {
 		font-size: 0.8rem;
+	}
+
+	.sentinel {
+		height: 1px;
 	}
 </style>

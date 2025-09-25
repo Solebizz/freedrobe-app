@@ -663,11 +663,13 @@ export async function placeOrderAndFetchPrice(params: Api.IPlaceOrdersParams) {
 }
 
 // get articles info ✅
-export async function getArticles() {
+export async function getArticles(params: Api.IArticlesParams) {
 	interface IArticlesInfoFromServer {
 		articles: Api.IArticleInfo[];
+		count: number;
 	}
 	try {
+		const { limit = 25, start = 0 } = params;
 		const $APP = get(APP);
 		const headers = {
 			'Content-Type': 'application/json',
@@ -677,7 +679,7 @@ export async function getArticles() {
 			method: 'GET',
 			headers,
 		};
-		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/articles`, requestOptions);
+		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/articles?limit=${limit}&startIndex=${start}`, requestOptions);
 		const jsonResp: Api.IServerResponse<IArticlesInfoFromServer> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
@@ -695,7 +697,8 @@ export async function getArticles() {
 				Images: 'images',
 			});
 		}
-		return articles;
+		const count = data.count;
+		return { articles, count };
 	} catch (e) {
 		const message = (e as Error).message || 'Unkown error';
 		addError(message, 5);

@@ -120,6 +120,10 @@ declare global {
 			otp: number;
 			noOfArticles?: number;
 		}
+		interface IArticlesParams {
+			limit: number;
+			start: number;
+		}
 	}
 	namespace App {
 		// interface Error {}
