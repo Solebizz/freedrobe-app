@@ -12,7 +12,7 @@
 	async function fetchArticles(params: Api.IPaginatedParams) {
 		const resp = await getArticles(params);
 		if (resp) {
-			const { articles, count } = resp;
+			const { articles = {}, count = 0 } = resp;
 			// Also update store if you want global availability
 			$APP.Articles = { ...$APP.Articles, ...articles };
 			return { items: Object.values(articles), total: count };
