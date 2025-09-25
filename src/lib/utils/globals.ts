@@ -1,3 +1,10 @@
+import { get } from 'svelte/store';
+import { fetchAndUpdateToken } from './apis';
+import { APP } from '$lib/stores/appMain';
+import { DateTime } from 'luxon';
+import { addError } from '$lib/stores/notices';
+import { goto } from '$app/navigation';
+
 export const logoSrc = '/imgs/main_app_logo.png';
 
 export const logoFullSrc = '/imgs/main_app_logo_full.png';
@@ -68,9 +75,22 @@ export function serializeResponse<J extends object, T extends object>(obj: T, ma
 	return res as J;
 }
 
-export async function fetchAuthHeadrs($APP: App.IData, staff = false): Promise<HeadersInit> {
+export async function fetchAuthHeadrs($APP: App.IData, force = false): Promise<HeadersInit> {
+	const currentDateTime = DateTime.now().toMillis();
+	if ($APP.Auth?.RefershTokenExpiryAt && $APP.Auth?.RefershTokenExpiryAt <= currentDateTime) {
+		goto('/login');
+		throw new Error('Login Session Expired.');
+	}
+	if (force || ($APP.Auth?.AuthTokenExpiryAt && $APP.Auth?.AuthTokenExpiryAt <= currentDateTime)) {
+		const auth = await fetchAndUpdateToken();
+
+		$APP.Auth = auth;
+		APP.set($APP);
+		return { authToken: auth?.AuthToken || '' };
+	}
+
 	return {
-		authToken: (staff ? $APP.Staff?.Auth?.AuthToken : $APP.Auth?.AuthToken) || '',
+		authToken: $APP.Auth?.AuthToken || '',
 	};
 }
 

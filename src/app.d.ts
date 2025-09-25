@@ -27,6 +27,12 @@ declare global {
 			subscriptionValidityPeriod?: string;
 			subscriptionName?: string;
 		}
+		interface IAuthInfo {
+			refreshToken: string;
+			authToken: string;
+			authTokenExpiryAt: number;
+			refershTokenExpiryAt: number;
+		}
 		interface IServerResponse<T = unknown> {
 			status: number;
 			success: boolean;

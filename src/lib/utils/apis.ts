@@ -40,14 +40,8 @@ export async function getOTP(phone: string) {
 // Verify OTP and get user info ✅
 export async function verifyOTPAndGetUserInfo(params: Api.IVerifyOTPParams) {
 	const { sessionId, otp } = params;
-	interface IAuthInfo {
-		refreshToken: string;
-		authToken: string;
-		authTokenExpiryAt: number;
-		refershTokenExpiryAt: number;
-	}
 
-	interface IVerifyOTPReponseFromServer extends IAuthInfo {
+	interface IVerifyOTPReponseFromServer extends Api.IAuthInfo {
 		user: Api.IUserInfo;
 	}
 	try {
@@ -68,7 +62,7 @@ export async function verifyOTPAndGetUserInfo(params: Api.IVerifyOTPParams) {
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
 		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
 		const data = jsonResp.data as IVerifyOTPReponseFromServer;
-		const authInfo = serializeResponse<App.IAuthInfo, IAuthInfo>(data, {
+		const authInfo = serializeResponse<App.IAuthInfo, Api.IAuthInfo>(data, {
 			AuthToken: 'authToken',
 			AuthTokenExpiryAt: 'authTokenExpiryAt',
 			RefreshToken: 'refreshToken',
@@ -1109,6 +1103,46 @@ export async function fetchUsersWithActiveSubscription(params: Api.IPaginatedPar
 		});
 		const count = jsonResp.data.count || 0;
 		return { users, count };
+	} catch (e) {
+		const message = (e as Error).message || 'Unkown error';
+		addError(message, 5);
+		console.error(message);
+	}
+}
+
+// fetch and update token from the server ✅
+export async function fetchAndUpdateToken() {
+	try {
+		const $APP = get(APP);
+		const authToken = $APP.Auth?.AuthToken || '';
+		const refreshToken = $APP.Auth?.RefreshToken || '';
+
+		const tokenHeaders = {
+			authToken,
+			refreshToken,
+		};
+		const headers = {
+			'Content-Type': 'application/json',
+			...tokenHeaders,
+		};
+		const requestOptions = {
+			method: 'GET',
+			headers,
+		};
+		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/public/users/refresh-token/`, requestOptions);
+		const jsonResp: Api.IServerResponse<Api.IAuthInfo> = await res.json();
+		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
+		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
+		if (!('data' in jsonResp) || typeof jsonResp.data !== 'object' || !jsonResp.data) throw Error('Server error. ⛔️');
+		const auth = jsonResp.data;
+
+		const resp = serializeResponse<App.IAuthInfo, Api.IAuthInfo>(auth, {
+			AuthToken: 'authToken',
+			RefreshToken: 'refreshToken',
+			AuthTokenExpiryAt: 'authTokenExpiryAt',
+			RefershTokenExpiryAt: 'refershTokenExpiryAt',
+		});
+		return resp;
 	} catch (e) {
 		const message = (e as Error).message || 'Unkown error';
 		addError(message, 5);
