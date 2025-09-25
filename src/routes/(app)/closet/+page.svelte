@@ -12,28 +12,31 @@
 	let loading = true;
 	let fetchingMore = false;
 	let limit = 10;
-	let start = 0;
+	let page = 0; // track page number
 	let totalCount = 0;
 
 	async function loadArticles(initial = false) {
-		if (fetchingMore || (totalCount && start >= totalCount)) return;
+		// if already fetching OR no more items, return
+		if (fetchingMore || (totalCount && page * limit >= totalCount)) return;
 		fetchingMore = true;
 
 		try {
 			const params = {
 				limit,
-				start,
+				start: page * limit, // correct offset
 			};
 			const resp = await getArticles(params);
 			if (resp) {
-				const { articles, count } = resp; // assuming { items, count }
+				const { articles, count } = resp; // assuming { articles, count }
 				totalCount = count;
+
 				if (initial) {
 					$APP.Articles = articles;
 				} else {
 					$APP.Articles = { ...$APP.Articles, ...articles };
 				}
-				start += limit;
+
+				page += 1; // ✅ increment page instead of start
 			}
 		} finally {
 			loading = false;
@@ -70,7 +73,7 @@
 
 <div class="heading-wrapper d-flex align-items-center gap-3 mb-2 justify-content-between">
 	<h1 class="fw-bold fs-5">
-		My Closet ({($APP.Articles && Object.keys($APP.Articles).length) || Object.values($APP?.Orders || {}).length})
+		My Closet ({totalCount})
 	</h1>
 	{#if $APP.User?.ActiveSubscription && (($APP.Articles && Object.keys($APP.Articles).length) || Object.values($APP?.Orders || {}).length)}
 		<button on:click={handlePickupClick} class="btn btn-primary">Pickup</button>
@@ -94,7 +97,7 @@
 			<Card {article} />
 		{/each}
 	</div>
-	<div bind:this={sentinel} class="sentinel"></div>
+	<div bind:this={sentinel} class="sentinel mb-1"></div>
 	{#if fetchingMore}
 		<div class="text-center my-3">
 			<Loader />
