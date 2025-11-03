@@ -37,7 +37,7 @@
 					</p>
 				</div>
 				<div class="mt-3 pt-3 border-top border-light-subtle">
-					<p class="mb-1"><strong>Free Pickups/Deliveries Left:</strong> {user?.LogisticValue}</p>
+					<p class="mb-1"><strong>Free Pickups / Deliveries Left:</strong> {user?.LogisticValue}</p>
 					<p class="mb-1"><strong>Free Dry Cleans Left:</strong> {user?.DryCleanValue}</p>
 					<p class="mb-1"><strong>Free Washes Left:</strong> {user?.WashValue}</p>
 				</div>

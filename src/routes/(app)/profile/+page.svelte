@@ -194,24 +194,24 @@
 	<h2 class="fs-4 fw-bold m-0">My Subscription</h2>
 	<div class="subscription-card p-3 rounded-4 text-black bg-white border mt-3">
 		<div class="mb-2">
-			<p class="mb-1"><strong>Type:</strong> {$APP.User?.SubscriptionName}</p>
+			<p class="mb-1">Type: {$APP.User?.SubscriptionName}</p>
 			<p class="mb-1">
-				<strong>Valid Until:</strong>
+				Valid Until:
 				{$APP.User?.SubscriptionValidTill ? DateTime.fromMillis(Number($APP.User?.SubscriptionValidTill)).toFormat('dd LLL yyyy') : ' Subscription not started yet.'}
 			</p>
 		</div>
 
 		<div class="mt-3 pt-3 border-top border-light-subtle">
-			<p class="mb-1"><strong>Free Pickups/Deliveries Left:</strong> {$APP.User?.LogisticValue}</p>
-			<p class="mb-1"><strong>Free Dry Cleans Left:</strong> {$APP.User?.DryCleanValue}</p>
-			<p class="mb-1"><strong>Free Washes Left:</strong> {$APP.User?.WashValue}</p>
+			<p class="mb-1">Free Pickups / Deliveries Left: {$APP.User?.LogisticValue}</p>
+			<p class="mb-1">Free Dry Cleans Left: {$APP.User?.DryCleanValue}</p>
+			<p class="mb-1">Free Washes Left: {$APP.User?.WashValue}</p>
 		</div>
 	</div>
 {/if}
 
 <h1 class="fw-bold fs-5" class:mt-4={$APP.User?.ActiveSubscription}>My Profile</h1>
-<main class="mt-2">
-	<form method="post" class="position-relative d-flex flex-column flex-grow-1 justify-content-between gap-2" bind:this={form} on:submit|preventDefault={submitForm}>
+<main class="mt-2 mb-3">
+	<form method="post" class="position-relative d-flex flex-column flex-grow-1 justify-content-between gap-2 bg-white p-3 border rounded-4" bind:this={form} on:submit|preventDefault={submitForm}>
 		<div class="narrow-form">
 			{#each fields as { key, definition }}
 				<div class="mb-3" data-field={key}>
