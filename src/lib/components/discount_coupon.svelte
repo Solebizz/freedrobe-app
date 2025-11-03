@@ -3,7 +3,6 @@
 	import type { IField } from './field.svelte';
 	import Field from './field.svelte';
 	import { fetchCouponInfo } from '$lib/utils/apis';
-	import { addError } from '$lib/stores/notices';
 
 	export let updateDiscountCoupon: (id: App.ICouopnInfo) => {};
 
@@ -40,7 +39,7 @@
 	$: disabled = !form || !form.checkValidity() || !obj;
 </script>
 
-<p class="fs-5 fw-bold mb-1">Protection Plans</p>
+<p class="fs-5 fw-bold mb-1">Apply Coupon</p>
 <main class="mt-3">
 	<form method="post" class="position-relative d-flex flex-column flex-grow-1 justify-content-between gap-2" bind:this={form} on:submit|preventDefault={submitForm}>
 		<div class="narrow-form">
