@@ -99,7 +99,7 @@
 			{#each Object.values(subscriptions) as subscription}
 				{@const finalPrice = Number(subscription.Price) - Math.floor(Number(subscription.Price) * ((discountCoupon?.Discount || 100) / 100))}
 				<div class="selectBox-ssa radio">
-					<input type="radio" name="radio" id={subscription.ID} value={subscription} bind:group={selected} />
+					<input class="bg-white" type="radio" name="radio" id={subscription.ID} value={subscription} bind:group={selected} />
 					<label class="rounded-3 border" for={subscription.ID}>
 						<div class="d-flex justify-content-between">
 							<div>
@@ -126,46 +126,54 @@
 			{/each}
 		</form>
 
-		<h1 class="fw-bold mt-4 fs-5">Additional Add-ons</h1>
+		<h1 class="fw-bold mt-4 fs-5">Protection Plans</h1>
 		<div class="rounded-3 border p-3" class:border-secondary={!!(plans && selectedProtectionPlan)} class:border-3={!!(plans && selectedProtectionPlan)} on:click={handleAddOnsClick}>
-			<p class="fw-bold fs-6 m-0">Protection Plans</p>
+			<p class="fw-bold fs-6 mb-1">Get Insured</p>
 			<p>Our Protection Plans are designed to give you peace of mind, safeguarding your stored goods from risks like theft, fire, and accidental damage—so you can store with confidence.</p>
 			{#if plans && selectedProtectionPlan}
-				<p class="fw-bold fs-6 m-0">Selected: {plans[selectedProtectionPlan].Title}</p>
+				<div class="bg-info-subtle p-3 rounded-3">
+					<div class="d-flex justify-content-between">
+						<p class="fw-bold fs-6 m-0">Selected: {plans[selectedProtectionPlan].Title}</p>
+						<button
+							class="m-0 fw-bold text-danger border-0 bg-transparent"
+							on:click|stopPropagation={() => {
+								selectedProtectionPlan = '';
+							}}>
+							Remove
+						</button>
+					</div>
+					<p class="m-0">Price: ₹{plans[selectedProtectionPlan].Price} / 3months</p>
+				</div>
 			{/if}
 			<div class="d-flex gap-3 mt-4">
 				<p class="m-0 fw-bold text-primary">Compare Plans →</p>
-				{#if plans && selectedProtectionPlan}
-					<button
-						class="m-0 fw-bold text-danger border-0 bg-transparent"
-						on:click|stopPropagation={() => {
-							selectedProtectionPlan = '';
-						}}>
-						Remove
-					</button>
-				{/if}
 				{#if plansAddOnsLoading}<Loader />{/if}
 			</div>
 		</div>
 
+		<h1 class="fw-bold mt-4 fs-5">Available Offers</h1>
 		<div class="rounded-3 border p-3" class:border-secondary={!!discountCoupon} class:border-3={!!discountCoupon} on:click={handleDiscountCoupons}>
-			<p class="fw-bold fs-6 m-0">Discount Coupons</p>
+			<p class="fw-bold fs-6 mb-1">Discount Coupons</p>
 			<p>Get the best discounts on your favourite subscription with our exclusive coupons.</p>
 			{#if discountCoupon}
-				<p class="fw-bold fs-6 m-0">Applied: {discountCoupon.Code}</p>
-				<p>{discountCoupon.Description}</p>
+				<div class="bg-info-subtle rounded-3 p-3">
+					<div class="d-flex gap-3 mb-1 justify-content-between align-items-center">
+						<p class="fw-bold fs-6 m-0">Applied: {discountCoupon.Code}</p>
+						<button
+							class="m-0 fw-bold text-danger border-0 bg-transparent"
+							on:click|stopPropagation={() => {
+								discountCoupon = undefined;
+							}}>
+							Remove
+						</button>
+					</div>
+
+					<p class="m-0">{discountCoupon.Description}</p>
+				</div>
 			{/if}
 			<div class="d-flex gap-3 mt-4">
 				<p class="mt-1 m-0 fw-bold text-primary">Apply Now →</p>
-				{#if discountCoupon}
-					<button
-						class="m-0 fw-bold text-danger border-0 bg-transparent"
-						on:click|stopPropagation={() => {
-							discountCoupon = undefined;
-						}}>
-						Remove
-					</button>
-				{/if}
+
 				{#if discountCouponsLoading}<Loader />{/if}
 			</div>
 		</div>
