@@ -88,6 +88,7 @@
 			bottomSheetStore.setSheet({
 				show: true,
 				children: OrderDetails as typeof SvelteComponent,
+				heightOffset: 50,
 				props: {
 					order: resp,
 					referrerComponent: 'order/pickup',

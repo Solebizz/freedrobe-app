@@ -176,6 +176,7 @@
 		$APP.User = user;
 		if (isProfileUpdatedForFirstTime)
 			bottomSheetStore.setSheet({
+				heightOffset: 50,
 				show: true,
 				children: ProfileUpdateNextSteps,
 			});

@@ -6,12 +6,14 @@
 	let children: typeof SvelteComponent | null | undefined = null;
 	let handleClose = () => {};
 	let props = {};
+	let heightOffset = 75;
 
 	const unsubscribe = bottomSheetStore.subscribe((state) => {
 		show = !!state.show;
 		children = state.children;
 		handleClose = state.handleClose ?? (() => {});
 		props = state.props ?? {};
+		heightOffset = state.heightOffset || 75;
 	});
 
 	onDestroy(() => {
@@ -25,7 +27,7 @@
 </script>
 
 <div class:showSheetWrapper={show} class="sheetWrapper d-flex align-items-end">
-	<div class:show class="contentWrapper h-75 overflow-hidden">
+	<div class:show class="contentWrapper h-{heightOffset} overflow-hidden">
 		<div class="d-flex justify-content-end">
 			<i class="bi bi-x m-0 fs-2 text-black" on:click={onClickClose}></i>
 		</div>

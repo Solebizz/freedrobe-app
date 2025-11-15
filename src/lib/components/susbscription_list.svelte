@@ -41,6 +41,7 @@
 		bottomSheetStore.setSheet({
 			show: true,
 			children: SubscriptionSummaryAddons,
+			heightOffset: 50,
 			props: {
 				plans,
 				selectProtectionPlan: (planId: string) => {
@@ -58,6 +59,7 @@
 			show: true,
 			children: DiscountCoupon,
 			props: {
+				heightOffset: 50,
 				updateDiscountCoupon: (coupon: App.ICouopnInfo) => {
 					discountCoupon = coupon;
 				},

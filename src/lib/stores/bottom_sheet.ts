@@ -8,6 +8,7 @@ interface IData {
 	children?: ComponentType | null;
 	handleClose?: () => void;
 	props?: Record<string, any>;
+	heightOffset?: number;
 }
 
 function noop() {}
