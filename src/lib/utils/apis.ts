@@ -302,6 +302,7 @@ export async function buySubscription(params: Api.IBuySubscriptionParams) {
 		gatewayEntityId: string;
 		amount: number;
 		details: IPriceBreakUp;
+		couponCode: string;
 	}
 	try {
 		const $APP = get(APP);
@@ -324,6 +325,7 @@ export async function buySubscription(params: Api.IBuySubscriptionParams) {
 		const subscriptionOrderInfo = serializeResponse<App.ISubscriptionOrderInfo, ISubscriptionOrderResponseFromServer>(data, {
 			GatewayEntityId: 'gatewayEntityId',
 			Total: 'amount',
+			CouponCode: 'couponCode',
 			PriceBreakup: (s) => {
 				if (!s.details) return {};
 				return serializeResponse<App.IPriceBreakUp, IPriceBreakUp>(s.details, {

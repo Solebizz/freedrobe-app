@@ -7,9 +7,10 @@
 	const dispatch = createEventDispatcher();
 
 	const {
+		CouponCode,
 		Total,
 		GatewayEntityId,
-		PriceBreakup: { SubscriptionAmount, DiscountPercent, DiscountAmount, ProtectionPlanAmount },
+		PriceBreakup: { SubscriptionAmount, DiscountAmount, DiscountPercent, ProtectionPlanAmount },
 	} = data;
 	let loading = false;
 
@@ -34,16 +35,16 @@
 <div class="mt-3">
 	<div class="amount-grid">
 		<div class="amount-row">
-			<div class="amount-label">Subscription:</div>
+			<div class="amount-label">Subscription (3 months):</div>
 			<div class="amount-value">₹{SubscriptionAmount}</div>
-		</div>
-		<div class="amount-row">
-			<div class="amount-label">Discount ({DiscountPercent}%):</div>
-			<div class="amount-value">₹{DiscountAmount}</div>
 		</div>
 		<div class="amount-row">
 			<div class="amount-label">Protection Plan:</div>
 			<div class="amount-value">₹{ProtectionPlanAmount}</div>
+		</div>
+		<div class="amount-row">
+			<div class="amount-label">Discount ({DiscountPercent}%):</div>
+			<div class="amount-value">- ₹{DiscountAmount}</div>
 		</div>
 		<div class="total">
 			<div class="amount-label total-label mt-3">Total Payable Amount:</div>

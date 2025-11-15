@@ -228,6 +228,7 @@ declare global {
 			ProtectionPlanAmount: number;
 		}
 		interface ISubscriptionOrderInfo {
+			CouponCode: string;
 			GatewayEntityId: string;
 			Total: number;
 			PriceBreakup: IPriceBreakUp;
