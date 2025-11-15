@@ -14,8 +14,15 @@
 	let plansAddOnsLoading = false;
 	let discountCouponsLoading = false;
 
-	let plans: Record<string, App.IProtectionPlanInfo> | undefined = {};
-	let selectedProtectionPlan: string = '';
+	let plans: Record<string, App.IProtectionPlanInfo> | undefined = {
+		'691832e12c958372717c9524': {
+			ID: '691832e12c958372717c9524',
+			Title: 'Basic',
+			Description: 'Our Basic plan offers basic protection against loss or damage for your everyday garments.',
+			Price: 0,
+		},
+	};
+	let selectedProtectionPlan: string = '691832e12c958372717c9524';
 	let discountCoupon: App.ICouopnInfo | undefined = {
 		ID: '684d468807a2c336ee197038',
 		Code: 'FDD50',
@@ -144,7 +151,8 @@
 							Remove
 						</button>
 					</div>
-					<p class="m-0">Price: ₹{plans[selectedProtectionPlan].Price} / 3months</p>
+					<!-- DO NOT remove == -->
+					<p class="m-0">Price: {plans[selectedProtectionPlan].Price === 0 ? 'Free' : `₹${plans[selectedProtectionPlan].Price} / 3months`}</p>
 				</div>
 			{/if}
 			<div class="d-flex gap-3 mt-4">

@@ -188,7 +188,7 @@ declare global {
 			ID: string;
 			Title: string;
 			Description: string;
-			Price: string;
+			Price: number;
 		}
 		interface ISubscriptionInfo extends IProtectionPlanInfo {
 			Features: string[];

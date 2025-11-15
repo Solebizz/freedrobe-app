@@ -4,7 +4,7 @@
 	export let plans: Record<string, App.IProtectionPlanInfo>;
 	export let selectProtectionPlan: (id: string) => {};
 
-	let selectedPlan: App.IProtectionPlanInfo;
+	let selectedPlan: App.IProtectionPlanInfo = Object.values(plans)[0];
 
 	const dispatch = createEventDispatcher();
 
