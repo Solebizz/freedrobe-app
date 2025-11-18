@@ -24,6 +24,7 @@
 		prefill: {
 			contact: $APP.User?.Phone,
 		},
+		webview_intent: true,
 		handler: async function (response: App.IRazorpayResponse) {
 			switch (referrer) {
 				case 'orders/pickup':
