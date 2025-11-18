@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onDestroy, SvelteComponent } from 'svelte';
 	import { bottomSheetStore } from '$lib/stores/bottom_sheet';
+	import { DEFAULTS } from '$lib/utils/constants';
 
 	let show = false;
 	let children: typeof SvelteComponent | null | undefined = null;
@@ -11,9 +12,9 @@
 	const unsubscribe = bottomSheetStore.subscribe((state) => {
 		show = !!state.show;
 		children = state.children;
-		handleClose = state.handleClose ?? (() => {});
-		props = state.props ?? {};
-		heightOffset = state.heightOffset || 75;
+		handleClose = state.handleClose ?? DEFAULTS.noop;
+		props = state.props ?? DEFAULTS.emptyObject;
+		heightOffset = state.heightOffset || DEFAULTS.bottomSheetHeightOffset;
 	});
 
 	onDestroy(() => {

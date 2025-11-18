@@ -2,6 +2,7 @@
 import { writable } from 'svelte/store';
 import type { Writable } from 'svelte/store';
 import type { ComponentType } from 'svelte';
+import { DEFAULTS } from '$lib/utils/constants';
 
 interface IData {
 	show?: boolean;
@@ -10,8 +11,6 @@ interface IData {
 	props?: Record<string, any>;
 	heightOffset?: number;
 }
-
-function noop() {}
 
 interface IUseBottomSheet extends Writable<IData> {
 	setSheet: (obj: IData) => void;
@@ -22,8 +21,9 @@ const createBottomSheetStore = (): IUseBottomSheet => {
 	const { subscribe, set, update } = writable<IData>({
 		show: false,
 		children: null,
-		handleClose: noop,
-		props: {},
+		handleClose: DEFAULTS.noop,
+		props: DEFAULTS.emptyObject,
+		heightOffset: DEFAULTS.bottomSheetHeightOffset,
 	});
 
 	return {
@@ -34,16 +34,17 @@ const createBottomSheetStore = (): IUseBottomSheet => {
 			update((prev) => ({
 				show: newState.show ?? prev.show,
 				children: newState.children ?? null,
-				handleClose: newState.handleClose ?? noop,
-				props: newState.props ?? {},
+				handleClose: newState.handleClose ?? DEFAULTS.noop,
+				props: newState.props ?? DEFAULTS.emptyObject,
+				heightOffset: newState.heightOffset ?? DEFAULTS.bottomSheetHeightOffset,
 			}));
 		},
 		reset: () =>
 			set({
 				show: false,
 				children: null,
-				handleClose: noop,
-				props: {},
+				handleClose: DEFAULTS.noop,
+				props: DEFAULTS.emptyObject,
 			}),
 	};
 };
