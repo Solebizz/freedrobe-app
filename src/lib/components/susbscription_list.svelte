@@ -65,8 +65,8 @@
 		bottomSheetStore.setSheet({
 			show: true,
 			children: DiscountCoupon,
+			heightOffset: 50,
 			props: {
-				heightOffset: 50,
 				updateDiscountCoupon: (coupon: App.ICouopnInfo) => {
 					discountCoupon = coupon;
 				},
@@ -88,6 +88,7 @@
 
 			bottomSheetStore.setSheet({
 				show: true,
+				heightOffset: 50,
 				children: SubscriptionOrderDetails,
 				props: {
 					data: resp.subscriptionOrderInfo,
