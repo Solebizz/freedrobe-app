@@ -185,52 +185,32 @@
 	}
 </script>
 
-<div class="onboarding-container">
-	<div class="onboarding-header os_top_padding">
-		<h1 class="fw-bold fs-3 text-center mb-2">Welcome to Freedrobe!</h1>
-		<p class="text-center px-3">Step 1 of 2: Complete your profile</p>
-	</div>
+<div class="onboarding-header-content">
+	<h1 class="fw-bold fs-3 text-center mb-2">Welcome to Freedrobe!</h1>
+	<p class="text-center px-3">Step 1 of 2: Complete your profile</p>
+</div>
 
-	<main class="onboarding-main bg-body-tertiary pt-3 px-3">
-		<form method="post" class="onboarding-form bg-white p-3 border rounded-4" bind:this={form} on:submit|preventDefault={submitForm}>
-			<div class="form-fields">
-				{#each fields as { key, definition }}
-					<div class="mb-3" data-field={key}>
-						<Field {key} {definition} bind:value={profile[key]} />
-					</div>
-				{/each}
-			</div>
+<div class="onboarding-content bg-body-tertiary">
+	<form method="post" class="onboarding-form bg-white p-3 border rounded-4 shadow-lg" bind:this={form} on:submit|preventDefault={submitForm}>
+		<div class="form-fields">
+			{#each fields as { key, definition }}
+				<div class="mb-3" data-field={key}>
+					<Field {key} {definition} bind:value={profile[key]} />
+				</div>
+			{/each}
+		</div>
 
-			<button class="d-none">Needed for ENTER to submit</button>
-			<button on:click={() => form.checkValidity()} type="submit" class="btn btn-primary" {disabled}>
-				<span>Continue to Subscription</span>
-				{#if loading}
-					<Loader />
-				{/if}
-			</button>
-		</form>
-	</main>
+		<button class="d-none">Needed for ENTER to submit</button>
+		<button on:click={() => form.checkValidity()} type="submit" class="btn btn-primary" {disabled}>
+			<span>Continue to Subscription</span>
+			{#if loading}
+				<Loader />
+			{/if}
+		</button>
+	</form>
 </div>
 
 <style lang="scss">
-	.onboarding-container {
-		min-height: 100vh;
-		display: flex;
-		flex-direction: column;
-		background-color: var(--bs-body-bg);
-	}
-
-	.onboarding-header {
-		padding: 1.5rem 1rem;
-	}
-
-	.onboarding-main {
-		flex: 1;
-		padding: 1.5rem;
-		display: flex;
-		flex-direction: column;
-	}
-
 	.onboarding-form {
 		background: white;
 		border-radius: 1rem;
