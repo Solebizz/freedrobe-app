@@ -35,7 +35,7 @@
 		if (!$APP.Auth?.AuthToken || !$APP.Auth?.RefreshToken) {
 			// TODO revisit this again
 			// addError('Something went wrong. Please login again.');
-			goto('/login');
+			goto('/login', { replaceState: true });
 			return;
 		}
 
@@ -65,6 +65,13 @@
 		else if ($APP.User.LocationId && !$APP.User.ActiveSubscription && page.url.pathname !== '/onboarding/subscription') {
 			goto('/onboarding/subscription', { replaceState: true });
 		}
+	}
+
+	// Watch for auth changes - if auth is cleared, redirect to login
+	$: if (!$APP.Auth?.AuthToken || !$APP.Auth?.RefreshToken) {
+		setTimeout(() => {
+			window.location.href = '/login';
+		}, 250);
 	}
 </script>
 

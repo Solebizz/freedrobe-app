@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import MemberSidebar from '$lib/components/member_sidebar.svelte';
 	import { logoFullSrc } from '$lib/utils/globals';
 	import { APP } from '$lib/stores/appMain';
-	import { DateTime } from 'luxon';
 
 	export let show_sidebar = true;
 	export let logo_only = false;
@@ -12,10 +11,10 @@
 	export let onboarding_subtitle = '';
 
 	function handleBack() {
-		if ($page.data.back_button === true) {
+		if (page.data.back_button === true) {
 			history.back();
-		} else if ($page.data.back_button) {
-			goto($page.data.back_button);
+		} else if (page.data.back_button) {
+			goto(page.data.back_button);
 		}
 	}
 
@@ -27,7 +26,7 @@
 <section class="os_top_padding sticky_top">
 	<div class="d-flex ps-3 pe-0 align-items-center justify-content-between pb-2">
 		<div class="d-flex align-items-center">
-			{#if !logo_only && $page.data.back_button}
+			{#if !logo_only && page.data.back_button}
 				<button on:click={handleBack} class="back btn-plain"><i class="bi bi-arrow-left text-black"></i></button>
 			{/if}
 			<img src={logoFullSrc} class="header-logo" alt="FREEDROBE" />
@@ -47,19 +46,19 @@
 						<p class="m-0 fw-bold">Subscription: <span class="text-success">Active</span></p>
 						<p class="m-0 fw-bold">Storage: <span class="bg-secondary text-primary rounded-2 px-1">{`${$APP.User.StorageValue}/${$APP.User.TotalStorageValue}`}</span></p>
 					</div>
-				{:else}
+				{:else if !page.url.pathname.startsWith('/onboarding')}
 					<button class="border-0 text-uppercase p-2 px-3 shadow rounded-3 p-1 ms-4 bg-primary text-white shadow px-2" on:click={handleClickSubscribe}>Subscribe</button>
 				{/if}
 			{/if}
 			{#if !logo_only}
-				<span class="fs-2 py-2 me-auto">{$page.data.the_title ?? ''}</span>
+				<span class="fs-2 py-2 me-auto">{page.data.the_title ?? ''}</span>
 			{/if}
 		</div>
 		{#if !logo_only}
 			<div class="me-3">
-				{#if $page.data.the_ctas}
-					{#each $page.data.the_ctas as cta}
-						{@const isActive = cta.href === $page.url.pathname}
+				{#if page.data.the_ctas}
+					{#each page.data.the_ctas as cta}
+						{@const isActive = cta.href === page.url.pathname}
 						<a class="btn text-white position-relative" href={cta.href} class:active={isActive}>
 							{#if $APP.ArticlesInBag && $APP.ArticlesInBag.length > 0}
 								<span class="pill position-absolute rounded-pill bg-danger text-white px-2">{$APP.ArticlesInBag.length}</span>
@@ -99,17 +98,6 @@
 		font-size: 0.6rem;
 		right: 3.2rem;
 		top: 0.6rem;
-	}
-	.primary-gradient {
-		// TODO png header img
-		// background:
-		// 	linear-gradient(180deg, var(--bs-primary) 0%, var(--bs-link-hover-color) 100%),
-		// 	url(/imgs/backgrounds/bg-header-chevrons.png) center;
-		// background-size: cover;
-		// background-blend-mode: soft-light;
-		// &[data-staff='true'] {
-		// 	background: var(--bs-secondary-dark) url(/imgs/backgrounds/bg-header-triangles.png) center;
-		// }
 	}
 
 	.dot-indicator {

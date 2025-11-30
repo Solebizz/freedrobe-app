@@ -3,22 +3,19 @@
 	import { APP } from '$lib/stores/appMain';
 	import { contactusUrl, deleteUrl, privacyUrl, protectionPlanUrl, termsUrl } from '$lib/utils/globals';
 
-	export let trainer_mode: boolean = false;
-
-	let is_staff: boolean;
 	let show = false;
 
 	function toggle() {
 		show = !show;
 	}
 
-	function handleLogout() {
+	async function handleLogout() {
+		toggle();
 		$APP.User = undefined;
 		$APP.Articles = undefined;
 		$APP.Orders = undefined;
 		$APP.Auth = undefined;
 		$APP.ArticlesInBag = [];
-		toggle();
 	}
 </script>
 
