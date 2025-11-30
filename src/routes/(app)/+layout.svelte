@@ -15,13 +15,21 @@
 	// Check if current route is onboarding OR if user should be in onboarding (only for endUsers)
 	$: isOnboardingRoute = isEndUser && (page.url.pathname.startsWith('/onboarding') || !$APP.User?.LocationId || ($APP.User?.LocationId && !$APP.User?.ActiveSubscription));
 
-	// Only hide bottom nav on onboarding, but show header everywhere
-	$: showBottomNav = !page.url.pathname.startsWith('/onboarding') && $APP.User?.LocationId && $APP.User?.ActiveSubscription;
+	// Show bottom nav for non-endUsers always, or for endUsers when not on onboarding
+	$: showBottomNav = isEndUser ? !page.url.pathname.startsWith('/onboarding') && $APP.User?.LocationId && $APP.User?.ActiveSubscription : true; // Always show nav for non-endUsers
 
-	// Determine onboarding header text based on route
-	$: onboardingTitle = page.url.pathname === '/onboarding' ? 'Welcome to Freedrobe!' : page.url.pathname === '/onboarding/subscription' ? 'Choose Your Plan' : '';
+	// Show logo-only header only for endUsers on onboarding
+	$: showLogoOnlyHeader = isEndUser && page.url.pathname.startsWith('/onboarding');
 
-	$: onboardingSubtitle = page.url.pathname === '/onboarding' ? 'Step 1 of 2: Complete your profile' : page.url.pathname === '/onboarding/subscription' ? 'Step 2 of 2: Select a subscription ' : '';
+	// Determine onboarding header text based on route (only for endUsers)
+	$: onboardingTitle = isEndUser && page.url.pathname === '/onboarding' ? 'Welcome to Freedrobe!' : isEndUser && page.url.pathname === '/onboarding/subscription' ? 'Choose Your Plan' : '';
+
+	$: onboardingSubtitle =
+		isEndUser && page.url.pathname === '/onboarding'
+			? 'Step 1 of 2: Complete your profile'
+			: isEndUser && page.url.pathname === '/onboarding/subscription'
+				? 'Step 2 of 2: Select a subscription '
+				: '';
 
 	onMount(() => {
 		if (!$APP.Auth?.AuthToken || !$APP.Auth?.RefreshToken) {
@@ -66,7 +74,7 @@
 	</div>
 {:else}
 	<div id="outermost_app_wrap">
-		<MainHeader logo_only={page.url.pathname.startsWith('/onboarding')} onboarding_title={onboardingTitle} onboarding_subtitle={onboardingSubtitle} />
+		<MainHeader logo_only={showLogoOnlyHeader} onboarding_title={onboardingTitle} onboarding_subtitle={onboardingSubtitle} />
 		<div id="main_container" class="bg-body-tertiary" class:px-3={!isOnboardingRoute} class:pt-3={!isOnboardingRoute}>
 			<slot />
 		</div>
