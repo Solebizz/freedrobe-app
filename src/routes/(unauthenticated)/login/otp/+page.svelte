@@ -85,7 +85,13 @@
 			} else {
 				$APP.Auth = resp.authInfo;
 				$APP.User = resp.userInfo;
-				goto('/profile', { replaceState: true });
+
+				// Redirect to onboarding if user hasn't completed profile
+				if (!resp.userInfo.LocationId) {
+					goto('/onboarding', { replaceState: true });
+				} else {
+					goto('/profile', { replaceState: true });
+				}
 			}
 		} finally {
 			loading = false;
