@@ -9,8 +9,19 @@
 
 	let loading = false;
 
-	// Check if current route is onboarding OR if user should be in onboarding
-	$: isOnboardingRoute = page.url.pathname.startsWith('/onboarding') || !$APP.User?.LocationId || ($APP.User?.LocationId && !$APP.User?.ActiveSubscription);
+	// Check if user is endUser
+	$: isEndUser = $APP.User?.UserRole === 'endUser';
+
+	// Check if current route is onboarding OR if user should be in onboarding (only for endUsers)
+	$: isOnboardingRoute = isEndUser && (page.url.pathname.startsWith('/onboarding') || !$APP.User?.LocationId || ($APP.User?.LocationId && !$APP.User?.ActiveSubscription));
+
+	// Only hide bottom nav on onboarding, but show header everywhere
+	$: showBottomNav = !page.url.pathname.startsWith('/onboarding') && $APP.User?.LocationId && $APP.User?.ActiveSubscription;
+
+	// Determine onboarding header text based on route
+	$: onboardingTitle = page.url.pathname === '/onboarding' ? 'Welcome to Freedrobe!' : page.url.pathname === '/onboarding/subscription' ? 'Choose Your Plan' : '';
+
+	$: onboardingSubtitle = page.url.pathname === '/onboarding' ? 'Step 1 of 2: Complete your profile' : page.url.pathname === '/onboarding/subscription' ? 'Step 2 of 2: Select a subscription ' : '';
 
 	onMount(() => {
 		if (!$APP.Auth?.AuthToken || !$APP.Auth?.RefreshToken) {
@@ -20,21 +31,24 @@
 			return;
 		}
 
-		// Check if user needs to complete profile
-		if (!$APP.User?.LocationId && page.url.pathname !== '/onboarding') {
-			goto('/onboarding', { replaceState: true });
-			return;
-		}
+		// Only check onboarding for endUser role
+		if (isEndUser) {
+			// Check if user needs to complete profile
+			if (!$APP.User?.LocationId && page.url.pathname !== '/onboarding') {
+				goto('/onboarding', { replaceState: true });
+				return;
+			}
 
-		// Check if user needs to subscribe
-		if ($APP.User?.LocationId && !$APP.User?.ActiveSubscription && page.url.pathname !== '/onboarding/subscription') {
-			goto('/onboarding/subscription', { replaceState: true });
-			return;
+			// Check if user needs to subscribe
+			if ($APP.User?.LocationId && !$APP.User?.ActiveSubscription && page.url.pathname !== '/onboarding/subscription') {
+				goto('/onboarding/subscription', { replaceState: true });
+				return;
+			}
 		}
 	});
 
-	// Watch for changes in the route and user data
-	$: if ($APP.User) {
+	// Watch for changes in the route and user data (only for endUsers)
+	$: if ($APP.User && isEndUser) {
 		// Redirect to profile step if no LocationId
 		if (!$APP.User.LocationId && page.url.pathname !== '/onboarding') {
 			goto('/onboarding', { replaceState: true });
@@ -52,13 +66,11 @@
 	</div>
 {:else}
 	<div id="outermost_app_wrap">
-		{#if !isOnboardingRoute}
-			<MainHeader />
-		{/if}
+		<MainHeader logo_only={page.url.pathname.startsWith('/onboarding')} onboarding_title={onboardingTitle} onboarding_subtitle={onboardingSubtitle} />
 		<div id="main_container" class="bg-body-tertiary" class:px-3={!isOnboardingRoute} class:pt-3={!isOnboardingRoute}>
 			<slot />
 		</div>
-		{#if !isOnboardingRoute}
+		{#if showBottomNav}
 			<Nav />
 		{/if}
 	</div>

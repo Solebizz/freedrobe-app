@@ -185,11 +185,6 @@
 	}
 </script>
 
-<div class="onboarding-header-content">
-	<h1 class="fw-bold fs-3 text-center mb-2">Welcome to Freedrobe!</h1>
-	<p class="text-center px-3">Step 1 of 2: Complete your profile</p>
-</div>
-
 <div class="onboarding-content bg-body-tertiary">
 	<form method="post" class="onboarding-form bg-white p-3 border rounded-4 shadow-lg" bind:this={form} on:submit|preventDefault={submitForm}>
 		<div class="form-fields">
