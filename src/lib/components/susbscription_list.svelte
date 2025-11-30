@@ -25,9 +25,9 @@
 	let selectedProtectionPlan: string = '691832e12c958372717c9524';
 	let discountCoupon: App.ICouopnInfo | undefined = {
 		ID: '684d468807a2c336ee197038',
-		Code: 'FDD50',
-		Description: 'Discount Offer: 50% Off',
-		Discount: 50,
+		Code: 'FDD15',
+		Description: 'Discount Offer: 15% Off',
+		Discount: 15,
 	};
 	let termsText = 'Subscription will start from the date of first pick up.';
 
