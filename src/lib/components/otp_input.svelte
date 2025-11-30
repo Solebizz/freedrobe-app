@@ -13,6 +13,12 @@
 		const input = event.target as HTMLInputElement;
 		let v = input.value.replace(/\D/g, '');
 
+		// Handle autocomplete or paste that fills entire OTP in first field
+		if (v.length > 1) {
+			fillOTP(v);
+			return;
+		}
+
 		if (!v) {
 			boxes[index] = '';
 			onChange(boxes.join(''));
@@ -34,24 +40,42 @@
 	}
 
 	function handlePaste(event: ClipboardEvent) {
+		event.preventDefault();
 		const text = event.clipboardData?.getData('text')?.trim() || '';
+		const digits = text.replace(/\D/g, '');
 
-		if (!/^\d+$/.test(text)) return;
+		if (!digits) return;
 
-		const digits = text.split('').slice(0, length);
+		fillOTP(digits);
+	}
 
-		digits.forEach((d, i) => {
+	function fillOTP(digits: string) {
+		const digitArray = digits.split('').slice(0, length);
+
+		digitArray.forEach((d, i) => {
 			boxes[i] = d;
 			const el = document.querySelector<HTMLInputElement>(`.otp-input-${i}`);
 			if (el) el.value = d;
 		});
 
-		focusInput(digits.length - 1);
+		// Fill remaining boxes with empty strings if needed
+		for (let i = digitArray.length; i < length; i++) {
+			boxes[i] = '';
+			const el = document.querySelector<HTMLInputElement>(`.otp-input-${i}`);
+			if (el) el.value = '';
+		}
+
+		// Focus the last filled input or the last input if all filled
+		const focusIndex = Math.min(digitArray.length, length - 1);
+		focusInput(focusIndex);
+
 		onChange(boxes.join(''));
 	}
 
 	function focusInput(i: number) {
-		document.querySelector<HTMLInputElement>(`.otp-input-${i}`)?.focus();
+		setTimeout(() => {
+			document.querySelector<HTMLInputElement>(`.otp-input-${i}`)?.focus();
+		}, 10);
 	}
 </script>
 
@@ -59,9 +83,11 @@
 	{#each boxes as digit, i}
 		<input
 			class="otp-input otp-input-{i}"
-			maxlength="1"
+			type="tel"
+			maxlength="6"
 			inputmode="numeric"
-			autocomplete="one-time-code"
+			pattern="[0-9]*"
+			autocomplete={i === 0 ? 'one-time-code' : 'off'}
 			value={digit}
 			on:input={(e) => handleInput(i, e)}
 			on:keydown={(e) => handleKeydown(i, e)}
