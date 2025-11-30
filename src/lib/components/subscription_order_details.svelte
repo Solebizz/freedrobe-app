@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 	import { createEventDispatcher } from 'svelte';
 	import Loader from './loader.svelte';
 
@@ -14,6 +15,8 @@
 	} = data;
 	let loading = false;
 
+	$: isOnboarding = $page.url.pathname.includes('/onboarding');
+
 	async function startPaymentFlow() {
 		loading = true;
 		try {
@@ -21,7 +24,7 @@
 				state: {
 					amount: Total,
 					paymentGatewayEntityId: GatewayEntityId,
-					referrer: 'subscription_list',
+					referrer: isOnboarding ? 'onboarding_subscription' : 'subscription_list',
 				},
 			});
 		} finally {

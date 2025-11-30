@@ -20,8 +20,18 @@ export async function load() {
 
 		$APP.User = resp?.userInfo;
 		APP.set($APP);
-		if ($APP.User.ActiveSubscription) throw redirect(307, '/closet');
-		throw redirect(307, '/profile');
+
+		// Check onboarding status
+		if (!$APP.User.LocationId) {
+			// User needs to complete profile
+			throw redirect(307, '/onboarding');
+		} else if (!$APP.User.ActiveSubscription) {
+			// User needs to subscribe
+			throw redirect(307, '/onboarding/subscription');
+		}
+
+		// User is fully onboarded, redirect to main app
+		throw redirect(307, '/closet');
 	}
 	throw redirect(307, '/login');
 }

@@ -58,7 +58,7 @@
 				default: {
 					if (!response || !response.razorpay_payment_id || !response.razorpay_signature || !response.razorpay_order_id) {
 						addError('Payment failed. Try again.');
-						return goto('/subscription-list');
+						return goto(referrer === 'onboarding_subscription' ? '/onboarding/subscription' : '/subscription-list');
 					}
 					const params = {
 						gatewayEntityId: response.razorpay_order_id,
@@ -68,12 +68,12 @@
 					const userInfo = await activateSubscription(params);
 					if (!userInfo) {
 						addError('Unable to get the user. Please try again after sometime.');
-						return goto('/subscription-list', { replaceState: true });
+						return goto(referrer === 'onboarding_subscription' ? '/onboarding/subscription' : '/subscription-list', { replaceState: true });
 					}
 
 					const noticeObj: NoticeWithoutMeta = {
-						type: 'info',
-						msg: 'Subscription bought.',
+						type: 'success',
+						msg: referrer === 'onboarding_subscription' ? 'Welcome! Your subscription is now active.' : 'Subscription bought.',
 						snooze: 5,
 					};
 					addNotice(noticeObj);
@@ -87,6 +87,10 @@
 				switch (referrer) {
 					case 'basket': {
 						goto('/orders');
+						break;
+					}
+					case 'onboarding_subscription': {
+						goto('/onboarding/subscription');
 						break;
 					}
 					default: {

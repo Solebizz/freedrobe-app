@@ -177,8 +177,8 @@
 			};
 			addNotice(noticeObj);
 
-			// Redirect to main app
-			goto('/profile', { replaceState: true });
+			// Redirect to subscription step
+			goto('/onboarding/subscription', { replaceState: true });
 		} finally {
 			loading = false;
 		}
@@ -188,7 +188,7 @@
 <div class="onboarding-container">
 	<div class="onboarding-header os_top_padding">
 		<h1 class="fw-bold fs-3 text-center mb-2">Welcome to Freedrobe!</h1>
-		<p class="text-center px-3">Please complete your profile to get started</p>
+		<p class="text-center px-3">Step 1 of 2: Complete your profile</p>
 	</div>
 
 	<main class="onboarding-main bg-body-tertiary pt-3 px-3">
@@ -203,7 +203,7 @@
 
 			<button class="d-none">Needed for ENTER to submit</button>
 			<button on:click={() => form.checkValidity()} type="submit" class="btn btn-primary" {disabled}>
-				<span>Complete Profile</span>
+				<span>Continue to Subscription</span>
 				{#if loading}
 					<Loader />
 				{/if}

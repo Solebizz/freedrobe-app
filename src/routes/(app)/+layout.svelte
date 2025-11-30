@@ -9,6 +9,9 @@
 
 	let loading = false;
 
+	// Check if current route is onboarding OR if user should be in onboarding
+	$: isOnboardingRoute = page.url.pathname.startsWith('/onboarding') || !$APP.User?.LocationId || ($APP.User?.LocationId && !$APP.User?.ActiveSubscription);
+
 	onMount(() => {
 		if (!$APP.Auth?.AuthToken || !$APP.Auth?.RefreshToken) {
 			// TODO revisit this again
@@ -17,15 +20,29 @@
 			return;
 		}
 
-		// Check if user needs to complete onboarding
+		// Check if user needs to complete profile
 		if (!$APP.User?.LocationId && page.url.pathname !== '/onboarding') {
 			goto('/onboarding', { replaceState: true });
+			return;
+		}
+
+		// Check if user needs to subscribe
+		if ($APP.User?.LocationId && !$APP.User?.ActiveSubscription && page.url.pathname !== '/onboarding/subscription') {
+			goto('/onboarding/subscription', { replaceState: true });
+			return;
 		}
 	});
 
 	// Watch for changes in the route and user data
-	$: if ($APP.User && !$APP.User.LocationId && page.url.pathname !== '/onboarding') {
-		goto('/onboarding', { replaceState: true });
+	$: if ($APP.User) {
+		// Redirect to profile step if no LocationId
+		if (!$APP.User.LocationId && page.url.pathname !== '/onboarding') {
+			goto('/onboarding', { replaceState: true });
+		}
+		// Redirect to subscription step if has LocationId but no subscription
+		else if ($APP.User.LocationId && !$APP.User.ActiveSubscription && page.url.pathname !== '/onboarding/subscription') {
+			goto('/onboarding/subscription', { replaceState: true });
+		}
 	}
 </script>
 
@@ -35,13 +52,13 @@
 	</div>
 {:else}
 	<div id="outermost_app_wrap">
-		{#if page.url.pathname !== '/onboarding'}
+		{#if !isOnboardingRoute}
 			<MainHeader />
 		{/if}
-		<div id="main_container" class="bg-body-tertiary" class:px-3={page.url.pathname !== '/onboarding'} class:pt-3={page.url.pathname !== '/onboarding'}>
+		<div id="main_container" class="bg-body-tertiary" class:px-3={!isOnboardingRoute} class:pt-3={!isOnboardingRoute}>
 			<slot />
 		</div>
-		{#if page.url.pathname !== '/onboarding'}
+		{#if !isOnboardingRoute}
 			<Nav />
 		{/if}
 	</div>
