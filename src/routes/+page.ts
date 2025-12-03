@@ -1,21 +1,20 @@
 import { APP } from '$lib/stores/appMain';
-import { addError } from '$lib/stores/notices';
 import { getUserInfo } from '$lib/utils/apis';
 import { SplashScreen } from '@capacitor/splash-screen';
-import { redirect } from '@sveltejs/kit';
 import { get } from 'svelte/store';
 
 /** @type {import('./$types').LayoutPageLoad} */
 export async function load() {
-	SplashScreen.hide();
+	// Keep native splash visible initially
 	let $APP = get(APP);
 
+	// Return the data instead of redirecting immediately
+	// This allows the page to mount and show custom splash
 	if ($APP.Auth?.AuthToken) {
 		const resp = await getUserInfo();
 		if (!resp?.userInfo) {
-			// TODO revisit this again
-			//addError('Error getting user info. Please login again');
-			throw redirect(307, '/login');
+			await SplashScreen.hide();
+			return { redirectTo: '/login', reason: 'no_user_info' };
 		}
 
 		$APP.User = resp?.userInfo;
@@ -24,16 +23,18 @@ export async function load() {
 		// Check onboarding status (only for endUser role)
 		if ($APP.User.UserRole === 'endUser') {
 			if (!$APP.User.LocationId) {
-				// User needs to complete profile
-				throw redirect(307, '/onboarding');
+				await SplashScreen.hide();
+				return { redirectTo: '/onboarding', reason: 'needs_profile' };
 			} else if (!$APP.User.ActiveSubscription) {
-				// User needs to subscribe
-				throw redirect(307, '/onboarding/subscription');
+				await SplashScreen.hide();
+				return { redirectTo: '/onboarding/subscription', reason: 'needs_subscription' };
 			}
 		}
 
-		// User is fully onboarded or is not endUser, redirect to main app
-		throw redirect(307, '/closet');
+		await SplashScreen.hide();
+		return { redirectTo: '/closet', reason: 'authenticated' };
 	}
-	throw redirect(307, '/login');
+
+	await SplashScreen.hide();
+	return { redirectTo: '/login', reason: 'no_auth' };
 }
