@@ -828,6 +828,7 @@ export async function fetchCouponInfo(text: string) {
 		code: string;
 		description: string;
 		discount: number;
+		directDiscount: boolean;
 	}
 	try {
 		const $APP = get(APP);
@@ -851,6 +852,7 @@ export async function fetchCouponInfo(text: string) {
 			Code: 'code',
 			Description: 'description',
 			Discount: 'discount',
+			DirectDiscount: 'directDiscount',
 		});
 		return { discountInfo };
 	} catch (e) {

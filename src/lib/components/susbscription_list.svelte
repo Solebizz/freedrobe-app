@@ -25,9 +25,10 @@
 	let selectedProtectionPlan: string = '691832e12c958372717c9524';
 	let discountCoupon: App.ICouopnInfo | undefined = {
 		ID: '684d468807a2c336ee197038',
-		Code: 'FDD15',
-		Description: 'Discount Offer: 15% Off',
-		Discount: 15,
+		Code: 'FDD50',
+		Description: 'Discount Offer: ₹147 Off',
+		Discount: 147,
+		DirectDiscount: true,
 	};
 	let termsText = 'Subscription will start from the date of first pick up.';
 
@@ -107,7 +108,9 @@
 		<form class="d-flex flex-column gap-2">
 			<h1 class="fw-bold mb-3 fs-5">Available Plans</h1>
 			{#each Object.values(subscriptions) as subscription}
-				{@const finalPrice = Number(subscription.Price) - Math.floor(Number(subscription.Price) * ((discountCoupon?.Discount || 100) / 100))}
+				{@const finalPrice = discountCoupon?.DirectDiscount
+					? Number(subscription.Price) - Math.floor(Number(discountCoupon?.Discount) / 3)
+					: Number(subscription.Price) - Math.floor(Number(subscription.Price) * ((discountCoupon?.Discount || 100) / 100))}
 				<div class="selectBox-ssa radio">
 					<input class="bg-white" type="radio" name="radio" id={subscription.ID} value={subscription} bind:group={selected} />
 					<label class="rounded-3 border" for={subscription.ID}>

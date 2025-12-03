@@ -257,6 +257,7 @@ declare global {
 			Code: string;
 			Description: string;
 			Discount: number;
+			DirectDiscount: boolean;
 		}
 		interface IPricesInfo {
 			Category: string;
