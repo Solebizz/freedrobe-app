@@ -1,5 +1,5 @@
 import { APP } from '$lib/stores/appMain';
-import { getUserInfo } from '$lib/utils/apis';
+import { getUserInfo, getOrdersList } from '$lib/utils/apis';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { get } from 'svelte/store';
 
@@ -28,6 +28,13 @@ export async function load() {
 			} else if (!$APP.User.ActiveSubscription) {
 				await SplashScreen.hide();
 				return { redirectTo: '/onboarding/subscription', reason: 'needs_subscription' };
+			} else {
+				// Check if user has any orders
+				const ordersResp = await getOrdersList({ limit: 1, start: 0 });
+				if (ordersResp && (!ordersResp.orders || Object.keys(ordersResp.orders).length === 0)) {
+					await SplashScreen.hide();
+					return { redirectTo: '/onboarding/pickup', reason: 'needs_first_pickup' };
+				}
 			}
 		}
 

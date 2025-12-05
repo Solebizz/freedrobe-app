@@ -19,8 +19,8 @@
 	});
 </script>
 
-<div class="onboarding-content">
-	<div class="mb-5 p-3 py-3 rounded-4 bg-white shadow-lg">
+<div class="px-3">
+	<div class="bg-white p-4 rounded-4 shadow-sm">
 		<SusbscriptionList />
 	</div>
 </div>

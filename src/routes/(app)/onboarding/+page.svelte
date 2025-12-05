@@ -185,36 +185,34 @@
 	}
 </script>
 
-<div class="onboarding-content bg-body-tertiary">
-	<form method="post" class="onboarding-form bg-white p-3 border rounded-4 shadow-lg" bind:this={form} on:submit|preventDefault={submitForm}>
-		<div class="form-fields">
-			{#each fields as { key, definition }}
-				<div class="mb-3" data-field={key}>
-					<Field {key} {definition} bind:value={profile[key]} />
-				</div>
-			{/each}
-		</div>
+<div class="px-3">
+	<div class="bg-white p-4 rounded-4 shadow-sm">
+		<h2 class="fw-bold fs-4 mb-2">Profile Details</h2>
+		<p class="text-muted mb-4">Please add your details to continue.</p>
 
-		<button class="d-none">Needed for ENTER to submit</button>
-		<button on:click={() => form.checkValidity()} type="submit" class="btn btn-primary" {disabled}>
-			<span>Continue to Subscription</span>
-			{#if loading}
-				<Loader />
-			{/if}
-		</button>
-	</form>
+		<form method="post" bind:this={form} on:submit|preventDefault={submitForm}>
+			<div class="form-fields">
+				{#each fields as { key, definition }}
+					<div class="mb-3" data-field={key}>
+						<Field {key} {definition} bind:value={profile[key]} />
+					</div>
+				{/each}
+			</div>
+
+			<button class="d-none">Needed for ENTER to submit</button>
+			<button on:click={() => form.checkValidity()} type="submit" class="btn btn-primary w-100 py-2 text-uppercase fw-bold" {disabled}>
+				{#if loading}
+					<Loader />
+				{:else}
+					Next
+				{/if}
+			</button>
+		</form>
+	</div>
 </div>
 
 <style lang="scss">
-	.onboarding-form {
-		background: white;
-		border-radius: 1rem;
-		display: flex;
-		flex-direction: column;
-		gap: 1.5rem;
-	}
-
 	.form-fields {
-		flex: 1;
+		max-width: 100%;
 	}
 </style>

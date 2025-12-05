@@ -78,7 +78,9 @@
 					};
 					addNotice(noticeObj);
 					$APP.User = userInfo;
-					goto('/profile', { replaceState: true });
+
+					// Redirect to pickup page for onboarding, profile for regular subscription
+					goto(referrer === 'onboarding_subscription' ? '/onboarding/pickup' : '/profile', { replaceState: true });
 				}
 			}
 		},

@@ -1,4 +1,4 @@
-<div class="onboarding-container">
+<div class="onboarding-container bg-body-tertiary">
 	<slot />
 </div>
 
@@ -7,14 +7,8 @@
 		height: 100%;
 		display: flex;
 		flex-direction: column;
-		background-color: var(--bs-body-bg);
-		overflow: hidden;
-	}
-
-	:global(.onboarding-content) {
-		flex: 1;
 		overflow-y: auto;
-		background-color: var(--bs-body-tertiary);
-		padding: 1.5rem;
+		padding-top: 1rem;
+		padding-bottom: 2rem;
 	}
 </style>
