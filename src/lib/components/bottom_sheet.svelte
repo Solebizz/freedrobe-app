@@ -29,7 +29,7 @@
 
 <div class:showSheetWrapper={show} class="sheetWrapper d-flex align-items-end">
 	<div class:show class="contentWrapper h-{heightOffset} overflow-hidden">
-		<div class="d-flex justify-content-end">
+		<div class="d-flex justify-content-end" class:d-none={!show}>
 			<i class="bi bi-x m-0 fs-2 text-black" on:click={onClickClose}></i>
 		</div>
 		<div class="overflow-auto h-100 mb-5 pb-4">

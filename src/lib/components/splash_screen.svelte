@@ -23,9 +23,9 @@
 
 {#if show}
 	<div class="position-fixed top-0 start-0 end-0 bottom-0 bg-white d-flex align-items-center justify-content-center" style="z-index: 99999;">
-		<div class="d-flex flex-column align-items-center gap-5">
-			<img src={logoSrc} alt="Freedrobe" class="splash-logo" style="height: 8rem;" />
-			<div class="progress" style="width: 200px; height: 8px;">
+		<div class="d-flex flex-column align-items-center">
+			<img src={logoSrc} alt="Freedrobe" class="splash-logo" style="height: 12rem;" />
+			<div class="progress" style="width: 150px; height: 8px;">
 				<div
 					class="progress-bar"
 					role="progressbar"
