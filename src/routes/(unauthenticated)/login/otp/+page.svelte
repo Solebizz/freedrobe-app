@@ -5,7 +5,7 @@
 	import OtpInput from '$lib/components/otp_input.svelte';
 	import { APP } from '$lib/stores/appMain';
 	import { addError } from '$lib/stores/notices';
-	import { getOTP, verifyOTPAndGetUserInfo } from '$lib/utils/apis';
+	import { getOTP, verifyOTPAndGetUserInfo, getOrdersList } from '$lib/utils/apis';
 	import { onMount } from 'svelte';
 
 	let otpDisplay = '';
@@ -86,9 +86,22 @@
 				$APP.Auth = resp.authInfo;
 				$APP.User = resp.userInfo;
 
-				// Redirect to onboarding if user hasn't completed profile
-				if (!resp.userInfo.LocationId) {
-					goto('/onboarding', { replaceState: true });
+				// Check onboarding status (only for endUser role)
+				if (resp.userInfo.UserRole === 'endUser') {
+					// Redirect to onboarding if user hasn't completed profile
+					if (!resp.userInfo.LocationId) {
+						goto('/onboarding', { replaceState: true });
+					} else if (!resp.userInfo.ActiveSubscription) {
+						goto('/onboarding/subscription', { replaceState: true });
+					} else {
+						// Check if user has any orders
+						const ordersResp = await getOrdersList({ limit: 1, start: 0 });
+						if (ordersResp && (!ordersResp.orders || Object.keys(ordersResp.orders).length === 0)) {
+							goto('/onboarding/pickup', { replaceState: true });
+						} else {
+							goto('/closet', { replaceState: true });
+						}
+					}
 				} else {
 					goto('/profile', { replaceState: true });
 				}
