@@ -9,7 +9,6 @@
 	let phone = '';
 	let error = false;
 	let loading = false;
-	let checked = false;
 
 	async function handleGetOTP() {
 		try {
@@ -38,7 +37,7 @@
 	}
 
 	$: {
-		if (phone.length === 10 && checked) {
+		if (phone.length === 10) {
 			disabled = false; // Email is valid
 		} else {
 			disabled = true;
@@ -46,81 +45,59 @@
 	}
 </script>
 
-<div class="d-flex h-100 flex-column os_top_padding mt-4">
-	<div class="d-flex justify-content-center">
-		<img src={logoFullSrc} class="splash-logo" alt="ICARUS" height="130" />
+<div class="vh-100 d-flex flex-column" style="background-color: #f8f9fa;">
+	<!-- Header Image -->
+	<div class="position-relative" style="height: 240px; overflow: hidden;">
+		<img src="/imgs/coming-soon.png" alt="Closet" class="w-100 h-100" style="object-fit: cover;" />
+		<!-- Logo Overlay -->
+		<div class="bg-opacity-75 bg-white d-flex items-center justify-content-center position-absolute px-4 py-2 start-50 top-50 translate-middle w-100">
+			<img src={logoFullSrc} alt="FREEDROBE" style="height: 90px;" />
+		</div>
 	</div>
-	<div class="rounded-top-5 p-3 w-100 d-flex flex-column align-items-center pb-5">
-		<div class="w-100">
-			<h2 class="text-primary pb-2 pt-1 text-center my-3 fs-5 fw-bold">Welcome to Freedrobe</h2>
-			<span class="error-text text-danger" class:d-none={!error}>Please check email or password</span>
 
-			<form class="w-100" on:submit|preventDefault={handleGetOTP} enctype="multipart/form-data">
-				<div class="text-input-group">
-					<label class="mb-1 text-primary" for="email">Login / Signup</label>
-					<div class="d-flex align-items-center gap-2 bg-white p-1 border rounded-3">
-						<span class="fw-bold px-1">+91</span>
+	<!-- Content Card -->
+	<div class="flex-grow-1 d-flex align-items-start justify-content-center px-3 mt-4">
+		<div class="bg-white rounded-4 shadow-sm p-4 w-100" style="max-width: 400px;">
+			<p class="fw-bold mb-2 fs-5">Login/ SignUp</p>
+			<p class="text-muted mb-4 fs-6">Login/Create Account to access your wardrobe.</p>
+
+			<span class="error-text text-danger d-block mb-2" class:d-none={!error}>Please check mobile number</span>
+
+			<form on:submit|preventDefault={handleGetOTP} enctype="multipart/form-data">
+				<div class="mb-3">
+					<div class="d-flex align-items-center border rounded-3 px-3 py-2" style="background-color: #f8f9fa;">
+						<span class="fw-bold text-dark">+91</span>
 						<input
 							type="text"
 							inputmode="numeric"
-							class="form-control bg-transparent border-0 p-1 shadow-none"
+							class="form-control bg-transparent border-0 shadow-none ps-2"
 							bind:value={phone}
 							aria-describedby="phone"
-							placeholder="Enter mobile number"
+							placeholder="Enter Mobile number"
 							on:input={handleInput} />
 					</div>
 				</div>
-				<div class="label-group">
-					<input class="form-check-input" type="checkbox" bind:checked value="" id="flexCheckDefault" />
-					<label class="form-check-label" for="flexCheckDefault">I accept <a href={termsUrl}>Terms & Conditions</a> </label>
-				</div>
 
-				<button type="submit" class:disabled class="btn btn-primary w-100 my-4 d-flex justify-content-center gap-2"
-					>Get OTP
+				<button type="submit" class="btn w-100 py-2 fw-bold text-uppercase text-white mb-3" style="background-color: #003366; border: none;" disabled={disabled || loading}>
 					{#if loading}
-						<Loader />
+						<span class="d-flex align-items-center justify-content-center gap-2">
+							LOGIN
+							<Loader />
+						</span>
+					{:else}
+						LOGIN
 					{/if}
 				</button>
+
+				<span class="text-muted">By tapping, I accept </span>
+				<a href={termsUrl} target="_blank" class="text-dark fw-bold text-decoration-none">terms of service & privacy policy</a>
 			</form>
 		</div>
 	</div>
 </div>
 
 <style lang="scss">
-	a {
-		text-decoration: underline;
-		font-size: 0.8rem;
-	}
 	.error-text {
-		font-size: 0.8rem;
+		font-size: 0.85rem;
 	}
-	.back {
-		top: 1rem;
-		left: 1rem;
-	}
-	.text-input-group {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		margin-bottom: 1rem;
-		input[type='email'],
-		input[type='password'] {
-			padding: 0.5rem;
-			border-radius: var(--bs-border-radius);
-			color: var(--bs-body-color);
-			border: var(--bs-border-width) solid var(--bs-border-color);
-		}
-	}
-	.label-group {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		input[type='checkbox'] {
-			margin-top: 0;
-		}
-	}
-	// .splash-logo {
-	// 	height: auto;
-	// 	width: 11rem;
-	// }
 </style>

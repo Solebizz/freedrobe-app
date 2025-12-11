@@ -2,7 +2,6 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import Loader from '$lib/components/loader.svelte';
-	import OtpInput from '$lib/components/otp_input.svelte';
 	import { APP } from '$lib/stores/appMain';
 	import { addError } from '$lib/stores/notices';
 	import { getOTP, verifyOTPAndGetUserInfo, getOrdersList } from '$lib/utils/apis';
@@ -33,13 +32,22 @@
 
 		startInterval();
 
-		setTimeout(() => {
-			const first = document.querySelector('.otp-input-0') as HTMLInputElement;
-			first?.focus();
-		}, 50);
-
 		return () => intervalRef && clearInterval(intervalRef);
 	});
+
+	function handleOtpInput(event: Event) {
+		const input = event.target as HTMLInputElement;
+		// Remove all non-digit characters
+		let value = input.value.replace(/\D/g, '');
+
+		// Limit to 6 characters
+		if (value.length > 6) {
+			value = value.slice(0, 6);
+		}
+
+		input.value = value;
+		otpDisplay = value;
+	}
 
 	function handleBack() {
 		goto('/login', { replaceState: true });
@@ -114,40 +122,136 @@
 	$: disabled = otpDisplay.length !== 6;
 </script>
 
-<header class="os_top_padding">
-	<p class="px-3 fs-6 pt-3" on:click={handleBack}>
-		<i class="bi bi-arrow-left me-2"></i>Back
-	</p>
-</header>
+<div class="vh-100 d-flex flex-column bg-light">
+	<!-- Header Image -->
+	<div class="header-image">
+		<img src="/imgs/coming-soon.png" alt="Closet" class="w-100 h-100 object-fit-cover" />
+	</div>
 
-<main class="h-100 d-flex justify-content-center mt-3">
-	{#if !phone}
-		<div class="text-center">
-			<p class="fs-4">⚠️ Phone number is required.</p>
-			<button class="btn rounded-pill border" on:click={handleBack}>Go back</button>
-		</div>
-	{:else}
-		<form on:submit|preventDefault={handleSubmit} class="otp-form d-flex flex-column align-items-center mt-5" name="otp-form">
-			<div class="title text-center">
-				<p class="fs-5 fw-bold">OTP Verification</p>
-				<p class="info">
-					OTP has been successfully sent to <span class="fw-bold">{phone}</span>
-				</p>
+	<!-- Content Card -->
+	<div class="flex-grow-1 d-flex align-items-start justify-content-center content-wrapper">
+		{#if !phone}
+			<div class="otp-card bg-white rounded-4 shadow-sm p-4 w-100">
+				<div class="text-center">
+					<p class="fs-4">⚠️ Phone number is required.</p>
+					<button class="btn btn-outline-secondary rounded-pill mt-3" on:click={handleBack}>Go back</button>
+				</div>
 			</div>
+		{:else}
+			<div class="otp-card bg-white rounded-4 shadow-sm p-4 w-100">
+				<!-- Back Button -->
+				<button class="btn btn-link text-decoration-none text-dark p-0 mb-3 d-flex align-items-center back-button" on:click={handleBack}>
+					<i class="bi bi-arrow-left me-2"></i>
+					<span>BACK TO LOGIN</span>
+				</button>
 
-			<OtpInput length={6} value={otpDisplay} onChange={(v) => (otpDisplay = v)} />
+				<!-- Form -->
+				<form on:submit|preventDefault={handleSubmit} name="otp-form">
+					<h5 class="fw-bold mb-2 fs-5">Verify OTP</h5>
+					<p class="text-muted mb-4 small-text">OTP sent to +91-{phone}.</p>
 
-			<div class="w-100 pt-1 d-flex align-items-center gap-1">
-				<button class="btn text-capitalize p-0 border-0 text-underline" disabled={!!interval} on:click|preventDefault={onClickResendOtp}> Resend OTP </button>
-				<span class:d-none={!interval}> in {interval}s</span>
+					<!-- Single OTP Input -->
+					<div class="mb-4">
+						<input
+							type="text"
+							inputmode="numeric"
+							class="form-control form-control-lg text-center otp-input"
+							bind:value={otpDisplay}
+							maxlength="6"
+							on:input={handleOtpInput}
+							autocomplete="one-time-code" />
+					</div>
+
+					<div class="mb-4">
+						<span class="text-muted small-text mb-1">Didn't receive the OTP?</span>
+						<button class="btn btn-link p-0 text-decoration-none fw-bold text-uppercase resend-button" disabled={!!interval} on:click|preventDefault={onClickResendOtp}> SEND AGAIN </button>
+						{#if interval}
+							<span class="text-muted small-text ms-1">in {interval}s</span>
+						{/if}
+					</div>
+
+					<button type="submit" class="btn btn-primary w-100 py-2 fw-bold text-uppercase" style="background-color: #003366; border: none;" disabled={disabled || loading}>
+						{#if loading}
+							<span class="d-flex align-items-center justify-content-center gap-2">
+								VERIFY AND PROCEED
+								<Loader />
+							</span>
+						{:else}
+							VERIFY AND PROCEED
+						{/if}
+					</button>
+				</form>
 			</div>
+		{/if}
+	</div>
+</div>
 
-			<button type="submit" class="btn btn-primary w-100 my-3 d-flex justify-content-center gap-2" class:disabled>
-				Verify
-				{#if loading}
-					<Loader />
-				{/if}
-			</button>
-		</form>
-	{/if}
-</main>
+<style lang="scss">
+	.header-image {
+		height: 200px;
+		overflow: hidden;
+	}
+
+	.content-wrapper {
+		margin-top: -40px;
+		padding: 0 1rem;
+	}
+
+	.otp-card {
+		max-width: 400px;
+		margin: 0 auto;
+	}
+
+	.back-button {
+		font-size: 0.85rem;
+		letter-spacing: 0.5px;
+	}
+
+	.small-text {
+		font-size: 0.9rem;
+	}
+
+	.otp-input {
+		letter-spacing: 8px;
+		font-size: 1.5rem;
+		font-weight: 600;
+		border: 1px solid #dee2e6;
+		border-radius: 8px;
+		padding: 12px;
+
+		&:focus {
+			border-color: #003366;
+			box-shadow: 0 0 0 0.2rem rgba(0, 51, 102, 0.25);
+		}
+	}
+
+	.resend-button {
+		color: #000;
+		font-size: 0.85rem;
+		letter-spacing: 0.5px;
+
+		&:hover:not(:disabled) {
+			color: #003366;
+		}
+
+		&:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+	}
+
+	.submit-button {
+		background-color: #003366;
+		border: none;
+		border-radius: 8px;
+
+		&:hover:not(:disabled) {
+			background-color: #002147;
+		}
+
+		&:disabled {
+			opacity: 0.6;
+			cursor: not-allowed;
+		}
+	}
+</style>
