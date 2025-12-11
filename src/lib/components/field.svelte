@@ -213,7 +213,7 @@
 </script>
 
 <div class="field mb-3 form-group col-md-{definition.Span ?? 12} {definition.GroupClass ?? ''}" data-field-key={key} data-field-type={type}>
-	<label for="field-{key}" class="pb-1">
+	<label for="field-{key}" class="pb-1 fw-bold">
 		{#if type === 'checkbox'}
 			<input type="checkbox" bind:checked={value} {value} {...attributes} />
 			{#if definition.SubmitOffCheckbox && !value}
