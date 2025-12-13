@@ -195,17 +195,17 @@
 	<h2 class="fs-4 fw-bold m-0">My Subscription</h2>
 	<div class="subscription-card p-3 rounded-4 text-black bg-white border mt-3">
 		<div class="mb-2">
-			<p class="mb-1">Type: {$APP.User?.SubscriptionName}</p>
+			<p class="mb-1"><span class="fw-bold">Type:</span> {$APP.User?.SubscriptionName}</p>
 			<p class="mb-1">
-				Valid Until:
+				<span class="fw-bold">Valid Until:</span>
 				{$APP.User?.SubscriptionValidTill ? DateTime.fromMillis(Number($APP.User?.SubscriptionValidTill)).toFormat('dd LLL yyyy') : ' Subscription not started yet.'}
 			</p>
 		</div>
 
 		<div class="mt-3 pt-3 border-top border-light-subtle">
-			<p class="mb-1">Free Pickups / Deliveries Left: {$APP.User?.LogisticValue}</p>
-			<p class="mb-1">Free Dry Cleans Left: {$APP.User?.DryCleanValue}</p>
-			<p class="mb-1">Free Washes Left: {$APP.User?.WashValue}</p>
+			<p class="mb-1"><span class="fw-bold">Free Pickups / Deliveries Left:</span> {$APP.User?.LogisticValue}</p>
+			<p class="mb-1"><span class="fw-bold">Free Dry Cleans Left:</span> {$APP.User?.DryCleanValue}</p>
+			<p class="mb-1"><span class="fw-bold">Free Washes Left:</span> {$APP.User?.WashValue}</p>
 		</div>
 	</div>
 {/if}

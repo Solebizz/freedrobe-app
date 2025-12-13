@@ -127,12 +127,12 @@
 			</div>
 
 			<div class="d-flex gap-2 mt-4">
-				<button type="button" class="btn btn-secondary flex-fill py-2 text-uppercase fw-bold" on:click={handleBookLater}> Book Later </button>
-				<button type="submit" class="btn btn-primary flex-fill py-2 text-uppercase fw-bold" {disabled}> Book Now </button>
+				<button type="button" class="btn btn-outline-primary flex-fill text-capitalize py-2 fw-bold" on:click={handleBookLater}> Book Later </button>
+				<button type="submit" class="btn btn-primary flex-fill py-2 text-capitalize fw-bold" {disabled}> Book Now </button>
 			</div>
 		</form>
 
-		<p class="text-muted small mt-3 mb-0">
+		<p class="text-muted small mt-2 mb-0">
 			<span class="text-danger">*</span> You may find some dates unavailable for scheduling pickup due to high demand.
 		</p>
 	</div>
