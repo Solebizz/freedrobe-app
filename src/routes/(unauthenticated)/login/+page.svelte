@@ -48,10 +48,10 @@
 <div class="vh-100 d-flex flex-column" style="background-color: #f8f9fa;">
 	<!-- Header Image -->
 	<div class="position-relative" style="height: 240px; overflow: hidden;">
-		<img src="/imgs/coming-soon.png" alt="Closet" class="w-100 h-100" style="object-fit: cover;" />
+		<img src="/imgs/coming-soon.png" alt="Closet" class="w-100 h-100" />
 		<!-- Logo Overlay -->
-		<div class="bg-opacity-75 bg-white d-flex items-center justify-content-center position-absolute px-4 py-2 start-50 top-50 translate-middle w-100">
-			<img src={logoFullSrc} alt="FREEDROBE" style="height: 90px;" />
+		<div class="bg-opacity-75 bg-white d-flex items-center justify-content-center position-absolute px-4 start-50 top-50 translate-middle w-100">
+			<img src={logoFullSrc} alt="FREEDROBE" style="height: 130px;" />
 		</div>
 	</div>
 
@@ -59,7 +59,7 @@
 	<div class="flex-grow-1 d-flex align-items-start justify-content-center px-3 mt-4">
 		<div class="bg-white rounded-4 shadow-sm p-4 w-100" style="max-width: 400px;">
 			<p class="fw-bold mb-2 fs-5">Login/ SignUp</p>
-			<p class="text-muted mb-4 fs-6">Login/Create Account to access your wardrobe.</p>
+			<p class="text-muted mb-3 fs-6">Login/Create Account to access your wardrobe.</p>
 
 			<span class="error-text text-danger d-block mb-2" class:d-none={!error}>Please check mobile number</span>
 
@@ -78,7 +78,7 @@
 					</div>
 				</div>
 
-				<button type="submit" class="btn w-100 py-2 fw-bold text-uppercase text-white mb-3" style="background-color: #003366; border: none;" disabled={disabled || loading}>
+				<button type="submit" class="btn w-100 py-2 fw-bold text-uppercase text-white mb-2" style="background-color: #003366; border: none;" disabled={disabled || loading}>
 					{#if loading}
 						<span class="d-flex align-items-center justify-content-center gap-2">
 							LOGIN

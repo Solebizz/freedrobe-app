@@ -125,7 +125,7 @@
 <div class="vh-100 d-flex flex-column bg-light">
 	<!-- Header Image -->
 	<div class="header-image">
-		<img src="/imgs/coming-soon.png" alt="Closet" class="w-100 h-100 object-fit-cover" />
+		<img src="/imgs/coming-soon.png" alt="Closet" class="w-100 h-100" />
 	</div>
 
 	<!-- Content Card -->
@@ -140,18 +140,18 @@
 		{:else}
 			<div class="otp-card bg-white rounded-4 shadow-sm p-4 w-100">
 				<!-- Back Button -->
-				<button class="btn btn-link text-decoration-none text-dark p-0 mb-3 d-flex align-items-center back-button" on:click={handleBack}>
+				<button class="border-0 bg-white btn-link text-decoration-none text-dark p-0 mb-3 d-flex align-items-center back-button" on:click={handleBack}>
 					<i class="bi bi-arrow-left me-2"></i>
-					<span>BACK TO LOGIN</span>
+					<span>Back</span>
 				</button>
 
 				<!-- Form -->
 				<form on:submit|preventDefault={handleSubmit} name="otp-form">
 					<h5 class="fw-bold mb-2 fs-5">Verify OTP</h5>
-					<p class="text-muted mb-4 small-text">OTP sent to +91-{phone}.</p>
+					<p class="text-muted mb-3 small-text">OTP sent to +91-{phone}.</p>
 
 					<!-- Single OTP Input -->
-					<div class="mb-4">
+					<div class="mb-3">
 						<input
 							type="text"
 							inputmode="numeric"
@@ -162,22 +162,22 @@
 							autocomplete="one-time-code" />
 					</div>
 
-					<div class="mb-4">
+					<div class="mb-2">
 						<span class="text-muted small-text mb-1">Didn't receive the OTP?</span>
-						<button class="btn btn-link p-0 text-decoration-none fw-bold text-uppercase resend-button" disabled={!!interval} on:click|preventDefault={onClickResendOtp}> SEND AGAIN </button>
+						<button class="border-0 bg-white btn-link p-0 text-decoration-none fw-bold resend-button" disabled={!!interval} on:click|preventDefault={onClickResendOtp}> Send Again </button>
 						{#if interval}
-							<span class="text-muted small-text ms-1">in {interval}s</span>
+							<span class="text-muted small-text">in {interval}s</span>
 						{/if}
 					</div>
 
-					<button type="submit" class="btn btn-primary w-100 py-2 fw-bold text-uppercase" style="background-color: #003366; border: none;" disabled={disabled || loading}>
+					<button type="submit" class="btn btn-primary w-100 py-2 fw-bold" style="background-color: #003366; border: none;" disabled={disabled || loading}>
 						{#if loading}
 							<span class="d-flex align-items-center justify-content-center gap-2">
-								VERIFY AND PROCEED
+								Verify and Proceed
 								<Loader />
 							</span>
 						{:else}
-							VERIFY AND PROCEED
+							Verify and Proceed
 						{/if}
 					</button>
 				</form>
