@@ -2,7 +2,7 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import MemberSidebar from '$lib/components/member_sidebar.svelte';
-	import { logoFullSrc } from '$lib/utils/globals';
+	import { logoSrc } from '$lib/utils/globals';
 	import { APP } from '$lib/stores/appMain';
 	import { onboardingStep } from '$lib/stores/onboarding';
 
@@ -12,18 +12,6 @@
 	export let onboarding_subtitle = '';
 
 	const steps = [1, 2, 3];
-
-	// Get direct reference to store values
-	const currentStepValue = $onboardingStep.currentStep;
-	const completedStepsValue = $onboardingStep.completedSteps;
-
-	function isCompleted(stepNumber: number): boolean {
-		return $onboardingStep.completedSteps.includes(stepNumber);
-	}
-
-	function isActive(stepNumber: number): boolean {
-		return $onboardingStep.currentStep === stepNumber;
-	}
 
 	function handleBack() {
 		if ($page.data.back_button === true) {
@@ -44,7 +32,7 @@
 			{#if !logo_only && $page.data.back_button}
 				<button on:click={handleBack} class="back btn-plain"><i class="bi bi-arrow-left text-black"></i></button>
 			{/if}
-			<img src={logoFullSrc} class="header-logo" alt="FREEDROBE" />
+			<img src={logoSrc} class="header-logo" alt="FREEDROBE" />
 			{#if logo_only && $onboardingStep.currentStep > 0}
 				<div class="onboarding-text ms-3 d-flex align-items-center gap-3">
 					<div class="d-flex align-items-center gap-2">
@@ -126,7 +114,7 @@
 	}
 
 	.header-logo {
-		height: 4.5rem;
+		height: 5.5rem;
 	}
 	.active {
 		color: var(--bs-secondary);
