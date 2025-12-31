@@ -1,7 +1,7 @@
 <script lang="ts">
 	import MemberImage from '$lib/components/member_image.svelte';
 	import { APP } from '$lib/stores/appMain';
-	import { resetOnboardingStep } from '$lib/stores/onboarding';
+	import { resetOnboardingStep, resetSubscriptionSkipped } from '$lib/stores/onboarding';
 	import { contactusUrl, deleteUrl, privacyUrl, protectionPlanUrl, termsUrl } from '$lib/utils/globals';
 
 	let show = false;
@@ -18,6 +18,7 @@
 		$APP.Auth = undefined;
 		$APP.ArticlesInBag = [];
 		resetOnboardingStep();
+		resetSubscriptionSkipped();
 	}
 </script>
 

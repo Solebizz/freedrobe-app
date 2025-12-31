@@ -21,6 +21,6 @@
 
 <div class="px-3">
 	<div class="bg-white p-4 rounded-4 shadow-sm">
-		<SusbscriptionList />
+		<SusbscriptionList showSkip />
 	</div>
 </div>

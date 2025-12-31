@@ -1,11 +1,15 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	import Loader from '$lib/components/loader.svelte';
 	import { buySubscription, getSubscriptionsList } from '$lib/utils/apis';
 	import { bottomSheetStore } from '$lib/stores/bottom_sheet';
+	import { setSubscriptionSkipped } from '$lib/stores/onboarding';
 	import SubscriptionSummaryAddons from './subscription_summary_addons.svelte';
 	import DiscountCoupon from './discount_coupon.svelte';
 	import SubscriptionOrderDetails from './subscription_order_details.svelte';
+
+	export let showSkip = false;
 
 	let subscriptions: Record<string, App.ISubscriptionInfo> = {};
 	let selected: App.ISubscriptionInfo;
@@ -13,6 +17,7 @@
 	let submitLoading = false;
 	let plansAddOnsLoading = false;
 	let discountCouponsLoading = false;
+	let showSkipButton = false;
 
 	let plans: Record<string, App.IProtectionPlanInfo> | undefined = {
 		'691832e12c958372717c9524': {
@@ -40,6 +45,10 @@
 		subscriptions = resp;
 		selected = subscriptions && Object.values(subscriptions)[0];
 		loading = false;
+
+		if (showSkip) {
+			showSkipButton = true;
+		}
 	});
 
 	async function handleAddOnsClick() {
@@ -98,6 +107,12 @@
 		} finally {
 			submitLoading = false;
 		}
+	}
+
+	function handleSkip() {
+		// Mark that user has skipped subscription in the store
+		setSubscriptionSkipped(true);
+		goto('/closet');
 	}
 </script>
 
@@ -194,6 +209,14 @@
 		<button on:click={handleOrderDetails} disabled={submitLoading} class="submit-cta btn p-2 btn-primary w-100 mt-3 d-flex align-items-center justify-content-center gap-2 shadow"
 			><span>Continue with {selected?.Title}</span>{#if submitLoading}<Loader />{/if}</button>
 		<p class="text-primary">* {termsText}</p>
+
+		{#if showSkip && showSkipButton}
+			<div class="text-center mt-2">
+				<button class="btn btn-link text-muted text-decoration-none skip-button" on:click={handleSkip}>
+					<small>Skip for now</small>
+				</button>
+			</div>
+		{/if}
 	</div>
 {/if}
 
@@ -253,6 +276,16 @@
 	.submit-cta {
 		i {
 			font-size: 0.8rem;
+		}
+	}
+
+	.skip-button {
+		font-size: 0.85rem;
+		opacity: 0.6;
+		transition: opacity 0.2s ease;
+
+		&:hover {
+			opacity: 1;
 		}
 	}
 </style>

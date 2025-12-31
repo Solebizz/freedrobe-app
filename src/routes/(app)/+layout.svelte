@@ -5,7 +5,7 @@
 	import MainHeader from '$lib/components/main_header.svelte';
 	import Nav from '$lib/components/nav.svelte';
 	import { APP } from '$lib/stores/appMain';
-	import { onboardingStep, setOnboardingStep } from '$lib/stores/onboarding';
+	import { onboardingStep, setOnboardingStep, subscriptionSkipped } from '$lib/stores/onboarding';
 	import { onMount } from 'svelte';
 
 	let loading = false;
@@ -17,17 +17,17 @@
 	$: isEndUser = $APP.User?.UserRole === 'endUser';
 
 	// Check if current route is onboarding OR if user should be in onboarding (only for endUsers)
-	$: isOnboardingRoute = isEndUser && (currentPathname.startsWith('/onboarding') || !$APP.User?.LocationId || ($APP.User?.LocationId && !$APP.User?.ActiveSubscription));
+	$: isOnboardingRoute = currentPathname.startsWith('/onboarding');
 
 	// Show bottom nav for non-endUsers always, or for endUsers when not on onboarding
-	$: showBottomNav = isEndUser ? !currentPathname.startsWith('/onboarding') && $APP.User?.LocationId && $APP.User?.ActiveSubscription : true; // Always show nav for non-endUsers
+	$: showBottomNav = isEndUser ? !isOnboardingRoute : true; // Always show nav for non-endUsers
 
 	// Show logo-only header only for endUsers on onboarding
-	$: showLogoOnlyHeader = isEndUser && currentPathname.startsWith('/onboarding');
+	$: showLogoOnlyHeader = isEndUser && isOnboardingRoute;
 
 	// Update onboarding step store based on current route
 	$: {
-		if (isEndUser && currentPathname.startsWith('/onboarding')) {
+		if (isEndUser && isOnboardingRoute) {
 			const step = currentPathname === '/onboarding' ? 1 : currentPathname === '/onboarding/subscription' ? 2 : currentPathname === '/onboarding/pickup' ? 3 : 0;
 
 			if (step > 0) {
@@ -57,8 +57,8 @@
 				return;
 			}
 
-			// Check if user needs to subscribe
-			if ($APP.User?.LocationId && !$APP.User?.ActiveSubscription && currentPathname !== '/onboarding/subscription') {
+			// Check if user needs to subscribe (and hasn't skipped)
+			if ($APP.User?.LocationId && !$APP.User?.ActiveSubscription && !$subscriptionSkipped && currentPathname !== '/onboarding/subscription') {
 				goto('/onboarding/subscription', { replaceState: true });
 				return;
 			}
@@ -77,8 +77,8 @@
 		if (!$APP.User.LocationId && currentPathname !== '/onboarding') {
 			goto('/onboarding', { replaceState: true });
 		}
-		// Redirect to subscription step if has LocationId but no subscription
-		else if ($APP.User.LocationId && !$APP.User.ActiveSubscription && currentPathname !== '/onboarding/subscription') {
+		// Redirect to subscription step if has LocationId but no subscription (and hasn't skipped)
+		else if ($APP.User.LocationId && !$APP.User.ActiveSubscription && !$subscriptionSkipped && currentPathname !== '/onboarding/subscription') {
 			goto('/onboarding/subscription', { replaceState: true });
 		}
 	}

@@ -5,6 +5,8 @@ export const onboardingStep = writable({
 	completedSteps: [] as number[],
 });
 
+export const subscriptionSkipped = writable(false);
+
 export function setOnboardingStep(step: number) {
 	onboardingStep.set({
 		currentStep: step,
@@ -17,4 +19,12 @@ export function resetOnboardingStep() {
 		currentStep: 0,
 		completedSteps: [],
 	});
+}
+
+export function setSubscriptionSkipped(skipped: boolean) {
+	subscriptionSkipped.set(skipped);
+}
+
+export function resetSubscriptionSkipped() {
+	subscriptionSkipped.set(false);
 }
