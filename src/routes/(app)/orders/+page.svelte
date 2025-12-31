@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import InfinteLoader from '$lib/components/infinte_loader.svelte';
+	import Loader from '$lib/components/loader.svelte';
 	import OrderDetails from '$lib/components/order_details.svelte';
 	import { APP } from '$lib/stores/appMain';
 	import { bottomSheetStore } from '$lib/stores/bottom_sheet';
@@ -64,14 +65,21 @@
 
 	{#if !items.length}
 		{#if $APP.User?.ActiveSubscription}
-			<div class="d-flex align-items-center flex-column mt-2">
+			<div class="d-flex align-items-center flex-column my-2">
+				<img src="/imgs/no-orders.png" alt="No orders" class="empty-state-image mb-3" />
 				<p class="fs-6 text-center">No items in the orders yet.</p>
 				<button on:click={handlePickupClick} class:d-none={items.length} class="btn btn-primary w-75">Book your first pickup</button>
 			</div>
 		{:else if isEndUser}
-			<p class="text-center fs-6">No active subscription.</p>
+			<div class="text-center">
+				<img src="/imgs/no-orders.png" alt="No orders" class="empty-state-image mb-3" />
+				<p class="fs-6">No active subscription.</p>
+			</div>
 		{:else}
-			<p class="text-center fs-6">No items in the orders yet.</p>
+			<div class="text-center">
+				<img src="/imgs/no-orders.png" alt="No orders" class="empty-state-image mb-3" />
+				<p class="fs-6">No items in the orders yet.</p>
+			</div>
 		{/if}
 	{:else}
 		<div class="d-flex flex-column gap-2 mb-3">
@@ -196,5 +204,11 @@
 
 	.chip {
 		font-size: 0.8rem;
+	}
+
+	.empty-state-image {
+		max-width: 200px;
+		width: 100%;
+		height: auto;
 	}
 </style>
