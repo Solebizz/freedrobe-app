@@ -2,7 +2,6 @@
 	import { goto } from '$app/navigation';
 	import Card from '$lib/components/card.svelte';
 	import InfinteLoader from '$lib/components/infinte_loader.svelte';
-	import Loader from '$lib/components/loader.svelte';
 	import ServiceCards from '$lib/components/service_cards.svelte';
 	import { APP } from '$lib/stores/appMain';
 	import { getArticles } from '$lib/utils/apis';

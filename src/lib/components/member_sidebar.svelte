@@ -3,6 +3,7 @@
 	import { APP } from '$lib/stores/appMain';
 	import { resetOnboardingStep, resetSubscriptionSkipped } from '$lib/stores/onboarding';
 	import { contactusUrl, deleteUrl, privacyUrl, protectionPlanUrl, termsUrl } from '$lib/utils/globals';
+	import { clearAppCache } from '$lib/utils/pwa';
 
 	let show = false;
 
@@ -19,6 +20,8 @@
 		$APP.ArticlesInBag = [];
 		resetOnboardingStep();
 		resetSubscriptionSkipped();
+		// Clear cached API data on logout
+		await clearAppCache();
 	}
 </script>
 

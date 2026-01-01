@@ -6,6 +6,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { App } from '@capacitor/app';
 	import { bottomSheetStore } from '$lib/stores/bottom_sheet';
+	import { registerServiceWorker } from '$lib/utils/pwa';
 
 	let platform = Capacitor.getPlatform();
 	let top_padding = '20px'; //padding for web
@@ -25,6 +26,8 @@
 	});
 
 	onMount(() => {
+		registerServiceWorker();
+
 		App.addListener('backButton', () => {
 			if (isBottomSheetShow) {
 				handleBottomSheetClose();
