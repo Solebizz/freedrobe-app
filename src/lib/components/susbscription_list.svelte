@@ -5,6 +5,7 @@
 	import { buySubscription, getSubscriptionsList } from '$lib/utils/apis';
 	import { bottomSheetStore } from '$lib/stores/bottom_sheet';
 	import { setSubscriptionSkipped } from '$lib/stores/onboarding';
+	import { AVAILABLE_COUPONS } from '$lib/utils/constants';
 	import SubscriptionSummaryAddons from './subscription_summary_addons.svelte';
 	import DiscountCoupon from './discount_coupon.svelte';
 	import SubscriptionOrderDetails from './subscription_order_details.svelte';
@@ -28,13 +29,7 @@
 		},
 	};
 	let selectedProtectionPlan: string = '691832e12c958372717c9524';
-	let discountCoupon: App.ICouopnInfo | undefined = {
-		ID: '684d468807a2c336ee197038',
-		Code: 'FDD50',
-		Description: 'Discount Offer: ₹147 Off',
-		Discount: 147,
-		DirectDiscount: true,
-	};
+	let discountCoupon: App.ICouopnInfo | undefined = AVAILABLE_COUPONS[0];
 	let termsText = 'Subscription will start from the date of first pick up.';
 
 	onMount(async () => {
@@ -75,8 +70,9 @@
 		bottomSheetStore.setSheet({
 			show: true,
 			children: DiscountCoupon,
-			heightOffset: 50,
+			// heightOffset: 50,
 			props: {
+				currentCoupon: discountCoupon,
 				updateDiscountCoupon: (coupon: App.ICouopnInfo) => {
 					discountCoupon = coupon;
 				},
