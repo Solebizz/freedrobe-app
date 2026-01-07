@@ -11,7 +11,7 @@
 		show = !show;
 	}
 
-	async function handleLogout() {
+	function handleLogout() {
 		toggle();
 		$APP.User = undefined;
 		$APP.Articles = undefined;
@@ -20,9 +20,10 @@
 		$APP.ArticlesInBag = [];
 		resetOnboardingStep();
 		resetSubscriptionSkipped();
-		// Clear cached API data on logout
-		await clearAppCache();
+		clearAppCache();
 	}
+
+	let showQuickLinks = false;
 </script>
 
 {#if show}
@@ -37,22 +38,28 @@
 	<div class="p-3 d-flex flex-column flex-grow-1 text-black">
 		<section class="members d-flex flex-column mb-4"></section>
 
-		<section class="quick-actions d-flex flex-column">
-			<p class="f-lbl-2">Quick Links</p>
-			<!-- <a class="link" href={termsUrl}> <i class="bi bi-credit-card" aria-hidden="true"></i>Payments</a> -->
-			<a class="link" href="/prices" on:click={toggle}><i class="bi bi-cash-coin" aria-hidden="true"></i>Prices</a>
+		<div class="quick-links-collapsible d-flex flex-column">
+			<button class="quick-links-toggle f-lbl-2" on:click={() => (showQuickLinks = !showQuickLinks)}>
+				Quick Links
+				<i class={showQuickLinks ? 'bi bi-chevron-up' : 'bi bi-chevron-down'} style="margin-left: 0.5em;"></i>
+			</button>
+			{#if showQuickLinks}
+				<section class="quick-actions d-flex flex-column">
+					<a class="link" target="_blank" href={contactusUrl}> <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>Contact Us</a>
+					<a class="link" target="_blank" href={protectionPlanUrl}> <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>Protection Plan</a>
+					<a class="link" target="_blank" href={termsUrl}> <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>Terms & Conditions</a>
+					<a class="link" target="_blank" href={privacyUrl}> <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>PrivacyPolicy</a>
+					<a class="link" target="_blank" href={deleteUrl}> <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>Delete My Data</a>
+				</section>
+			{/if}
+		</div>
+
+		<section class="bottom mt-auto">
+			<a class="link" href="/prices" on:click={toggle}><i class="bi bi-tag" aria-hidden="true"></i>Prices</a>
 			<a class="link" href="/login" on:click={handleLogout}>
 				<i class="bi bi-box-arrow-right"></i>
 				<span>Logout</span>
 			</a>
-		</section>
-
-		<section class="bottom mt-auto">
-			<a class="link" target="_blank" href={contactusUrl}> <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>Contact Us</a>
-			<a class="link" target="_blank" href={protectionPlanUrl}> <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>Protection Plan</a>
-			<a class="link" target="_blank" href={termsUrl}> <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>Terms & Conditions</a>
-			<a class="link" target="_blank" href={privacyUrl}> <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>PrivacyPolicy</a>
-			<a class="link" target="_blank" href={deleteUrl}> <i class="bi bi-box-arrow-up-right" aria-hidden="true"></i>Delete My Data</a>
 		</section>
 	</div>
 </aside>
