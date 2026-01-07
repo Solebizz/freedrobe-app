@@ -114,7 +114,7 @@
 	}
 
 	.header-logo {
-		height: 5.5rem;
+		height: 6rem;
 	}
 	.active {
 		color: var(--bs-secondary);
