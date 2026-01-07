@@ -187,6 +187,9 @@
 </div>
 
 <style lang="scss">
+	button.btn.btn-primary {
+		text-transform: capitalize !important;
+	}
 	.header-image {
 		height: 200px;
 		overflow: hidden;
