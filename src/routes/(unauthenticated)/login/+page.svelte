@@ -47,11 +47,11 @@
 
 <div class="vh-100 d-flex flex-column" style="background-color: #f8f9fa;">
 	<!-- Header Image -->
-	<div class="position-relative" style="height: 240px; overflow: hidden;">
+	<div class="position-relative" style="height: 280px; overflow: hidden;">
 		<img src="/imgs/coming-soon.png" alt="Closet" class="w-100 h-100" />
 		<!-- Logo Overlay -->
 		<div class="bg-opacity-75 bg-white d-flex items-center justify-content-center position-absolute px-4 start-50 top-50 translate-middle w-100">
-			<img src={logoFullSrc} alt="FREEDROBE" style="height: 130px;" />
+			<img src={logoFullSrc} alt="FREEDROBE" style="height: 120px;" />
 		</div>
 	</div>
 
