@@ -77,8 +77,8 @@
 		top: 0;
 		right: 0;
 		color: white;
-		width: 300px;
-		right: -300px;
+		width: 240px;
+		right: -240px;
 		transition: right 0.25s;
 		&.show {
 			right: 0px;
