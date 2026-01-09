@@ -14,6 +14,7 @@ export default defineConfig({
 				globIgnores: ['**/index.html', '**/*.html'],
 				navigateFallback: '/index.html',
 				navigateFallbackDenylist: [/^\/(api|_app)\//],
+				maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MB
 				runtimeCaching: [
 					{
 						urlPattern: /^https:\/\/backend\.freedrobe\.com\/.*/i,
