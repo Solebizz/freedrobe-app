@@ -6,9 +6,13 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scale=no" />
 
+		<!-- Preload critical images -->
+		<link rel="preload" as="image" href="/imgs/main_app_logo.png" fetchpriority="high" />
+		<link rel="preload" as="image" href="/imgs/coming-soon.png" fetchpriority="high" />
+
 		<!-- Bootstrap -->
-		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-		<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+		<script defer src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+		<script defer src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 		<!-- Google Tag Manager -->
 		<script>

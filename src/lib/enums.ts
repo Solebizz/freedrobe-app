@@ -26,3 +26,9 @@ export enum PlayerRank {
 	elite = 'elite',
 	developing = 'developing',
 }
+
+export enum NetworkStatus {
+	ONLINE = 'online',
+	OFFLINE = 'offline',
+	SLOW = 'slow',
+}

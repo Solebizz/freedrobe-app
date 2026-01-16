@@ -23,7 +23,7 @@ export default defineConfig({
 							cacheName: 'api-cache',
 							expiration: {
 								maxEntries: 100,
-								maxAgeSeconds: 60 * 60 * 24, // 24 hours
+								maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days (increased for better offline support)
 							},
 							networkTimeoutSeconds: 10,
 							cacheableResponse: {
@@ -51,8 +51,32 @@ export default defineConfig({
 						options: {
 							cacheName: 'static-images-cache',
 							expiration: {
-								maxEntries: 50,
+								maxEntries: 100,
+								maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year for static images
+							},
+						},
+					},
+					{
+						// Cache CSS and JS files
+						urlPattern: /\.(?:css|js)$/i,
+						handler: 'StaleWhileRevalidate',
+						options: {
+							cacheName: 'static-resources',
+							expiration: {
+								maxEntries: 60,
 								maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+							},
+						},
+					},
+					{
+						// Cache fonts
+						urlPattern: /\.(?:woff|woff2|ttf|otf|eot)$/i,
+						handler: 'CacheFirst',
+						options: {
+							cacheName: 'font-cache',
+							expiration: {
+								maxEntries: 30,
+								maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
 							},
 						},
 					},

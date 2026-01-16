@@ -1,8 +1,50 @@
 import { env } from '$env/dynamic/public';
 import { APP } from '$lib/stores/appMain';
 import { addError, addNotice, type NoticeWithoutMeta } from '$lib/stores/notices';
-import { get } from 'svelte/store';
 import { fetchAuthHeadrs, serializeResponse } from './globals';
+import { get } from 'svelte/store';
+import { networkStatus } from '$lib/stores/network';
+import { NetworkStatus } from '$lib/enums';
+
+// Utility: block POST/PUT if offline
+export async function safeFetch(input: RequestInfo, init?: RequestInit): Promise<Response | undefined> {
+	const method = (init?.method || 'GET').toUpperCase();
+	if ((method === 'POST' || method === 'PUT') && get(networkStatus) === NetworkStatus.OFFLINE) {
+		addError('You are offline. Cannot perform this action.', 5);
+		return undefined;
+	}
+	return fetch(input, init);
+}
+
+// Utility: wrap API calls to gracefully handle offline with cached data
+export async function fetchWithOfflineFallback<T>(fetchFn: () => Promise<T>, getCachedData: () => T | undefined, options: { allowOffline?: boolean; cacheKey?: string } = {}): Promise<T | undefined> {
+	const { allowOffline = true } = options;
+
+	// If offline and we have cached data, return it
+	if (get(networkStatus) === NetworkStatus.OFFLINE && allowOffline) {
+		const cached = getCachedData();
+		if (cached) {
+			console.log('📦 Returning cached data (offline mode)');
+			return cached;
+		}
+	}
+
+	try {
+		// Try to fetch from network
+		const data = await fetchFn();
+		return data;
+	} catch (error) {
+		// If fetch fails and we're offline, try cached data
+		if (get(networkStatus) === NetworkStatus.OFFLINE && allowOffline) {
+			const cached = getCachedData();
+			if (cached) {
+				console.log('📦 Returning cached data (fetch failed)');
+				return cached;
+			}
+		}
+		throw error;
+	}
+}
 
 // Get OTP ✅
 export async function getOTP(phone: string) {
@@ -20,7 +62,8 @@ export async function getOTP(phone: string) {
 			headers,
 			body: JSON.stringify(body),
 		};
-		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/public/users/request-otp`, requestOptions);
+		const res = await safeFetch(`${env.PUBLIC_ADMIN_URL}/public/users/request-otp`, requestOptions);
+		if (!res) throw Error('You are offline. Cannot perform this action.');
 		const jsonResp: Api.IServerResponse<IOTP> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
@@ -56,7 +99,8 @@ export async function verifyOTPAndGetUserInfo(params: Api.IVerifyOTPParams) {
 			headers,
 			body: JSON.stringify(body),
 		};
-		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/public/users/verify-otp`, requestOptions);
+		const res = await safeFetch(`${env.PUBLIC_ADMIN_URL}/public/users/verify-otp`, requestOptions);
+		if (!res) throw Error('You are offline. Cannot perform this action.');
 		const jsonResp: Api.IServerResponse<IVerifyOTPReponseFromServer> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
@@ -122,7 +166,8 @@ export async function getLocationsInfo() {
 		const requestOptions = {
 			method: 'GET',
 		};
-		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/public/locations`, requestOptions);
+		const res = await safeFetch(`${env.PUBLIC_ADMIN_URL}/public/locations`, requestOptions);
+		if (!res) throw Error('You are offline. Cannot perform this action.');
 		const jsonResp: Api.IServerResponse<ILocationsInfoFromServer> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
@@ -141,6 +186,16 @@ export async function getLocationsInfo() {
 		return locations;
 	} catch (e) {
 		const message = (e as Error).message || 'Unkown error';
+
+		// If offline, return cached locations from store
+		if (get(networkStatus) === NetworkStatus.OFFLINE) {
+			const $APP = get(APP);
+			if ($APP.Locations && Object.keys($APP.Locations).length > 0) {
+				console.log('📦 Returning cached locations (offline)');
+				return Object.values($APP.Locations);
+			}
+		}
+
 		addError(message, 5);
 		console.error(message);
 	}
@@ -159,7 +214,8 @@ export async function saveUserInfo(params: Api.ISaveUserInfoParams) {
 			headers,
 			body: JSON.stringify(params),
 		};
-		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/users`, requestOptions);
+		const res = await safeFetch(`${env.PUBLIC_ADMIN_URL}/secure/users`, requestOptions);
+		if (!res) throw Error('You are offline. Cannot perform this action.');
 		const jsonResp: Api.IServerResponse<Api.IUserInfo> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
@@ -240,7 +296,8 @@ export async function getSubscriptionsList(protection = false) {
 		const requestOptions = {
 			method: 'GET',
 		};
-		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/public/subscriptions${protection ? '?filter={"protection": "true"}' : ''}`, requestOptions);
+		const res = await safeFetch(`${env.PUBLIC_ADMIN_URL}/public/subscriptions${protection ? '?filter={"protection": "true"}' : ''}`, requestOptions);
+		if (!res) throw Error('You are offline. Cannot perform this action.');
 		const jsonResp: Api.IServerResponse<ISubscriptionsInfoFromServer> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
@@ -315,7 +372,8 @@ export async function buySubscription(params: Api.IBuySubscriptionParams) {
 			headers,
 			body: JSON.stringify(params),
 		};
-		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/subscriptions/buy`, requestOptions);
+		const res = await safeFetch(`${env.PUBLIC_ADMIN_URL}/secure/subscriptions/buy`, requestOptions);
+		if (!res) throw Error('You are offline. Cannot perform this action.');
 		const jsonResp: Api.IServerResponse<ISubscriptionOrderResponseFromServer> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
@@ -358,7 +416,8 @@ export async function activateSubscription(params: Api.IActivateSubscriptionPara
 			headers,
 			body: JSON.stringify(params),
 		};
-		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/subscriptions/activate`, requestOptions);
+		const res = await safeFetch(`${env.PUBLIC_ADMIN_URL}/secure/subscriptions/activate`, requestOptions);
+		if (!res) throw Error('You are offline. Cannot perform this action.');
 		const jsonResp: Api.IServerResponse<Api.IUserInfo> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
@@ -428,7 +487,8 @@ export async function getOrdersList(params: Api.IPaginatedParams) {
 			method: 'GET',
 			headers,
 		};
-		const res = await fetch(url, requestOptions);
+		const res = await safeFetch(url, requestOptions);
+		if (!res) throw Error('You are offline. Cannot perform this action.');
 		const jsonResp: Api.IServerResponse<IOrdersInfoFromServer> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
@@ -500,6 +560,16 @@ export async function getOrdersList(params: Api.IPaginatedParams) {
 		return { orders, count };
 	} catch (e) {
 		const message = (e as Error).message || 'Unkown error';
+
+		// If offline, return cached orders from store
+		if (get(networkStatus) === NetworkStatus.OFFLINE) {
+			const $APP = get(APP);
+			if ($APP.Orders && Object.keys($APP.Orders).length > 0) {
+				console.log('📦 Returning cached orders (offline)');
+				return { orders: $APP.Orders, count: Object.keys($APP.Orders).length };
+			}
+		}
+
 		addError(message, 5);
 		console.error(message);
 	}
@@ -525,6 +595,7 @@ export async function getOrderDetailsByID(id: string) {
 			headers,
 		};
 		const res = await fetch(url, requestOptions);
+		if (!res) throw Error('You are offline. Cannot perform this action.');
 		const jsonResp: Api.IServerResponse<Api.IOrdersInfo> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
@@ -611,6 +682,7 @@ export async function placeOrderAndFetchPrice(params: Api.IPlaceOrdersParams) {
 			body: JSON.stringify(params),
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/orders`, requestOptions);
+		if (!res) throw Error('You are offline. Cannot perform this action.');
 		const jsonResp: Api.IServerResponse<Api.IOrdersInfo> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
@@ -680,6 +752,7 @@ export async function getArticles(params: Api.IPaginatedParams) {
 			headers,
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/articles?limit=${limit}&startIndex=${start}`, requestOptions);
+		if (!res) throw Error('You are offline. Cannot perform this action.');
 		const jsonResp: Api.IServerResponse<IArticlesInfoFromServer> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
@@ -701,6 +774,16 @@ export async function getArticles(params: Api.IPaginatedParams) {
 		return { articles, count };
 	} catch (e) {
 		const message = (e as Error).message || 'Unkown error';
+
+		// If offline, return cached articles from store
+		if (get(networkStatus) === NetworkStatus.OFFLINE) {
+			const $APP = get(APP);
+			if ($APP.Articles && Object.keys($APP.Articles).length > 0) {
+				console.log('📦 Returning cached articles (offline)');
+				return { articles: $APP.Articles, count: Object.keys($APP.Articles).length };
+			}
+		}
+
 		addError(message, 5);
 		console.error(message);
 	}
@@ -725,6 +808,7 @@ export async function cofirmOrder(params: Api.IConfirmOrderParams) {
 			body: JSON.stringify(paramsForResquest),
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/orders/${orderId}`, requestOptions);
+		if (!res) throw Error('You are offline. Cannot perform this action.');
 		const jsonResp: Api.IServerResponse<Api.IOrdersInfo> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
@@ -751,6 +835,7 @@ export async function cancelOrder(params: Api.ICancelOrderParams) {
 			headers,
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/orders/${orderId}`, requestOptions);
+		if (!res) throw Error('You are offline. Cannot perform this action.');
 		const jsonResp: Api.IServerResponse<Api.IOrdersInfo> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
@@ -776,6 +861,7 @@ export async function getUserInfo() {
 			headers,
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/users`, requestOptions);
+		if (!res) throw Error('You are offline. Cannot perform this action.');
 		const jsonResp: Api.IServerResponse<Api.IUserInfo> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
@@ -816,6 +902,16 @@ export async function getUserInfo() {
 		return { userInfo };
 	} catch (e) {
 		const message = (e as Error).message || 'Unkown error';
+
+		// If offline, return cached user info from store
+		if (get(networkStatus) === NetworkStatus.OFFLINE) {
+			const $APP = get(APP);
+			if ($APP.User) {
+				console.log('📦 Returning cached user info (offline)');
+				return { userInfo: $APP.User };
+			}
+		}
+
 		addError(message, 5);
 		console.error(message);
 	}
@@ -841,6 +937,7 @@ export async function fetchCouponInfo(text: string) {
 			headers,
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/coupons/${text}`, requestOptions);
+		if (!res) throw Error('You are offline. Cannot perform this action.');
 		const jsonResp: Api.IServerResponse<ICouponInfo> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
@@ -883,6 +980,7 @@ export async function fetchPrices(type: string) {
 			headers,
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/prices?filter={"type": "${type}"}`, requestOptions);
+		if (!res) throw Error('You are offline. Cannot perform this action.');
 		const jsonResp: Api.IServerResponse<IPricesResponseFromServer> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);
@@ -922,6 +1020,7 @@ export async function changeOrderStatus(params: Api.IChangeOrderStatusParams) {
 			body: JSON.stringify(body),
 		};
 		const res = await fetch(`${env.PUBLIC_ADMIN_URL}/secure/orders/logistics/${orderId}`, requestOptions);
+		if (!res) throw Error('You are offline. Cannot perform this action.');
 		const jsonResp: Api.IServerResponse<Api.IUserInfo> = await res.json();
 		if (!jsonResp || typeof jsonResp !== 'object') throw Error('Server error. Not an object. ⛔️');
 		if (res.status !== 200 && 'message' in jsonResp && typeof jsonResp.message === 'string') throw Error(jsonResp.message);

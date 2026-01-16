@@ -125,7 +125,7 @@
 <div class="vh-100 d-flex flex-column bg-light">
 	<!-- Header Image -->
 	<div class="header-image">
-		<img src="/imgs/coming-soon.png" alt="Closet" class="w-100 h-100" />
+		<img src="/imgs/coming-soon.png" alt="Closet" class="w-100 h-100" fetchpriority="high" />
 	</div>
 
 	<!-- Content Card -->
